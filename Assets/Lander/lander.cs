@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class lander : MonoBehaviour
+public class Lander : MonoBehaviour
 {
     
     [SerializeField]
@@ -15,6 +15,10 @@ public class lander : MonoBehaviour
     private Animator thrustAnim;
     
     private Rigidbody2D rb;
+    
+    
+    [SerializeField]
+    private float worldRotationSpeed = 10.0f;
     
     
     private void Awake() {
@@ -37,5 +41,22 @@ public class lander : MonoBehaviour
             torqueDir--;
         }
         rb.AddTorque(angularThrust * torqueDir, ForceMode2D.Force);
+    }
+    
+    
+    
+    private void Update() {
+        float rotationDir = 0;
+        
+        if( Input.GetKey(KeyCode.A) ) {
+            rotationDir++;
+        }
+        if( Input.GetKey(KeyCode.E) ) {
+            rotationDir--;
+        }
+        
+        if( rotationDir != 0 ) {
+            TerrainManager.Instance.RotateAround( transform.position.x, rotationDir * worldRotationSpeed * Time.deltaTime );
+        }
     }
 }

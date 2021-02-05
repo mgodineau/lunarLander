@@ -8,7 +8,9 @@ public class PlanetGen : MonoBehaviour
     
     
     private void Awake() {
-        layers.Add( new RandomLayer(0.5f, 1f) );
+        layers.Add( new RandomLayer(1, 30) );
+        layers.Add( new RandomLayer(0.1f, 5) );
+        // layers.Add( new RandomLayer(0.5f, 2f) );
     }
     
     public float GetHeight( Vector3 position ) {

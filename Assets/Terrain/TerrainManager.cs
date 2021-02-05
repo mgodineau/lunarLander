@@ -4,46 +4,126 @@ using UnityEngine;
 
 public class TerrainManager : MonoBehaviour
 {
-    [SerializeField]
-    private PlanetGen planet;
+    private static TerrainManager _instance;
+    public static TerrainManager Instance {
+        get{ return _instance; }
+    }
     
-    public Vector3 sliceNormal = Vector3.up;
-    private Vector3 sliceOrigine = Vector3.forward;
     
     [SerializeField]
-    private float terrainWidth = 10;
+    private float _terrainWidth = 10;
+    public float TerrainWidth {
+        get { return _terrainWidth; }
+    }
+    
     [SerializeField]
     private int sampleCount = 100;
     
     [SerializeField]
-    private List<GameObject> terrainObjects = new List<GameObject>();
-    private List<EdgeCollider2D> terrainColliders = new List<EdgeCollider2D>();
-    private List<MeshFilter> terrainMesh = new List<MeshFilter>();
+    private float bottomY = -1;
     
     [SerializeField]
-    private float bottomY = -1;
+    private Material terrainSideMaterial;
+    [SerializeField]
+    private PlanetGen planet;
+    
+    private Vector3 sliceNormal = Vector3.up;
+    private Vector3 sliceOrigine = Vector3.forward;
+    
+    
+    //propriétés du terrain
+    private EdgeCollider2D[] terrainColliders = new EdgeCollider2D[2];
+    // private MeshFilter[] terrainMesh = new MeshFilter[2];
+    private Mesh terrainMesh;
+    
+    private Vector2[] points;
+    private Vector3[] vertices;
     
     
     private void Awake() {
+        _instance = this; //singleton
+        
+        //récupération du générateur le planête si il est pas connu
         if( planet == null ) {
             planet = GetComponent<PlanetGen>();
         }
-        foreach( GameObject terrain in terrainObjects ) {
-            terrainColliders.Add( terrain.GetComponent<EdgeCollider2D>() );
-            terrainMesh.Add( terrain.GetComponent<MeshFilter>() );
+        
+        
+        //creation des objets du terrain
+        terrainMesh = new Mesh(); //Mesh des 2 objets du terrain
+        
+        int terrainCount = 2;
+        terrainColliders = new EdgeCollider2D[terrainCount];
+        
+        for( int i=0; i<terrainCount; i++ ) {
+            //cré"ation de l'objet, et ajustement de sa position
+            GameObject terrain = new GameObject("terrain_" + i);
+            terrain.transform.SetParent(transform);
+            terrain.transform.localPosition = Vector3.zero - Vector3.right * _terrainWidth * i;
+            terrain.transform.localRotation = Quaternion.identity;
+            terrain.transform.localScale = Vector3.one;
+            
+            //ajout d'un MeshRenderer et d'un collider à l'objet
+            terrain.AddComponent<MeshFilter>().mesh = terrainMesh;
+            terrain.AddComponent<MeshRenderer>().material = terrainSideMaterial;
+            terrainColliders[i] = terrain.AddComponent<EdgeCollider2D>();
         }
+        
+        //création de la géométrie du terrain et du collider
+        UpdateTerrainStructure();
     }
     
-    private void Start()
-    {
+    
+    /// <summary>
+    /// Créé  une nouvelle structure de terrain, en mettant à jour la géométrie du mesh et des colliders
+    /// </summary>
+    /// <remarks>la variable mesh doit être initialisé</remarks>
+    private void UpdateTerrainStructure() {
+        points = new Vector2[sampleCount+1];
+        vertices = new Vector3[(sampleCount+1) * 2];
+        
+        for( int i=0; i<sampleCount; i++ ) {
+            
+            //création des points du collider et du mesh
+            float x = _terrainWidth * i / sampleCount;
+            points[i] = new Vector2(  x, 1 );
+            vertices[i*2] = new Vector3(x, 1, 0);
+            vertices[i*2 + 1] = new Vector3(x, bottomY, 0);
+            
+        }
+        //ajout des derniers points, pour permettre de dupliquer les mesh
+        points[sampleCount] = new Vector2( _terrainWidth, points[0].y );
+        vertices[sampleCount*2] = new Vector3( _terrainWidth, vertices[0].y, 0 );
+        vertices[sampleCount*2+1] = new Vector3( _terrainWidth, bottomY, 0 );
+        
+        
+        //création des triangles
+        int[] triangles = new int[sampleCount * 3 * 2];
+        for( int i=0; i<sampleCount; i++) {
+            triangles[i*6] = i*2 + 1;
+            triangles[i*6+1] = i*2;
+            triangles[i*6+2] = i*2 + 2;
+            
+            triangles[i*6+3] = i*2 + 1;
+            triangles[i*6+4] = i*2 + 2;
+            triangles[i*6+5] = i*2 + 3;
+        }
+        
+        //affectation de la géométrie au Mesh
+        terrainMesh.vertices = vertices;
+        terrainMesh.triangles = triangles;
+        
+        
+        //MAJ des données de hauteur du terrain
         UpdateTerrain();
     }
     
     
+    /// <summary>
+    /// Met à jours la géométrie du mesh et du collider des terrains
+    /// </summary>
+    /// <remarks>les tableaux points et vertices doivent être initialisés, ainsi que mesh</remarks>
     private void UpdateTerrain() {
-        Vector2[] points = new Vector2[sampleCount+1];
-        Vector3[] vertices = new Vector3[(sampleCount+1) * 2];
-        
         
         for( int i=0; i<sampleCount; i++ ) {
             //récupération de la hauteur
@@ -53,42 +133,48 @@ public class TerrainManager : MonoBehaviour
             float sample = planet.GetHeight(samplePosition);
             
             //création des points du collider et du mesh
-            float x = terrainWidth * ratio;
-            points[i] = new Vector2(  x, sample );
-            vertices[i*2] = new Vector3(x, sample, 0);
-            vertices[i*2 + 1] = new Vector3(x, bottomY, 0);
+            float x = _terrainWidth * ratio;
+            points[i].y = sample;
+            vertices[i*2].y = sample;
             
         }
-        points[sampleCount] = new Vector2( terrainWidth, points[0].y );
-        vertices[sampleCount*2] = new Vector3( terrainWidth, 0, vertices[0].x );
-        vertices[sampleCount*2+1] = new Vector3( terrainWidth, bottomY, 0 );
+        points[sampleCount].y = points[0].y;
+        vertices[sampleCount*2].y = vertices[0].y;
         
         
-        int[] faces = new int[sampleCount * 3 * 2]; //TODO changer en triangles
-        for( int i=0; i<sampleCount; i++) {
-            faces[i*6] = i*2 + 1;
-            faces[i*6+1] = i*2;
-            faces[i*6+2] = i*2 + 2;
-            
-            faces[i*6+3] = i*2 + 1;
-            faces[i*6+4] = i*2 + 2;
-            faces[i*6+5] = i*2 + 3;
-        }
-        
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices;
-        mesh.triangles = faces;
-        
+        terrainMesh.vertices = vertices;
+        terrainMesh.RecalculateBounds();
         foreach( EdgeCollider2D col in terrainColliders ) {
             col.points = points;
         }
         
-        foreach( MeshFilter filter in terrainMesh ) {
-            filter.mesh = mesh;
-        }
-        
     }
     
+    
+    /// <summary>
+    /// Effectue une rotation du plan d'évolution du jeu, et met à jour les objets du terrain.
+    /// </summary>
+    /// <param name="axis2dPosition">la position x de l'axe de rotation, dans le repère 2D (ex : la position du joueur)</param>
+    /// <param name="angle">L'angle de rotation, en degré</param>
+    public void RotateAround( float axis2dPosition, float angle ) {
+        axis2dPosition = axis2dPosition % _terrainWidth;
+        Vector3 axis = Quaternion.AngleAxis( 360.0f * axis2dPosition/_terrainWidth, sliceNormal ) * sliceOrigine;
+        
+        RotateAround( axis, angle );
+    }
+    
+    /// <summary>
+    /// Effectue une rotation du plan d'évolution du jeu, et met à jour les objets du terrain.
+    /// </summary>
+    /// <param name="rotationAxis">L'axe de rotation, dans le repère globale (non nul)</param>
+    /// <param name="angle">L'angle de rotation, en degré</param>
+    public void RotateAround( Vector3 rotationAxis, float angle ) {
+        Quaternion rotation = Quaternion.AngleAxis( angle, rotationAxis );
+        sliceNormal = rotation * sliceNormal;
+        sliceOrigine = rotation * sliceOrigine;
+        
+        UpdateTerrain();
+    }
     
     
 }
