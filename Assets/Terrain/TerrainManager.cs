@@ -27,6 +27,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField]
     private PlanetGen planet;
     
+    
     private Vector3 sliceNormal = Vector3.up;
     private Vector3 sliceOrigine = Vector3.forward;
     
@@ -39,6 +40,7 @@ public class TerrainManager : MonoBehaviour
     private Vector2[] points;
     private Vector3[] vertices;
     
+    private List<Vector3> renderLine;
     
     private void Awake() {
         _instance = this; //singleton
@@ -148,7 +150,15 @@ public class TerrainManager : MonoBehaviour
             col.points = points;
         }
         
+        
+        WireframeRender.Instance.linePaths.Remove(renderLine);
+        renderLine = new List<Vector2>(points).ConvertAll( v2 => new Vector3(v2.x - _terrainWidth, v2.y, 0) );
+        renderLine.AddRange( renderLine.ConvertAll( pos => new Vector3(pos.x + _terrainWidth, pos.y, pos.z ) ) );
+        WireframeRender.Instance.linePaths.Add(renderLine);
     }
+    
+    
+    
     
     
     /// <summary>
@@ -175,6 +185,8 @@ public class TerrainManager : MonoBehaviour
         
         UpdateTerrain();
     }
+    
+    
     
     
 }

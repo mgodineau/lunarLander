@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: wireframeTest
-  m_Shader: {fileID: 4800000, guid: 009a95bc9e2270941a4e1a34c4d47aaf, type: 3}
+  m_Name: addWireframe
+  m_Shader: {fileID: 4800000, guid: 2a6276f24a70c8e4f9e435b7e3f3ff02, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -71,8 +71,10 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
+    - _Width: 3
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _LineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
