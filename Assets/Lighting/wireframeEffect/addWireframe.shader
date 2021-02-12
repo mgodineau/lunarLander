@@ -5,6 +5,7 @@ Shader "Custom/addWireframe"
         _MainTex ("Texture", 2D) = "white" {}
         _LineColor("Line color", Color) = (1,1,1,1)
         _Width ("Width", Int) = 10
+        _BrightnessThreshold("Brightness threshold", Float) = 0.2
     }
     SubShader
     {
@@ -32,13 +33,14 @@ Shader "Custom/addWireframe"
             };
 
             sampler2D _MainTex;
-            float4 _MainTex_ST;
+            float4 _MainTex_TexelSize;
             
             sampler2D _WireframeTex;
             float4 _WireframeTex_TexelSize;
             float4 _LineColor;
             
             int _Width;
+            float _BrightnessThreshold;
             
             v2f vert (appdata_img v)
             {
@@ -49,16 +51,36 @@ Shader "Custom/addWireframe"
                 return o;
             }
             
+            
+            float brightness( float3 color ) {
+                return sqrt( 
+                    color.r * color.r * 0.241 +
+                    color.g * color.g * 0.691 +
+                    color.b * color.b * 0.068
+                 );
+            }
+            
+            float maxBrightness( float2 uv ) {
+                float maxBr = 0;
+                for( int x2=-1; x2<=1; x2++ ) {
+                    for( int y2=-1; y2<=1; y2++ ) {
+                        float2 offset = float2( _MainTex_TexelSize.x * x2, _MainTex_TexelSize.y * y2 );
+                        maxBr = max( maxBr, brightness( tex2D( _MainTex, uv + offset ).rgb ) );
+                    }
+                }
+                return maxBr;
+            }
+            
             bool isOnWire( float2 uv ) {
-                return tex2D(_WireframeTex, uv ).a > 0.1;
+                return tex2D(_WireframeTex, uv ).a > 0.1 && maxBrightness(uv) < _BrightnessThreshold;
             }
             
             fixed4 frag (v2f i) : SV_Target
             {
                 
                 
-                float opacity = 0.0;
-                int x = 0;
+                float wireOpacity = 0.0;
+                
                 for( int x=0; x<_Width; x++ ) {
                     for( int y=0; y<_Width; y++ ) {
                         float weight = 1.0 - sqrt( x*x + y*y ) / _Width;
@@ -66,31 +88,34 @@ Shader "Custom/addWireframe"
                         
                         float2 offset = float2( _WireframeTex_TexelSize.x * x, _WireframeTex_TexelSize.y * y );
                         if( isOnWire(i.uv + offset) ) {
-                            opacity = max( opacity, weight );
+                            wireOpacity = max( wireOpacity, weight );
                         }
                         
                         offset.y = -offset.y;
                         if( isOnWire(i.uv + offset) ) {
-                            opacity = max( opacity, weight );
+                            wireOpacity = max( wireOpacity, weight );
                         }
                         
                         offset.x = -offset.x;
                         if( isOnWire(i.uv + offset) ) {
-                            opacity = max( opacity, weight );
+                            wireOpacity = max( wireOpacity, weight );
                         }
                         
                         offset.y = -offset.y;
                         if( isOnWire(i.uv + offset) ) {
-                            opacity = max( opacity, weight );
+                            wireOpacity = max( wireOpacity, weight );
                         }
                         
                     }//for y
                 }//for x
                 
                 fixed4 originalColor = tex2D( _MainTex, i.uv );
-                return originalColor + opacity * _LineColor;
+                
+                return originalColor + wireOpacity * _LineColor;
             }
             ENDCG
-        }
-    }
-}
+        }//Pass
+        
+        
+    }//SubShader
+}//Shader
