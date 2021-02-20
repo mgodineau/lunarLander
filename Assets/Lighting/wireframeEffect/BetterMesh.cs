@@ -26,9 +26,26 @@ public class BetterMesh
             _linkedMesh = value;
 
             _vertices = new List<Vertex>();
-            for (int i = 0; i < _linkedMesh.vertexCount; i++)
+            if (_linkedMesh.normals.Length < _linkedMesh.vertexCount)
             {
-                _vertices.Add(new Vertex(_linkedMesh.vertices[i], _linkedMesh.normals[i], _linkedMesh.uv[i]));
+                for (int i = 0; i < _linkedMesh.vertexCount; i++)
+                {
+                    _vertices.Add(new Vertex(_linkedMesh.vertices[i]));
+                }
+            }
+            else if (_linkedMesh.uv.Length < _linkedMesh.vertexCount)
+            {
+                for (int i = 0; i < _linkedMesh.vertexCount; i++)
+                {
+                    _vertices.Add(new Vertex(_linkedMesh.vertices[i], _linkedMesh.normals[i]));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < _linkedMesh.vertexCount; i++)
+                {
+                    _vertices.Add(new Vertex(_linkedMesh.vertices[i], _linkedMesh.normals[i], _linkedMesh.uv[i]));
+                }
             }
 
             _triangles = new List<Triangle>();
@@ -84,12 +101,14 @@ public class BetterMesh
         }
     }
 
-    public void AddTriangles( IEnumerable<Triangle> triangles ) {
-        foreach( Triangle triangle in triangles ) {
+    public void AddTriangles(IEnumerable<Triangle> triangles)
+    {
+        foreach (Triangle triangle in triangles)
+        {
             AddTriangle(triangle);
         }
     }
-    
+
     public void AddTriangle(Triangle triangle)
     {
         if (!_triangles.Contains(triangle))
@@ -132,18 +151,19 @@ public class BetterMesh
     {
         return _vertices.ConvertAll(vertex => vertex.uv).ToArray();
     }
-    
-    
-    public void UpdateMesh() {
+
+
+    public void UpdateMesh()
+    {
         _linkedMesh.Clear();
-        
+
         _linkedMesh.vertices = GetMeshVertices();
         _linkedMesh.normals = GetMeshNormals();
         _linkedMesh.uv = GetMeshUVs();
-        
+
         _linkedMesh.triangles = GetMeshTriangles();
     }
-    
+
 
     public BetterMesh(Mesh mesh)
     {
@@ -162,8 +182,8 @@ public class Vertex
     public Vector3 position;
     public Vector3 normal;
     public Vector2 uv;
-    
-    
+
+
     private static Vector2 GetLocalUVCoord(Edge edge1, Edge edge2, Vector3 position)
     {
         Vertex sharedVertex = GetVertexInCommon(edge1, edge2);
@@ -224,7 +244,7 @@ public class Vertex
 
         return coords;
     }
-    
+
     private static Vertex GetVertexInCommon(Edge edge1, Edge edge2)
     {
         if (edge1.ContainsVertex(edge2.vertex_0))
@@ -237,10 +257,20 @@ public class Vertex
         }
         return null;
     }
-    
-    
-    public Vertex(Vector3 position) : this(position, Vector3.up, Vector2.zero) { }
-    
+
+
+    public Vertex(Vector3 position) : this(position, Vector3.up) { }
+
+    public Vertex(Vector3 position, Vector3 normal) : this(position, normal, Vector2.zero) { }
+
+    public Vertex(Vector3 position, Vector3 normal, Vector2 uv)
+    {
+        this.position = position;
+        this.normal = normal.normalized;
+        this.uv = uv;
+    }
+
+
     public Vertex(Vector3 position, Triangle triangle)
     {
         this.position = position;
@@ -258,12 +288,7 @@ public class Vertex
         normal.Normalize();
     }
 
-    public Vertex(Vector3 position, Vector3 normal, Vector2 uv)
-    {
-        this.position = position;
-        this.normal = normal.normalized;
-        this.uv = uv;
-    }
+
 }
 
 public class Edge
@@ -275,19 +300,22 @@ public class Edge
     {
         return vertex_0 == vertex || vertex_1 == vertex;
     }
-    
-    public bool ReplaceVertex( Vertex oldVertex, Vertex newVertex ) {
-        if ( vertex_0 == oldVertex ) {
+
+    public bool ReplaceVertex(Vertex oldVertex, Vertex newVertex)
+    {
+        if (vertex_0 == oldVertex)
+        {
             vertex_0 = newVertex;
             return true;
         }
-        if ( vertex_1 == oldVertex ) {
+        if (vertex_1 == oldVertex)
+        {
             vertex_1 = newVertex;
             return true;
         }
         return false;
     }
-    
+
     public override bool Equals(object obj)
     {
         Edge otherEdge = obj as Edge;
@@ -331,9 +359,10 @@ public class Triangle
     {
         get { return _vertices; }
     }
-    
-    
-    public Edge[] GetEdges() {
+
+
+    public Edge[] GetEdges()
+    {
         return new Edge[3]{
             new Edge(_vertices[0], _vertices[1]) ,
             new Edge(_vertices[1], _vertices[2]) ,
@@ -356,7 +385,6 @@ public class Triangle
             normal = Vector3.Cross(pos[1] - pos[0], pos[2] - pos[0]).normalized;
             i++;
         }
-        // return Vector3.Cross(_vertices[1].position - _vertices[0].position, _vertices[2].position - _vertices[0].position).normalized;
         return normal;
     }
 

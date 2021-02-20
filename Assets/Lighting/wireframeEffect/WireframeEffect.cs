@@ -24,12 +24,12 @@ public class WireframeEffect : MonoBehaviour
         linesGlobal = new List<List<Vector3>>();
         // linesLocal = ExtractLines( meshFilter.sharedMesh );
         // linesGlobal = linesLocal.ConvertAll( line => line.ConvertAll(vLocal => transform.TransformPoint(vLocal)) );
+        UpdateLinesFromMesh();
     }
 
 
     private void Start() {
-        // WireframeRender.Instance.linePaths.AddRange(linesGlobal);
-        UpdateLines();
+        WireframeRender.Instance.linePaths.AddRange(linesGlobal);
     }
     
     
@@ -43,16 +43,21 @@ public class WireframeEffect : MonoBehaviour
         
     }
     
-    
+    /// <summary>
+    /// Nécessite de pouvoir lire le mesh
+    /// </summary>
     public void UpdateLines() {
+        UpdateLinesFromMesh();
+        WireframeRender.Instance.linePaths.AddRange(linesGlobal);
+    }
+    
+    private void UpdateLinesFromMesh() {
         
         foreach( List<Vector3> path in linesGlobal ) {
             WireframeRender.Instance.linePaths.Remove( path );
         }
         linesLocal = ExtractLines( meshFilter.sharedMesh );
         linesGlobal = linesLocal.ConvertAll( line => line.ConvertAll(vLocal => transform.TransformPoint(vLocal)) );
-        
-        WireframeRender.Instance.linePaths.AddRange(linesGlobal);
     }
     
     
