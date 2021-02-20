@@ -38,7 +38,8 @@ public class TerrainManager : MonoBehaviour
     
     
     //propriétés du terrain
-    private EdgeCollider2D[] terrainColliders = new EdgeCollider2D[2];
+    private EdgeCollider2D[] terrainColliders;
+    private WireframeEffect[] terrainWireEffect;
     private Mesh terrainSideMesh;
     private Mesh terrainMesh;
     
@@ -63,6 +64,7 @@ public class TerrainManager : MonoBehaviour
         
         int terrainCount = 2;
         terrainColliders = new EdgeCollider2D[terrainCount];
+        terrainWireEffect = new WireframeEffect[terrainCount];
         
         for( int i=0; i<terrainCount; i++ ) {
             //création de l'objet sur le côté, et ajustement de sa position
@@ -80,6 +82,7 @@ public class TerrainManager : MonoBehaviour
             SetTerrainParent( terrainBackground.transform, terrain.transform, 0 );
             terrainBackground.AddComponent<MeshFilter>().mesh = terrainMesh;
             terrainBackground.AddComponent<MeshRenderer>().material = terrainMaterial;
+            terrainWireEffect[i] = terrainBackground.AddComponent<WireframeEffect>();
         }
         
         //création de la géométrie du terrain et du collider

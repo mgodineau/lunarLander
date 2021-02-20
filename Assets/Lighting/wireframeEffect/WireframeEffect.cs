@@ -14,18 +14,22 @@ public class WireframeEffect : MonoBehaviour
     
     [SerializeField]
     private bool removeDiagonals = true;
+    private MeshFilter meshFilter;
     
     private void Awake() {
         
-        Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
+        meshFilter = GetComponent<MeshFilter>(); 
         
-        linesLocal = ExtractLines( mesh );
-        linesGlobal = linesLocal.ConvertAll( line => line.ConvertAll(vLocal => transform.TransformPoint(vLocal)) );
+        linesLocal = new List<List<Vector3>>();
+        linesGlobal = new List<List<Vector3>>();
+        // linesLocal = ExtractLines( meshFilter.sharedMesh );
+        // linesGlobal = linesLocal.ConvertAll( line => line.ConvertAll(vLocal => transform.TransformPoint(vLocal)) );
     }
 
 
     private void Start() {
-        WireframeRender.Instance.linePaths.AddRange(linesGlobal);
+        // WireframeRender.Instance.linePaths.AddRange(linesGlobal);
+        UpdateLines();
     }
     
     
@@ -39,6 +43,17 @@ public class WireframeEffect : MonoBehaviour
         
     }
     
+    
+    public void UpdateLines() {
+        
+        foreach( List<Vector3> path in linesGlobal ) {
+            WireframeRender.Instance.linePaths.Remove( path );
+        }
+        linesLocal = ExtractLines( meshFilter.sharedMesh );
+        linesGlobal = linesLocal.ConvertAll( line => line.ConvertAll(vLocal => transform.TransformPoint(vLocal)) );
+        
+        WireframeRender.Instance.linePaths.AddRange(linesGlobal);
+    }
     
     
     private List<List<Vector3>> ExtractLines(Mesh mesh)
