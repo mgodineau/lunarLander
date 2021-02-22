@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TerrainManager : MonoBehaviour
 {
+    //singleton
     private static TerrainManager _instance;
     public static TerrainManager Instance
     {
@@ -11,6 +12,7 @@ public class TerrainManager : MonoBehaviour
     }
 
 
+    //paramètres de la génération du terrain
     [SerializeField]
     private float _terrainWidth = 10;
     public float TerrainWidth
@@ -22,24 +24,35 @@ public class TerrainManager : MonoBehaviour
     private int sampleCount = 100;
     [SerializeField]
     private int bgSampleCount = 5;
-
     [SerializeField]
     private float bottomY = -1;
 
+    [SerializeField]
+    private float lzCosThreshold = 0.1f;
+
+    //matérials du terrain
     [SerializeField]
     private Material terrainSideMaterial;
     [SerializeField]
     private Material terrainMaterial;
 
+    //générateur le la planète
     [SerializeField]
     private PlanetGen planet;
 
+    //prefab des ZA
+    [SerializeField]
+    private GameObject lzPref;
 
+    //instances des ZA
+    private Dictionary<LandingZone, GameObject> lzToPrefInstance = new Dictionary<LandingZone, GameObject>();
+
+    //propriétés de la tranche visualisée
     private Vector3 sliceNormal = Vector3.up;
     private Vector3 sliceOrigine = Vector3.forward;
 
 
-    //propriétés du terrain
+    //propriétés privées du terrain
     private EdgeCollider2D[] terrainColliders;
     private Mesh terrainSideMesh;
     private Mesh terrainMesh;
@@ -48,6 +61,7 @@ public class TerrainManager : MonoBehaviour
     private Vector3[] vertices;
     private Vector3[] bgVertices;
 
+    //rendu wireframe du terrain
     private List<Vector3> frontLine;
     private List<Vector3>[] backgroundXlines;
     private List<Vector3>[] backgroundZlines;
@@ -62,8 +76,6 @@ public class TerrainManager : MonoBehaviour
             planet = GetComponent<PlanetGen>();
         }
 
-        backgroundXlines = new List<Vector3>[2];
-        backgroundZlines = new List<Vector3>[2];
 
 
         //creation des objets du terrain
@@ -72,6 +84,8 @@ public class TerrainManager : MonoBehaviour
 
         int terrainCount = 2;
         terrainColliders = new EdgeCollider2D[terrainCount];
+        backgroundXlines = new List<Vector3>[terrainCount];
+        backgroundZlines = new List<Vector3>[terrainCount];
 
         for (int i = 0; i < terrainCount; i++)
         {
@@ -97,6 +111,12 @@ public class TerrainManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// affecte le parent d'un transform, et réinitialise ses transformations locales en fonction de i
+    /// </summary>
+    /// <param name="child">Le transform enfant</param>
+    /// <param name="parent">Le tranform parent</param>
+    /// <param name="i">Le nombre de décalage d'amplitude _terrainWidth à effectuer sur X</param>
     private void SetTerrainParent(Transform child, Transform parent, int i)
     {
         child.SetParent(parent);
@@ -203,6 +223,41 @@ public class TerrainManager : MonoBehaviour
 
         }
 
+        //TODO créer les zones d'atterrissage
+        foreach (LandingZone lz in planet.landingZones)
+        {
+            float normalCos = Vector3.Dot(lz.Position, sliceNormal);
+            if (normalCos < lzCosThreshold)
+            {
+                Vector3 displayPosition = Vector3.ProjectOnPlane(lz.Position, sliceNormal);
+                float angle = Vector3.SignedAngle(sliceOrigine, displayPosition, sliceNormal) % 360.0f;
+                int positionId = (int)(sampleCount * angle / 360.0f);
+
+                float heightMean = (points[positionId].y + points[positionId + 1].y) / 2;
+                heightMean = 50.0f;
+                points[positionId].y = heightMean;
+                points[positionId + 1].y = heightMean;
+                vertices[positionId * 2].y = heightMean;
+                vertices[(positionId + 1) * 2].y = heightMean;
+                
+                GameObject instance;
+                if( !lzToPrefInstance.ContainsKey(lz) ) {
+                    lzToPrefInstance.Add( lz, Instantiate(lzPref, transform) );
+                    
+                }
+                instance = lzToPrefInstance[lz];
+                
+                instance.transform.localPosition = new Vector3(points[positionId].x + _terrainWidth / sampleCount * 0.5f, heightMean, 0);
+                
+
+            }
+            else if (lzToPrefInstance.ContainsKey(lz))
+            {
+                Destroy(lzToPrefInstance[lz]);
+                lzToPrefInstance.Remove(lz);
+            }
+        }
+
 
         terrainSideMesh.vertices = vertices;
         terrainSideMesh.RecalculateBounds();
@@ -213,7 +268,11 @@ public class TerrainManager : MonoBehaviour
 
 
         //création de la hauteur de l'arrière plan
-        for (int z = 0; z <= bgSampleCount; z++)
+        for (int x = 0; x <= sampleCount; x++)
+        {
+            bgVertices[x].y = points[x].y;
+        }
+        for (int z = 1; z <= bgSampleCount; z++)
         {
             for (int x = 0; x <= sampleCount; x++)
             {
@@ -234,9 +293,9 @@ public class TerrainManager : MonoBehaviour
         //MAJ du rendu de la surface du terrain
         WireframeRender.Instance.linePaths.Remove(frontLine);
         frontLine = new List<Vector2>(points).ConvertAll(v2 => new Vector3(v2.x - _terrainWidth, v2.y, 0));
-        frontLine.AddRange( ShiftLine( frontLine, _terrainWidth ) );
+        frontLine.AddRange(ShiftLine(frontLine, _terrainWidth));
         WireframeRender.Instance.linePaths.Add(frontLine);
-        
+
 
         //MAJ du rendu wireframe de l'arrière plan
         foreach (List<Vector3> line in backgroundXlines)
@@ -272,8 +331,8 @@ public class TerrainManager : MonoBehaviour
         {
             WireframeRender.Instance.linePaths.Add(line);
         }
-        
-        
+
+
         foreach (List<Vector3> line in backgroundZlines)
         {
             WireframeRender.Instance.linePaths.Remove(line);
@@ -300,7 +359,7 @@ public class TerrainManager : MonoBehaviour
             }
             frontToBack = !frontToBack;
         }
-        backgroundZlines[1] = ShiftLine( backgroundZlines[0], -_terrainWidth );
+        backgroundZlines[1] = ShiftLine(backgroundZlines[0], -_terrainWidth);
 
         foreach (List<Vector3> line in backgroundZlines)
         {
