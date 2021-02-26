@@ -14,9 +14,10 @@ public class WireframeRender : MonoBehaviour
     private Camera cam;
     private RenderTexture wireframeRT;
     
-    
     [SerializeField]
-    private Material lineMaterial;
+    private Material linePostProcMaterial;
+    [SerializeField]
+    private Material lineDrawMaterial;
     
     public List<List<Vector3>> linePaths = new List<List<Vector3>>();
     
@@ -24,9 +25,10 @@ public class WireframeRender : MonoBehaviour
     private void Awake() {
         _instance = this;
         cam = GetComponent<Camera>();
+        cam.depthTextureMode = DepthTextureMode.Depth;
         
-        // lineMaterial = new Material(lineShader);
         wireframeRT = new RenderTexture( cam.pixelWidth, cam.pixelHeight, 16, RenderTextureFormat.Default );
+        wireframeRT.useDynamicScale = true;
     }
     
     
@@ -38,11 +40,16 @@ public class WireframeRender : MonoBehaviour
     
     private void OnRenderImage( RenderTexture source, RenderTexture dest ) {
         
+        if( cam.pixelHeight != wireframeRT.height || cam.pixelWidth != wireframeRT.width ) {
+            wireframeRT.Release();
+            wireframeRT = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 16, RenderTextureFormat.Default);
+        }
         
-        Graphics.SetRenderTarget(wireframeRT);
+        Graphics.Blit( source, wireframeRT ); //rendu des lignes sur source, et copie de la vraie source dans wireframeRT, parce que ça parche pas dans l'autre sens
+        Graphics.SetRenderTarget(source);
         GL.Clear( false, true, Color.clear, 1 );
         
-        // lineMaterial.SetPass(0);
+        lineDrawMaterial.SetPass(0);
         foreach( List<Vector3> path in linePaths ) {
             GL.Begin( GL.LINE_STRIP );
             GL.Color( Color.white );
@@ -54,8 +61,17 @@ public class WireframeRender : MonoBehaviour
             GL.End();
         }
         
-        lineMaterial.SetTexture("_WireframeTex", wireframeRT);
-        Graphics.Blit(source, dest, lineMaterial);
+        
+        linePostProcMaterial.SetTexture("_WireframeTex", source);
+        Graphics.Blit(wireframeRT, dest, linePostProcMaterial);
+        
+    }
+    
+    
+    private Matrix4x4 ApplyZoffset( Matrix4x4 proj, float offset ) {
+        Debug.Log( proj );
+        proj[2,3] -= offset;
+        return proj;
     }
     
     

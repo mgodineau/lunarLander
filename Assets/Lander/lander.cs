@@ -46,8 +46,8 @@ public class Lander : MonoBehaviour
     
     
     private void Update() {
-        float rotationDir = 0;
         
+        float rotationDir = 0;
         if( Input.GetKey(KeyCode.A) ) {
             rotationDir++;
         }

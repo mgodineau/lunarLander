@@ -20,6 +20,13 @@ public class TerrainManager : MonoBehaviour
         get { return _terrainWidth; }
     }
 
+
+    
+    [SerializeField]
+    private Transform lightReference;
+    public Transform mainLight;
+    public Vector3 globalLightDir = Vector3.right;
+
     [SerializeField]
     private int sampleCount = 100;
     [SerializeField]
@@ -29,6 +36,7 @@ public class TerrainManager : MonoBehaviour
 
     [SerializeField]
     private float lzCosThreshold = 0.1f;
+
 
     //matérials du terrain
     [SerializeField]
@@ -108,6 +116,15 @@ public class TerrainManager : MonoBehaviour
 
         //création de la géométrie du terrain et du collider
         UpdateTerrainStructure();
+    }
+
+
+    private void Update()
+    {
+        //MAJ de l'orientation de la lumière
+        Vector3 localLightDir = Quaternion.Inverse( Quaternion.LookRotation( sliceNormal, lightReference.position ) ) * globalLightDir;
+        mainLight.rotation = Quaternion.LookRotation( localLightDir, Vector3.up );
+        
     }
 
 
@@ -239,16 +256,17 @@ public class TerrainManager : MonoBehaviour
                 points[positionId + 1].y = heightMean;
                 vertices[positionId * 2].y = heightMean;
                 vertices[(positionId + 1) * 2].y = heightMean;
-                
+
                 GameObject instance;
-                if( !lzToPrefInstance.ContainsKey(lz) ) {
-                    lzToPrefInstance.Add( lz, Instantiate(lzPref, transform) );
-                    
+                if (!lzToPrefInstance.ContainsKey(lz))
+                {
+                    lzToPrefInstance.Add(lz, Instantiate(lzPref, transform));
+
                 }
                 instance = lzToPrefInstance[lz];
-                
+
                 instance.transform.localPosition = new Vector3(points[positionId].x + _terrainWidth / sampleCount * 0.5f, heightMean, 0);
-                
+
 
             }
             else if (lzToPrefInstance.ContainsKey(lz))

@@ -14,6 +14,8 @@ Shader "Custom/addWireframe"
 
         Pass
         {
+            ZWrite Off
+            
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -62,7 +64,9 @@ Shader "Custom/addWireframe"
             
             float maxBrightness( float2 uv ) {
                 float maxBr = 0;
+                [unroll]
                 for( int x2=-1; x2<=1; x2++ ) {
+                    [unroll]
                     for( int y2=-1; y2<=1; y2++ ) {
                         float2 offset = float2( _MainTex_TexelSize.x * x2, _MainTex_TexelSize.y * y2 );
                         maxBr = max( maxBr, brightness( tex2D( _MainTex, uv + offset ).rgb ) );
