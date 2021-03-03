@@ -22,14 +22,18 @@ public class WireframeEffect : MonoBehaviour
         
         linesLocal = new List<List<Vector3>>();
         linesGlobal = new List<List<Vector3>>();
-        // linesLocal = ExtractLines( meshFilter.sharedMesh );
-        // linesGlobal = linesLocal.ConvertAll( line => line.ConvertAll(vLocal => transform.TransformPoint(vLocal)) );
         UpdateLinesFromMesh();
     }
 
 
     private void Start() {
         WireframeRender.Instance.linePaths.AddRange(linesGlobal);
+    }
+    
+    private void OnDisable() {
+        foreach( List<Vector3> line in linesGlobal ) {
+        WireframeRender.Instance.linePaths.Remove(line);
+        }
     }
     
     

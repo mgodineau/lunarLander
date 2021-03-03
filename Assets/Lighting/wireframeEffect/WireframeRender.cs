@@ -21,6 +21,8 @@ public class WireframeRender : MonoBehaviour
     
     public List<List<Vector3>> linePaths = new List<List<Vector3>>();
     
+    // public List<List<Vector3>> linePathsUI = new List<List<Vector3>>();
+    public List<LineData> linesUI = new List<LineData>();
     
     private void Awake() {
         _instance = this;
@@ -49,6 +51,8 @@ public class WireframeRender : MonoBehaviour
         Graphics.SetRenderTarget(source);
         GL.Clear( false, true, Color.clear, 1 );
         
+        
+        //rendu des lignes en 3d
         lineDrawMaterial.SetPass(0);
         foreach( List<Vector3> path in linePaths ) {
             GL.Begin( GL.LINE_STRIP );
@@ -60,6 +64,22 @@ public class WireframeRender : MonoBehaviour
             
             GL.End();
         }
+        
+        //rendu des lignes du HUD
+        GL.PushMatrix();
+        
+        GL.LoadOrtho();
+        foreach( LineData line in linesUI ) {
+            GL.Begin( GL.LINE_STRIP );
+            GL.Color( line.LineColor );
+            
+            foreach( Vector3 pos in line.points ) {
+                GL.Vertex(pos);
+            }
+            
+            GL.End();
+        }
+        GL.PopMatrix();
         
         
         linePostProcMaterial.SetTexture("_WireframeTex", source);
