@@ -14,8 +14,8 @@ public class Map : Instrument
     [SerializeField]
     private float sliceDelta = 10.0f;
     
-    LineData bgVertical = new LineData();
-    LineData bgHorizontal = new LineData();
+    LineData bgVertical = new LineData(Color.grey);
+    LineData bgHorizontal = new LineData(Color.grey);
     
     LineData landerPos = new LineData(Color.red);
     LineData sliceLine = new LineData(Color.red);
@@ -28,6 +28,7 @@ public class Map : Instrument
         
         EnableLayout();
         EnableInfos();
+        EnableBorder();
     }
     
     

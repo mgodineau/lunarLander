@@ -27,37 +27,46 @@ public abstract class Instrument : MonoBehaviour
     protected void Start() {
         UpdateScreenRect();
         UpdateBorder();
-        EnableBorder();
+        // EnableBorder();
     }
     
     
     
     private void UpdateScreenRect() {
-        Vector3[] worldCorners = new Vector3[4];
-        rectTransform.GetWorldCorners(worldCorners);
+        // Rect mainRect = InstrumentsManager.Instance.CanvasRect.rect;
+        Vector3[] canvasCorners = new Vector3[4];
+        InstrumentsManager.Instance.CanvasRect.GetWorldCorners(canvasCorners);
+        
+        Vector3[] localCorners = new Vector3[4];
+        rectTransform.GetWorldCorners(localCorners);
+        // screenRect = new Rect(
+        //     worldCorners[0].x / Screen.width,
+        //     worldCorners[0].y / Screen.height,
+        //     (worldCorners[3].x - worldCorners[0].x) / Screen.width,
+        //     (worldCorners[1].y - worldCorners[0].y) / Screen.height);
+        
+        float width = canvasCorners[3].x - canvasCorners[0].x;
+        float height = canvasCorners[1].y - canvasCorners[0].y;
+        
         screenRect = new Rect(
-            worldCorners[0].x / Screen.width,
-            worldCorners[0].y / Screen.height,
-            (worldCorners[3].x - worldCorners[0].x) / Screen.width,
-            (worldCorners[1].y - worldCorners[0].y) / Screen.height);
+            (localCorners[0].x - canvasCorners[0].x) / width,
+            (localCorners[0].y - canvasCorners[0].y) / height,
+            (localCorners[3].x - localCorners[0].x) / width,
+            (localCorners[1].y - localCorners[0].y) / height);
     }
     
     
     private void UpdateBorder() {
-        Vector3[] borderLineArr = new Vector3[4];
-        rectTransform.GetWorldCorners(borderLineArr);
-        
-        for (int i = 0; i < borderLineArr.Length; i++)
-        {
-            borderLineArr[i].x /= Screen.width;
-            borderLineArr[i].y /= Screen.height;
-            borderLineArr[i].z = 0;
-        }
+        borderLine.points.Clear();
 
-        borderLine.points = new List<Vector3>(borderLineArr);
+        borderLine.points.Add( localToGlobal(Vector3.zero) );
+        borderLine.points.Add( localToGlobal(Vector3.up) );
+        borderLine.points.Add( localToGlobal(Vector2.one) );
+        borderLine.points.Add( localToGlobal(Vector3.right) );
+        borderLine.points.Add( localToGlobal(Vector3.zero) );
     }
     
-    private void EnableBorder()
+    protected void EnableBorder()
     {
         WireframeRender.Instance.linesUI.Add( borderLine );
     }

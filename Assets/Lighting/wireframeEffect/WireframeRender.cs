@@ -18,6 +18,8 @@ public class WireframeRender : MonoBehaviour
     private Material linePostProcMaterial;
     [SerializeField]
     private Material lineDrawMaterial;
+    [SerializeField]
+    private Material uiLineDrawMaterial;
     
     public List<List<Vector3>> linePaths = new List<List<Vector3>>();
     
@@ -66,6 +68,7 @@ public class WireframeRender : MonoBehaviour
         }
         
         //rendu des lignes du HUD
+        uiLineDrawMaterial.SetPass(0);
         GL.PushMatrix();
         
         GL.LoadOrtho();
@@ -74,7 +77,10 @@ public class WireframeRender : MonoBehaviour
             GL.Color( line.LineColor );
             
             foreach( Vector3 pos in line.points ) {
-                GL.Vertex(pos);
+                Vector3 pos2 = pos;
+                pos2.z = 0;
+                
+                GL.Vertex(pos2);
             }
             
             GL.End();
@@ -85,6 +91,7 @@ public class WireframeRender : MonoBehaviour
         linePostProcMaterial.SetTexture("_WireframeTex", source);
         Graphics.Blit(wireframeRT, dest, linePostProcMaterial);
         
+        // Graphics.Blit(source, dest); //DEBUG : montre juste les lignes
     }
     
     

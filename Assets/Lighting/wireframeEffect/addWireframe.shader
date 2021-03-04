@@ -83,39 +83,25 @@ Shader "Custom/addWireframe"
             {
                 
                 
-                float wireOpacity = 0.0;
+                float maxWeight = 0.0;
+                float4 wireColor;
                 
-                for( int x=0; x<_Width; x++ ) {
-                    for( int y=0; y<_Width; y++ ) {
+                for( int x=-_Width; x<=_Width; x++ ) {
+                    for( int y=-_Width; y<=_Width; y++ ) {
                         float weight = 1.0 - sqrt( x*x + y*y ) / _Width;
                         
-                        
                         float2 offset = float2( _WireframeTex_TexelSize.x * x, _WireframeTex_TexelSize.y * y );
-                        if( isOnWire(i.uv + offset) ) {
-                            wireOpacity = max( wireOpacity, weight );
-                        }
                         
-                        offset.y = -offset.y;
-                        if( isOnWire(i.uv + offset) ) {
-                            wireOpacity = max( wireOpacity, weight );
-                        }
-                        
-                        offset.x = -offset.x;
-                        if( isOnWire(i.uv + offset) ) {
-                            wireOpacity = max( wireOpacity, weight );
-                        }
-                        
-                        offset.y = -offset.y;
-                        if( isOnWire(i.uv + offset) ) {
-                            wireOpacity = max( wireOpacity, weight );
+                        if( isOnWire(i.uv + offset) && weight > maxWeight) {
+                            maxWeight = weight;
+                            wireColor = tex2D( _WireframeTex, i.uv + offset );
                         }
                         
                     }//for y
                 }//for x
                 
                 fixed4 originalColor = tex2D( _MainTex, i.uv );
-                
-                return originalColor + wireOpacity * _LineColor;
+                return originalColor + maxWeight * wireColor;
             }
             ENDCG
         }//Pass
