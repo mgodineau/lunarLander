@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
+[RequireComponent(typeof(Image))]
 public class Map : Instrument
 {
     
     [SerializeField]
-    private int resolution = 10;
+    private int linesResolution = 10;
+    
+    [SerializeField]
+    private int textureResolution = 50;
     
     [SerializeField]
     private float iconWidth = 0.01f;
@@ -14,12 +19,21 @@ public class Map : Instrument
     [SerializeField]
     private float sliceDelta = 10.0f;
     
-    LineData bgVertical = new LineData(Color.grey);
-    LineData bgHorizontal = new LineData(Color.grey);
+    
+    private Image image;
+    
+    LineData bgVertical = new LineData();
+    LineData bgHorizontal = new LineData();
     
     LineData landerPos = new LineData(Color.red);
     LineData sliceLine = new LineData(Color.red);
     
+    
+    new private void Awake() {
+        base.Awake();
+        
+        image = GetComponent<Image>();
+    }
     
     new private void Start() {
         base.Start();
@@ -29,12 +43,20 @@ public class Map : Instrument
         EnableLayout();
         EnableInfos();
         EnableBorder();
+        
+        UpdateHeightmap();
     }
     
     
     private void Update() {
         UpdateLanderLocation();
         UpdateSliceLine();
+        
+        //tmp
+        Vector3 landerDir = TerrainManager.Instance.convertXtoDir( InstrumentsManager.Instance.Lander.position.x );
+        Vector2 localPos = dirToLocalPos(landerDir);
+        Vector3 landerDir2 = localPosToDir(localPos);
+        Debug.Log( "dir = " + landerDir + "; localPos = " + localPos + "; dir2 = " + landerDir2 );
     }
     
     
@@ -86,15 +108,45 @@ public class Map : Instrument
     }
     
     
+    private void UpdateHeightmap() {
+        
+        float maxHeight = InstrumentsManager.Instance.Planet.getMaxHeight();
+        
+        Color[] colors = new Color[textureResolution * textureResolution * 2];
+        for( int u=0; u<textureResolution*2; u++ ) {
+            for( int v=0; v<textureResolution; v++ ) {
+                Vector2 localPos = new Vector2( (float)u / (textureResolution*2), (float)v / textureResolution );
+                float height = InstrumentsManager.Instance.Planet.GetHeight( localPosToDir(localPos) );
+                float brightness = height / maxHeight;
+                colors[ v * textureResolution*2 + u ] = new Color(brightness, brightness, brightness, 1 );
+            }
+        }
+        
+        Texture2D tex2D = new Texture2D( textureResolution*2, textureResolution );
+        tex2D.SetPixels( colors, 0 );
+        tex2D.Apply();
+        
+        Sprite sprite = Sprite.Create( tex2D, new Rect(0, 0, textureResolution*2, textureResolution), Vector2.one * 0.5f );
+        image.sprite = sprite;
+    }
+    
+    
     
     private Vector2 dirToLocalPos( Vector3 dir ) {
         
         float localX = Mathf.Sqrt( 1.0f - dir.y*dir.y );
         float yAngle = Mathf.Atan2( dir.y, localX );
         
-        float xAngle = Vector2.SignedAngle( new Vector2(dir.x, dir.z), Vector2.right );
+        float xAngle = Vector2.SignedAngle( new Vector2(dir.x, dir.z),  Vector2.right );
         
         return new Vector2( (xAngle / 360.0f) +0.5f , yAngle / Mathf.PI + 0.5f );
+    }
+    
+    private Vector3 localPosToDir( Vector2 localPos ) {
+        Vector3 dir = -Vector3.right;
+        dir = Quaternion.AngleAxis( (localPos.y - 0.5f) * 180.0f, -Vector3.forward) * dir;
+        dir = Quaternion.AngleAxis( localPos.x * 360.0f, Vector3.up) * dir;
+        return dir;
     }
     
     
@@ -103,9 +155,9 @@ public class Map : Instrument
         bgVertical.points.Clear();
         
         //lignes horizontales
-        float height = 1.0f / resolution;
+        float height = 1.0f / linesResolution;
         bool left = true;
-        for( int i=1; i<=resolution; i++ ) {
+        for( int i=1; i<=linesResolution; i++ ) {
             float x = left ? 0 : 1;
             left = !left;
             
@@ -114,9 +166,9 @@ public class Map : Instrument
         }
         
         //lignes verticales
-        float width = 0.5f / resolution;
+        float width = 0.5f / linesResolution;
         bool down = true;
-        for( int i=1; i<=resolution*2; i++ ) {
+        for( int i=1; i<=linesResolution*2; i++ ) {
             float y = down ? 0 : 1;
             down = !down;
             

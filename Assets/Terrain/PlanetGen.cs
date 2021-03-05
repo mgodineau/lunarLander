@@ -26,6 +26,14 @@ public class PlanetGen : MonoBehaviour
     }
     
     
+    public float getMaxHeight() {
+        float maxHeight = 0;
+        foreach( RandomLayer layer in layers ) {
+            maxHeight += layer.MaxHeight;
+        }
+        return maxHeight;
+    }
+    
     private void OnValidate() {
         foreach( RandomLayer layer in layers ) {
             layer.OnValidate();

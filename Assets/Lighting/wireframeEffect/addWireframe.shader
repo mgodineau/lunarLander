@@ -62,7 +62,7 @@ Shader "Custom/addWireframe"
                  );
             }
             
-            float maxBrightness( float2 uv ) {
+            float getMaxBrightness( float2 uv ) {
                 float maxBr = 0;
                 [unroll]
                 for( int x2=-1; x2<=1; x2++ ) {
@@ -76,7 +76,7 @@ Shader "Custom/addWireframe"
             }
             
             bool isOnWire( float2 uv ) {
-                return tex2D(_WireframeTex, uv ).a > 0.1 && maxBrightness(uv) < _BrightnessThreshold;
+                return tex2D(_WireframeTex, uv ).a > 0.1 && getMaxBrightness(uv) < _BrightnessThreshold;
             }
             
             fixed4 frag (v2f i) : SV_Target
@@ -84,6 +84,7 @@ Shader "Custom/addWireframe"
                 
                 
                 float maxWeight = 0.0;
+                float maxBrightness = 0.0;
                 float4 wireColor;
                 
                 for( int x=-_Width; x<=_Width; x++ ) {
@@ -92,7 +93,9 @@ Shader "Custom/addWireframe"
                         
                         float2 offset = float2( _WireframeTex_TexelSize.x * x, _WireframeTex_TexelSize.y * y );
                         
+                        float currentBrightness = getMaxBrightness(i.uv + offset);
                         if( isOnWire(i.uv + offset) && weight > maxWeight) {
+                            maxBrightness = max(currentBrightness, maxBrightness);
                             maxWeight = weight;
                             wireColor = tex2D( _WireframeTex, i.uv + offset );
                         }
@@ -101,7 +104,9 @@ Shader "Custom/addWireframe"
                 }//for x
                 
                 fixed4 originalColor = tex2D( _MainTex, i.uv );
-                return originalColor + maxWeight * wireColor;
+                // return originalColor + maxWeight * wireColor;
+                float brightnessFactor = (1 - maxBrightness/_BrightnessThreshold);
+                return originalColor + brightnessFactor * maxWeight * wireColor;
             }
             ENDCG
         }//Pass

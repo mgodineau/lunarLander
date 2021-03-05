@@ -266,7 +266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc1f28bcbb5ee3940a4e230095852f3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 10
+  linesResolution: 10
+  textureResolution: 100
   iconWidth: 0.003
   sliceDelta: 10
 --- !u!114 &265022605
@@ -282,7 +283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: c634046b29ac5064ca8e8724642f03b1, type: 2}
-  m_Color: {r: 0.03773582, g: 0.03773582, b: 0.03773582, a: 1}
+  m_Color: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
