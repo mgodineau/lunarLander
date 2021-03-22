@@ -24,7 +24,7 @@ public class TerrainManager : MonoBehaviour
     
     [SerializeField]
     private Transform lightReference;
-    public Transform mainLight;
+    public Light mainLight;
     public Vector3 globalLightDir = Vector3.right;
 
     [SerializeField]
@@ -46,7 +46,10 @@ public class TerrainManager : MonoBehaviour
 
     //générateur le la planète
     [SerializeField]
-    private PlanetGen planet;
+    private PlanetGen _planet;
+    public PlanetGen Planet {
+        get{ return _planet; }
+    }
 
     //prefab des ZA
     [SerializeField]
@@ -84,9 +87,9 @@ public class TerrainManager : MonoBehaviour
         _instance = this; //singleton
 
         //récupération du générateur le planête si il est pas connu
-        if (planet == null)
+        if (_planet == null)
         {
-            planet = GetComponent<PlanetGen>();
+            _planet = GetComponent<PlanetGen>();
         }
 
 
@@ -127,8 +130,10 @@ public class TerrainManager : MonoBehaviour
     private void Update()
     {
         //MAJ de l'orientation de la lumière
-        Vector3 localLightDir = Quaternion.Inverse( Quaternion.LookRotation( _sliceNormal, lightReference.position ) ) * globalLightDir;
-        mainLight.rotation = Quaternion.LookRotation( localLightDir, Vector3.up );
+        Vector3 localLightDir = Quaternion.Inverse( Quaternion.LookRotation( _sliceNormal, convertXtoDir(lightReference.position.x) ) ) * globalLightDir;
+        
+        mainLight.transform.rotation = Quaternion.LookRotation( localLightDir, Vector3.up );
+        mainLight.enabled = localLightDir.y <= 0;
         
     }
 
@@ -236,7 +241,7 @@ public class TerrainManager : MonoBehaviour
             float ratio = (float)i / sampleCount;
             float angle = 360.0f * ratio;
             Vector3 samplePosition = Quaternion.AngleAxis(angle, _sliceNormal) * _sliceOrigine;
-            float sample = planet.GetHeight(samplePosition);
+            float sample = _planet.GetHeight(samplePosition);
 
             //création des points du collider et du mesh
             float x = _terrainWidth * ratio;
@@ -248,30 +253,29 @@ public class TerrainManager : MonoBehaviour
         float lzCosThreshold = lzSideThreshold / _terrainWidth;
         
         //création des zone d'atterrissage
-        foreach (LandingZone lz in planet.landingZones)
+        foreach (LandingZone lz in _planet.landingZones)
         {
             float normalCos = Mathf.Abs(Vector3.Dot(lz.Position, _sliceNormal));
+            
             if (normalCos < lzCosThreshold)
             {
                 Vector3 displayPosition = Vector3.ProjectOnPlane(lz.Position, _sliceNormal);
                 float angle = Vector3.SignedAngle(_sliceOrigine, displayPosition, _sliceNormal) % 360.0f;
                 int positionId = (int)(sampleCount * angle / 360.0f);
-
-                float heightMean = (points[positionId].y + points[positionId + 1].y) / 2; // ! BUG IndexOutOfRangeException, des fois
-                // heightMean = 50.0f;
+                
+                float heightMean = (points[positionId].y + points[positionId + 1].y) / 2;
                 points[positionId].y = heightMean;
                 points[positionId + 1].y = heightMean;
                 vertices[positionId * 2].y = heightMean;
                 vertices[(positionId + 1) * 2].y = heightMean;
-
-                GameObject instance;
+                
+                
                 if (!lzToPrefInstance.ContainsKey(lz))
                 {
                     lzToPrefInstance.Add(lz, Instantiate(lzPref, transform));
 
                 }
-                instance = lzToPrefInstance[lz];
-
+                GameObject instance = lzToPrefInstance[lz];
                 instance.transform.localPosition = new Vector3(points[positionId].x + _terrainWidth / sampleCount * 0.5f, heightMean, 0);
 
 
@@ -305,7 +309,7 @@ public class TerrainManager : MonoBehaviour
                 float angleX = 360.0f * z / sampleCount;
                 Vector3 samplePosition = Quaternion.AngleAxis(angleZ, _sliceNormal) * _sliceOrigine;
                 samplePosition = Quaternion.AngleAxis(angleX, Vector3.Cross(samplePosition, _sliceNormal)) * samplePosition;
-                bgVertices[z * (sampleCount + 1) + x].y = planet.GetHeight(samplePosition);
+                bgVertices[z * (sampleCount + 1) + x].y = _planet.GetHeight(samplePosition);
             }
             // bgVertices[ (z+1)*sampleCount ].y = bgVertices[z * sampleCount].y;
         }
@@ -422,8 +426,8 @@ public class TerrainManager : MonoBehaviour
     public void RotateAround(Vector3 rotationAxis, float angle)
     {
         Quaternion rotation = Quaternion.AngleAxis(angle, rotationAxis);
-        _sliceNormal = rotation * _sliceNormal;
-        _sliceOrigine = rotation * _sliceOrigine;
+        _sliceNormal = (rotation * _sliceNormal).normalized;
+        _sliceOrigine = (rotation * _sliceOrigine).normalized;
 
         UpdateTerrain();
     }

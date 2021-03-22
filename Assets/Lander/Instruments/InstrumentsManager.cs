@@ -16,11 +16,11 @@ public class InstrumentsManager : MonoBehaviour
     {
         get { return _lander; }
     }
-    [SerializeField] private PlanetGen _planet;
-    public PlanetGen Planet
-    {
-        get { return _planet; }
-    }
+    // [SerializeField] private PlanetGen _planet;
+    // public PlanetGen Planet
+    // {
+    //     get { return _planet; }
+    // }
     [SerializeField] private RectTransform _canvasRect;
     public RectTransform CanvasRect {
         get{ return _canvasRect; }

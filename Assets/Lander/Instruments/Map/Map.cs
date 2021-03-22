@@ -51,12 +51,6 @@ public class Map : Instrument
     private void Update() {
         UpdateLanderLocation();
         UpdateSliceLine();
-        
-        //tmp
-        Vector3 landerDir = TerrainManager.Instance.convertXtoDir( InstrumentsManager.Instance.Lander.position.x );
-        Vector2 localPos = dirToLocalPos(landerDir);
-        Vector3 landerDir2 = localPosToDir(localPos);
-        Debug.Log( "dir = " + landerDir + "; localPos = " + localPos + "; dir2 = " + landerDir2 );
     }
     
     
@@ -110,13 +104,13 @@ public class Map : Instrument
     
     private void UpdateHeightmap() {
         
-        float maxHeight = InstrumentsManager.Instance.Planet.getMaxHeight();
+        float maxHeight = TerrainManager.Instance.Planet.getMaxHeight();
         
         Color[] colors = new Color[textureResolution * textureResolution * 2];
         for( int u=0; u<textureResolution*2; u++ ) {
             for( int v=0; v<textureResolution; v++ ) {
                 Vector2 localPos = new Vector2( (float)u / (textureResolution*2), (float)v / textureResolution );
-                float height = InstrumentsManager.Instance.Planet.GetHeight( localPosToDir(localPos) );
+                float height = TerrainManager.Instance.Planet.GetHeight( localPosToDir(localPos) );
                 float brightness = height / maxHeight;
                 colors[ v * textureResolution*2 + u ] = new Color(brightness, brightness, brightness, 1 );
             }

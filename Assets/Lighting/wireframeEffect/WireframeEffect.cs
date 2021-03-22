@@ -8,12 +8,16 @@ using UnityEngine;
 public class WireframeEffect : MonoBehaviour
 {
     
+    private static Dictionary<Mesh, List<List<Vector3>>> meshToLinesLocal = new Dictionary<Mesh, List<List<Vector3>>>();
     
     private List<List<Vector3>> linesLocal;
     private List<List<Vector3>> linesGlobal;
     
     [SerializeField]
     private bool removeDiagonals = true;
+    [SerializeField]
+    private float diagThreshold = 1.0f;
+    
     private MeshFilter meshFilter;
     
     private void Awake() {
@@ -67,6 +71,11 @@ public class WireframeEffect : MonoBehaviour
     
     private List<List<Vector3>> ExtractLines(Mesh mesh)
     {
+        if( meshToLinesLocal.ContainsKey(mesh) ) {
+            return meshToLinesLocal[mesh];
+        }
+        
+        
         BetterMesh betterMesh = new BetterMesh(mesh);
         List<Edge> previousEdges = new List<Edge>();
         List<Edge> displayedEdges = new List<Edge>();
@@ -80,7 +89,7 @@ public class WireframeEffect : MonoBehaviour
                         bool ignore = false;
                         for( int j=i+1; j<triangles.Count && !ignore; j++ ) {
                             //suppression des edges qui sont sur d'autres triangles parallèles
-                            if( new List<Edge>(triangles[j].GetEdges()).Contains(edge) && Vector3.Angle(triangles[i].GetNormal(), triangles[j].GetNormal()) <= 0.01f ) {
+                            if( new List<Edge>(triangles[j].GetEdges()).Contains(edge) && Vector3.Angle(triangles[i].GetNormal(), triangles[j].GetNormal()) <= diagThreshold ) {
                                 ignore = true;
                             }
                         }
@@ -96,7 +105,10 @@ public class WireframeEffect : MonoBehaviour
             
         }
         
+        
         List<List<Vector3>> linesPath = new List<List<Vector3>>();
+        meshToLinesLocal.Add(mesh, linesPath);
+        
         foreach( Edge edge in displayedEdges ) {
             List<Vector3> line = new List<Vector3>();
             line.Add(edge.vertex_0.position);
