@@ -42,6 +42,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+--- !u!114 &4757781669187661055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2175709390503316946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f43e15875405134f8e519a09eb0f1bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1897471778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,7 +121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ef9ab8069b4366947a0e5776596b62c1, type: 3}
       propertyPath: m_Name
-      value: LZ_template
+      value: LZ_pref
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ef9ab8069b4366947a0e5776596b62c1, type: 3}

@@ -16,17 +16,20 @@ public class InstrumentsManager : MonoBehaviour
     {
         get { return _lander; }
     }
-    // [SerializeField] private PlanetGen _planet;
-    // public PlanetGen Planet
-    // {
-    //     get { return _planet; }
-    // }
+    
+    
+    
     [SerializeField] private RectTransform _canvasRect;
     public RectTransform CanvasRect {
         get{ return _canvasRect; }
     }
     
-
+    private List<LandingZone> _knownLZ = new List<LandingZone>();
+    public List<LandingZone> KnownLZ {
+        get{ return _knownLZ; }
+    }
+    
+    
     public enum InstrumentType { Map }
 
 

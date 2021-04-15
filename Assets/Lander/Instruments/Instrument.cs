@@ -27,24 +27,19 @@ public abstract class Instrument : MonoBehaviour
     protected void Start() {
         UpdateScreenRect();
         UpdateBorder();
-        // EnableBorder();
     }
     
     
-    
+    /// <summary>
+    /// MAJ le rectangle de l'écran, en fonction de la nouvelle taille réelle
+    /// </summary>
     private void UpdateScreenRect() {
-        // Rect mainRect = InstrumentsManager.Instance.CanvasRect.rect;
         Vector3[] canvasCorners = new Vector3[4];
         InstrumentsManager.Instance.CanvasRect.GetWorldCorners(canvasCorners);
         
         Vector3[] localCorners = new Vector3[4];
         rectTransform.GetWorldCorners(localCorners);
-        // screenRect = new Rect(
-        //     worldCorners[0].x / Screen.width,
-        //     worldCorners[0].y / Screen.height,
-        //     (worldCorners[3].x - worldCorners[0].x) / Screen.width,
-        //     (worldCorners[1].y - worldCorners[0].y) / Screen.height);
-        
+
         float width = canvasCorners[3].x - canvasCorners[0].x;
         float height = canvasCorners[1].y - canvasCorners[0].y;
         
@@ -55,7 +50,9 @@ public abstract class Instrument : MonoBehaviour
             (localCorners[1].y - localCorners[0].y) / height);
     }
     
-    
+    /// <summary>
+    /// MAJ les lignes de la bordure de l'instrument
+    /// </summary>
     private void UpdateBorder() {
         borderLine.points.Clear();
 
@@ -66,17 +63,27 @@ public abstract class Instrument : MonoBehaviour
         borderLine.points.Add( localToGlobal(Vector3.zero) );
     }
     
+    /// <summary>
+    /// Active l'affichage de la bordure
+    /// </summary>
     protected void EnableBorder()
     {
         WireframeRender.Instance.linesUI.Add( borderLine );
     }
-
+    
+    /// <summary>
+    /// Désactive l'affichage de la bordure
+    /// </summary>
     private void DisableBorder()
     {
         WireframeRender.Instance.linesUI.Remove( borderLine );
     }
 
-
+    /// <summary>
+    /// Conversion d'une position dans le référentiel local vers le référentiel global
+    /// </summary>
+    /// <param name="localPos"> Une position locale, comprise dans le rectangle (0,0), (1,1) </param>
+    /// <returns> la conversion de localPos dans le référentiel de l'écran. </returns>
     protected Vector3 localToGlobal(Vector3 localPos)
     {
         localPos.x = localPos.x * screenRect.width + screenRect.x;

@@ -59,4 +59,17 @@ public class Lander : MonoBehaviour
             TerrainManager.Instance.RotateAround( transform.position.x, rotationDir * worldRotationSpeed * Time.deltaTime );
         }
     }
+    
+    
+    private void OnCollisionEnter2D(Collision2D other) {
+        
+        
+        LZbehaviour lz = other.gameObject.GetComponent<LZbehaviour>();
+        if( lz != null ) {
+            Debug.Log("Collision with : " + other.gameObject.name);
+            InstrumentsManager.Instance.KnownLZ.Add(lz.LZscript);
+        }
+        
+    }
+    
 }

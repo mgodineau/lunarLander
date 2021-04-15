@@ -319,8 +319,8 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
-  - component: {fileID: 519420030}
   - component: {fileID: 519420033}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -345,10 +345,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3e93268941af8a4ca9c71db6cd18132, type: 3}
+  m_Script: {fileID: 11500000, guid: 4de8ec535aab24a46bfb3e4f2460903f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1043752573}
+  groundY: 0
+  minSize: 30
+  maxSize: 100
+  maxLocalheight: 70
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -809,7 +813,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 50
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0

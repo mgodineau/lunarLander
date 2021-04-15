@@ -273,7 +273,7 @@ public class TerrainManager : MonoBehaviour
                 if (!lzToPrefInstance.ContainsKey(lz))
                 {
                     lzToPrefInstance.Add(lz, Instantiate(lzPref, transform));
-
+                    lzToPrefInstance[lz].GetComponent<LZbehaviour>().LZscript = lz;
                 }
                 GameObject instance = lzToPrefInstance[lz];
                 instance.transform.localPosition = new Vector3(points[positionId].x + _terrainWidth / sampleCount * 0.5f, heightMean, 0);
@@ -431,7 +431,11 @@ public class TerrainManager : MonoBehaviour
 
         UpdateTerrain();
     }
-
+    
+    
+    public bool isLZvisible( LandingZone lz ) {
+        return lzToPrefInstance.ContainsKey(lz);
+    }
 
     public Vector3 convertXtoDir( float x ) {
         x = x % _terrainWidth;

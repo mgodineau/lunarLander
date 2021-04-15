@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,12 +23,14 @@ public class Map : Instrument
     
     private Image image;
     
+    //Layout
     LineData bgVertical = new LineData();
     LineData bgHorizontal = new LineData();
     
-    LineData landerPos = new LineData(Color.red);
-    LineData sliceLine = new LineData(Color.red);
-    
+    // informations
+    LineData landerPos = new LineData(Color.red);   //position du lander
+    LineData sliceLine = new LineData(Color.red);   //section visitée
+    Dictionary< LandingZone, LineData> knownLZtoDisp = new Dictionary<LandingZone, LineData>();
     
     new private void Awake() {
         base.Awake();
@@ -51,24 +54,31 @@ public class Map : Instrument
     private void Update() {
         UpdateLanderLocation();
         UpdateSliceLine();
+        UpdateLZ();
     }
     
     
+    /// <summary>
+    /// MAJ de la position du marqueur du lander
+    /// </summary>
     private void UpdateLanderLocation() {
         Vector3 landerDir = TerrainManager.Instance.convertXtoDir(
             InstrumentsManager.Instance.Lander.position.x
         );
-        Vector3 landerCenter = localToGlobal( dirToLocalPos(landerDir) );
-        landerPos.points = new List<Vector3>();
-        float iconHeight = iconWidth * Screen.width / Screen.height;
-        landerPos.points.Add( landerCenter + Vector3.up * iconHeight );
-        landerPos.points.Add( landerCenter + Vector3.right * iconWidth );
-        landerPos.points.Add( landerCenter - Vector3.up * iconHeight );
-        landerPos.points.Add( landerCenter - Vector3.right * iconWidth );
-        landerPos.points.Add( landerCenter + Vector3.up * iconHeight );
+        Vector3 landerLocalCenter = localToGlobal( dirToLocalPos(landerDir) );
+        landerPos.points = CreateSquareLine( landerLocalCenter, iconWidth );
+        //new List<Vector3>();
+        // float iconHeight = iconWidth * Screen.width / Screen.height;
+        // landerPos.points.Add( landerCenter + Vector3.up * iconHeight );
+        // landerPos.points.Add( landerCenter + Vector3.right * iconWidth );
+        // landerPos.points.Add( landerCenter - Vector3.up * iconHeight );
+        // landerPos.points.Add( landerCenter - Vector3.right * iconWidth );
+        // landerPos.points.Add( landerCenter + Vector3.up * iconHeight );
     }
     
-    
+    /// <summary>
+    /// MAJ de la section visible
+    /// </summary>
     private void UpdateSliceLine() {
         sliceLine.points.Clear();
         LinkedList<Vector3> linePoints = new LinkedList<Vector3>();
@@ -82,26 +92,88 @@ public class Map : Instrument
         linePoints.AddLast(  localToGlobal(originLocalPos) );
         
         Vector2 sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(sliceDelta, sliceNormal) * originDir );
+        Vector2 prevSample = dirToLocalPos(originDir);
         int i=2;
         while( sampleLocalPos.x > originLocalPos.x ) {
             linePoints.AddLast(localToGlobal(sampleLocalPos) );
+            prevSample = sampleLocalPos;
             sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(sliceDelta * i, sliceNormal) * originDir );
             i++;
         }
         
+        //ajout du dernier point, calé sur le bord droit de la map
+        sampleLocalPos.x += 1;
+        sampleLocalPos -= (sampleLocalPos - prevSample) * (sampleLocalPos.x - 1.0f) / (sampleLocalPos.x - prevSample.x);
+        linePoints.AddLast( localToGlobal(sampleLocalPos) );
+        
         
         i = 2;
         sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(-sliceDelta, sliceNormal) * originDir );
+        prevSample = dirToLocalPos(originDir);
         while( sampleLocalPos.x < originLocalPos.x ) {
             linePoints.AddFirst(localToGlobal(sampleLocalPos) );
+            prevSample = sampleLocalPos;
             sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(-sliceDelta * i, sliceNormal) * originDir );
             i++;
         }
         
+        //ajout du dernier point, calé sur le bord gauche de la map
+        sampleLocalPos.x -= 1;
+        sampleLocalPos -= (sampleLocalPos - prevSample) * sampleLocalPos.x / (sampleLocalPos.x - prevSample.x);
+        linePoints.AddFirst( localToGlobal(sampleLocalPos) );
+        
+        
+        //ajout de la nouvelle ligne au rendu
         sliceLine.points.AddRange( linePoints );
     }
     
     
+    /// <summary>
+    /// MAJ des positions des LZ
+    /// </summary>
+    private void UpdateLZ()
+    {
+        
+        foreach( LandingZone currentLZ in InstrumentsManager.Instance.KnownLZ ) {
+            
+            
+            if( !knownLZtoDisp.ContainsKey(currentLZ) ) {
+                
+                LineData line = new LineData(Color.blue);
+                
+                WireframeRender.Instance.linesUI.Add(line);
+                knownLZtoDisp.Add(currentLZ, line );
+                
+            }
+            
+            knownLZtoDisp[currentLZ].points = CreateSquareLine(
+                localToGlobal(dirToLocalPos(currentLZ.Position)) , 
+                TerrainManager.Instance.isLZvisible( currentLZ ) ? iconWidth : iconWidth / 2
+            );
+            
+        }
+        
+    }
+    
+    
+    
+    private List<Vector3> CreateSquareLine( Vector3 localCenter, float width ) {
+        List<Vector3> path = new List<Vector3>();
+        float height = width * Screen.width / Screen.height;
+        path.Add( localCenter + Vector3.up * height );
+        path.Add( localCenter + Vector3.right * width );
+        path.Add( localCenter - Vector3.up * height );
+        path.Add( localCenter - Vector3.right * width );
+        path.Add( localCenter + Vector3.up * height );
+        
+        return path;
+    }
+    
+    
+    
+    /// <summary>
+    /// MAJ de l'arrière plan e la carte, qui représente la heightmap
+    /// </summary>
     private void UpdateHeightmap() {
         
         float maxHeight = TerrainManager.Instance.Planet.getMaxHeight();
@@ -125,7 +197,11 @@ public class Map : Instrument
     }
     
     
-    
+    /// <summary>
+    /// conversion d'une direction dans le repère global vers une position locale en 2D sur la carte
+    /// </summary>
+    /// <param name="dir"> La direction à convertir (normalisé) </param>
+    /// <returns> La position de dir sur la carte </returns>
     private Vector2 dirToLocalPos( Vector3 dir ) {
         
         float localX = Mathf.Sqrt( 1.0f - dir.y*dir.y );
@@ -136,6 +212,12 @@ public class Map : Instrument
         return new Vector2( (xAngle / 360.0f) +0.5f , yAngle / Mathf.PI + 0.5f );
     }
     
+    
+    /// <summary>
+    /// Conversion d'une position sur la carte vers une direction dans le repère global
+    /// </summary>
+    /// <param name="localPos"> Une position locale en 2D sur la carte </param>
+    /// <returns> La direction normalisé qui correspond à localPos </returns>
     private Vector3 localPosToDir( Vector2 localPos ) {
         Vector3 dir = -Vector3.right;
         dir = Quaternion.AngleAxis( (localPos.y - 0.5f) * 180.0f, -Vector3.forward) * dir;
@@ -143,7 +225,9 @@ public class Map : Instrument
         return dir;
     }
     
-    
+    /// <summary>
+    /// Construction des lignes intérieures de la carte, stockées dans bgHorizontal et bgVertical
+    /// </summary>
     public void BuildLayout() {
         bgHorizontal.points.Clear();
         bgVertical.points.Clear();
@@ -173,26 +257,45 @@ public class Map : Instrument
     
     
     
-    
+    /// <summary>
+    /// Active l'affichage des lignes d'arrière plan
+    /// </summary>
     public void EnableLayout() {
         WireframeRender.Instance.linesUI.Add( bgVertical );
         WireframeRender.Instance.linesUI.Add( bgHorizontal );
     }
     
     
+    /// <summary>
+    /// Désactive l'affichage des lignes d'arrière plan
+    /// </summary>
     public void DisableLayout() {
         WireframeRender.Instance.linesUI.Remove( bgVertical );
         WireframeRender.Instance.linesUI.Remove( bgHorizontal );
     }
     
+    /// <summary>
+    /// Active l'affichage des informations sur la carte, telles que la position du lander, ou la section visitée
+    /// </summary>
     public void EnableInfos() {
         WireframeRender.Instance.linesUI.Add( landerPos );
         WireframeRender.Instance.linesUI.Add( sliceLine );
+        
+        foreach( LineData line in knownLZtoDisp.Values ) {
+            WireframeRender.Instance.linesUI.Add( line );
+        }
     }
     
+    /// <summary>
+    /// Désactive l'affichage des informations sur la carte
+    /// </summary>
     public void DisableInfos() {
         WireframeRender.Instance.linesUI.Remove( landerPos );
         WireframeRender.Instance.linesUI.Remove( sliceLine );
+        
+        foreach( LineData line in knownLZtoDisp.Values ) {
+            WireframeRender.Instance.linesUI.Remove( line );
+        }
     }
     
 }
