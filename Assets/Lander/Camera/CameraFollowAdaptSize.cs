@@ -26,6 +26,10 @@ public class CameraFollowAdaptSize : MonoBehaviour
     
     private  void Update() {
         
+        if( target == null ) {
+            return;
+        }
+        
         //MAJ de la taille
         float deltaY = target.position.y - groundY;
         cam.orthographicSize = Mathf.Clamp( deltaY, minSize, maxSize );

@@ -264,6 +264,7 @@ MonoBehaviour:
   angularThrust: 1
   thrustAnim: {fileID: 590398268}
   worldRotationSpeed: 10
+  destructionVelocity: 10
 --- !u!95 &590398268
 Animator:
   serializedVersion: 3
@@ -357,7 +358,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 5517e194d85a5824fa88cf64cc72f43e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: 9ecb195549807864ca29aeb7de88052b, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5517e194d85a5824fa88cf64cc72f43e, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 

@@ -16,9 +16,12 @@ public class Lander : MonoBehaviour
     
     private Rigidbody2D rb;
     
-    
     [SerializeField]
     private float worldRotationSpeed = 10.0f;
+    
+    
+    [SerializeField] private float destructionVelocity = 10;
+    [SerializeField] private DestructionEffect destructionEffect;
     
     
     private void Awake() {
@@ -27,6 +30,7 @@ public class Lander : MonoBehaviour
     
     private void FixedUpdate()
     {
+        //déplacement du lander
         bool thrustInput = Input.GetKey(KeyCode.Z);
         if( thrustInput) {
             rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
@@ -41,12 +45,15 @@ public class Lander : MonoBehaviour
             torqueDir--;
         }
         rb.AddTorque(angularThrust * torqueDir, ForceMode2D.Force);
+        
     }
     
     
     
     private void Update() {
         
+        
+        // rotation du terrain
         float rotationDir = 0;
         if( Input.GetKey(KeyCode.A) ) {
             rotationDir++;
@@ -63,13 +70,32 @@ public class Lander : MonoBehaviour
     
     private void OnCollisionEnter2D(Collision2D other) {
         
+        //gestion de la destruction du Lander
+        Vector3 relativeVelocity = other.relativeVelocity;
+        float impactCos = relativeVelocity.normalized.x;
         
+        if( relativeVelocity.magnitude * Mathf.Abs(impactCos) > destructionVelocity ) {
+            DestroyLander();
+        }
+        
+        
+        //gestion de l'atterrissage sur une LZ
         LZbehaviour lz = other.gameObject.GetComponent<LZbehaviour>();
         if( lz != null ) {
-            Debug.Log("Collision with : " + other.gameObject.name);
             InstrumentsManager.Instance.KnownLZ.Add(lz.LZscript);
         }
         
     }
+    
+    
+    private void DestroyLander() {
+        
+        GameObject.Instantiate( destructionEffect ).InitEffect(rb);
+        InstrumentsManager.Instance.gameObject.SetActive(false);
+        
+        //Destruction de l'objet lander
+        Destroy(gameObject);
+    }
+    
     
 }

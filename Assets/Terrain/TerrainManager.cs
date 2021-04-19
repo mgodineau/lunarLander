@@ -22,8 +22,9 @@ public class TerrainManager : MonoBehaviour
 
 
     
-    [SerializeField]
-    private Transform lightReference;
+    [SerializeField] private Transform lightReference;      //l'objet depuis lequel calculer l'orientation de la lumière (souvent le lander)
+    [Range(0,1)]
+    [SerializeField] private float lightFadeLimit = 0.1f;
     public Light mainLight;
     public Vector3 globalLightDir = Vector3.right;
 
@@ -33,9 +34,11 @@ public class TerrainManager : MonoBehaviour
     private int bgSampleCount = 5;
     [SerializeField]
     private float bottomY = -1;
+    [SerializeField]
+    private float bottomZ = 0;
 
     [SerializeField]
-    private float lzSideThreshold = 1.0f;
+    private float objSideThreshold = 1.0f;
 
 
     //matérials du terrain
@@ -51,12 +54,12 @@ public class TerrainManager : MonoBehaviour
         get{ return _planet; }
     }
 
-    //prefab des ZA
-    [SerializeField]
-    private GameObject lzPref;
+    //prefab des objets
+    [SerializeField] public LZbehaviour lzPref;
+    [SerializeField] public CrystalBehaviour crystalPref;
 
     //instances des ZA
-    private Dictionary<LandingZone, GameObject> lzToPrefInstance = new Dictionary<LandingZone, GameObject>();
+    private Dictionary<LocalizedObject, GameObject> objToPrefInstance = new Dictionary<LocalizedObject, GameObject>();
 
     //propriétés de la tranche visualisée
     private Vector3 _sliceNormal = Vector3.up;
@@ -133,7 +136,8 @@ public class TerrainManager : MonoBehaviour
         Vector3 localLightDir = Quaternion.Inverse( Quaternion.LookRotation( _sliceNormal, convertXtoDir(lightReference.position.x) ) ) * globalLightDir;
         
         mainLight.transform.rotation = Quaternion.LookRotation( localLightDir, Vector3.up );
-        mainLight.enabled = localLightDir.y <= 0;
+        mainLight.intensity = Mathf.Clamp01( Mathf.Asin(-localLightDir.y) * 2.0f/Mathf.PI / lightFadeLimit );
+        // mainLight.enabled = localLightDir.y <= 0;
         
     }
 
@@ -169,7 +173,7 @@ public class TerrainManager : MonoBehaviour
             float x = _terrainWidth * i / sampleCount;
             points[i] = new Vector2(x, 1);
             vertices[i * 2] = new Vector3(x, 1, 0);
-            vertices[i * 2 + 1] = new Vector3(x, bottomY, 0);
+            vertices[i * 2 + 1] = new Vector3(x, bottomY, bottomZ);
 
         }
 
@@ -234,7 +238,8 @@ public class TerrainManager : MonoBehaviour
     /// <remarks>les tableaux points, vertices et bgVertices doivent être initialisés, ainsi que mesh</remarks>
     private void UpdateTerrain()
     {
-
+        
+        //MAJ des vertices du premier plan
         for (int i = 0; i <= sampleCount; i++)
         {
             //récupération de la hauteur
@@ -250,44 +255,12 @@ public class TerrainManager : MonoBehaviour
 
         }
         
-        float lzCosThreshold = lzSideThreshold / _terrainWidth;
         
-        //création des zone d'atterrissage
-        foreach (LandingZone lz in _planet.landingZones)
-        {
-            float normalCos = Mathf.Abs(Vector3.Dot(lz.Position, _sliceNormal));
-            
-            if (normalCos < lzCosThreshold)
-            {
-                Vector3 displayPosition = Vector3.ProjectOnPlane(lz.Position, _sliceNormal);
-                float angle = Vector3.SignedAngle(_sliceOrigine, displayPosition, _sliceNormal) % 360.0f;
-                int positionId = (int)(sampleCount * angle / 360.0f);
-                
-                float heightMean = (points[positionId].y + points[positionId + 1].y) / 2;
-                points[positionId].y = heightMean;
-                points[positionId + 1].y = heightMean;
-                vertices[positionId * 2].y = heightMean;
-                vertices[(positionId + 1) * 2].y = heightMean;
-                
-                
-                if (!lzToPrefInstance.ContainsKey(lz))
-                {
-                    lzToPrefInstance.Add(lz, Instantiate(lzPref, transform));
-                    lzToPrefInstance[lz].GetComponent<LZbehaviour>().LZscript = lz;
-                }
-                GameObject instance = lzToPrefInstance[lz];
-                instance.transform.localPosition = new Vector3(points[positionId].x + _terrainWidth / sampleCount * 0.5f, heightMean, 0);
-
-
-            }
-            else if (lzToPrefInstance.ContainsKey(lz))
-            {
-                Destroy(lzToPrefInstance[lz]);
-                lzToPrefInstance.Remove(lz);
-            }
-        }
-
-
+        //MAJ des zones d'atterrissages et des cristaux
+        UpdateObjetsDisplay( _planet.landingZones, true );
+        UpdateObjetsDisplay( _planet.crystals, false );
+        
+        
         terrainSideMesh.vertices = vertices;
         terrainSideMesh.RecalculateBounds();
         foreach (EdgeCollider2D col in terrainColliders)
@@ -396,7 +369,56 @@ public class TerrainManager : MonoBehaviour
         }
         //TODO factoriser ce bordel
     }
+    
+    
+    
+    private void UpdateObjetsDisplay( IEnumerable<LocalizedObject> objects, bool flattenTerrain ) {
+        float objCosThreshold = objSideThreshold / _terrainWidth;
+        
+        foreach (LocalizedObject obj in objects)
+        {
+            float normalCos = Mathf.Abs(Vector3.Dot(obj.Position, _sliceNormal));
+            
+            if (normalCos < objCosThreshold)
+            {
+                Vector3 displayPosition = Vector3.ProjectOnPlane(obj.Position, _sliceNormal);
+                float angle = Vector3.SignedAngle(_sliceOrigine, displayPosition, _sliceNormal);
+                if(angle < 0) {
+                    angle += 360.0f;
+                }
+                
+                int positionId = (int)(sampleCount * angle / 360.0f);
+                
+                float heightMean = Mathf.Lerp(points[positionId].y, points[positionId + 1].y, 
+                    flattenTerrain ? 0.5f : (angle * sampleCount / 360.0f) % 1.0f );
+                if( flattenTerrain ) {
+                    points[positionId].y = heightMean;
+                    points[positionId + 1].y = heightMean;
+                    vertices[positionId * 2].y = heightMean;
+                    vertices[(positionId + 1) * 2].y = heightMean;
+                }
+                
+                if (!objToPrefInstance.ContainsKey(obj))
+                {
+                    objToPrefInstance.Add(obj, obj.createInstance() );
+                }
+                GameObject instance = objToPrefInstance[obj];
+                
+                instance.transform.SetParent(transform, false);
+                instance.transform.localPosition = new Vector3(points[positionId].x + _terrainWidth / sampleCount * 0.5f, heightMean, 0);
 
+
+            }
+            else if (objToPrefInstance.ContainsKey(obj))
+            {
+                Destroy(objToPrefInstance[obj]);
+                objToPrefInstance.Remove(obj);
+            }
+        }
+    }
+    
+    
+    
 
 
     private List<Vector3> ShiftLine(List<Vector3> line, float Xoffset)
@@ -434,7 +456,7 @@ public class TerrainManager : MonoBehaviour
     
     
     public bool isLZvisible( LandingZone lz ) {
-        return lzToPrefInstance.ContainsKey(lz);
+        return objToPrefInstance.ContainsKey(lz);
     }
 
     public Vector3 convertXtoDir( float x ) {

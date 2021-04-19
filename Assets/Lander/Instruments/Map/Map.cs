@@ -8,17 +8,15 @@ using UnityEngine.UI;
 public class Map : Instrument
 {
     
-    [SerializeField]
-    private int linesResolution = 10;
+    [SerializeField] private int linesResolution = 10;
+    [SerializeField] private int textureResolution = 50;
     
-    [SerializeField]
-    private int textureResolution = 50;
+    [SerializeField]private float iconWidth = 0.01f;
     
-    [SerializeField]
-    private float iconWidth = 0.01f;
+    [SerializeField] private float sliceDelta = 10.0f;
     
-    [SerializeField]
-    private float sliceDelta = 10.0f;
+    [SerializeField] Color landerColor = Color.red;
+    [SerializeField] Color lzColor = Color.blue;
     
     
     private Image image;
@@ -28,12 +26,15 @@ public class Map : Instrument
     LineData bgHorizontal = new LineData();
     
     // informations
-    LineData landerPos = new LineData(Color.red);   //position du lander
-    LineData sliceLine = new LineData(Color.red);   //section visitée
+    LineData landerPos;   //position du lander
+    LineData sliceLine;   //section visitée
     Dictionary< LandingZone, LineData> knownLZtoDisp = new Dictionary<LandingZone, LineData>();
     
     new private void Awake() {
         base.Awake();
+        
+        landerPos = new LineData(landerColor);
+        sliceLine = new LineData(landerColor);
         
         image = GetComponent<Image>();
     }
@@ -67,13 +68,6 @@ public class Map : Instrument
         );
         Vector3 landerLocalCenter = localToGlobal( dirToLocalPos(landerDir) );
         landerPos.points = CreateSquareLine( landerLocalCenter, iconWidth );
-        //new List<Vector3>();
-        // float iconHeight = iconWidth * Screen.width / Screen.height;
-        // landerPos.points.Add( landerCenter + Vector3.up * iconHeight );
-        // landerPos.points.Add( landerCenter + Vector3.right * iconWidth );
-        // landerPos.points.Add( landerCenter - Vector3.up * iconHeight );
-        // landerPos.points.Add( landerCenter - Vector3.right * iconWidth );
-        // landerPos.points.Add( landerCenter + Vector3.up * iconHeight );
     }
     
     /// <summary>
@@ -139,7 +133,7 @@ public class Map : Instrument
             
             if( !knownLZtoDisp.ContainsKey(currentLZ) ) {
                 
-                LineData line = new LineData(Color.blue);
+                LineData line = new LineData( lzColor );
                 
                 WireframeRender.Instance.linesUI.Add(line);
                 knownLZtoDisp.Add(currentLZ, line );

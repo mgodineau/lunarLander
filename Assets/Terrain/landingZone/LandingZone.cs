@@ -1,24 +1,21 @@
 using UnityEngine;
 
-public abstract class LandingZone
+public abstract class LandingZone : LocalizedObject
 {
-
-    public Vector3 Position
+    
+    
+    protected LandingZone(Vector3 position) : base( position ) {}
+    
+    
+    public override GameObject createInstance()
     {
-        get { return _position; }
-        set { _position = value.normalized; }
+        GameObject instance = GameObject.Instantiate( prefToInstantiate().gameObject );
+        instance.GetComponent<LZbehaviour>().LZscript = this;
+        
+        return instance;
     }
-    private Vector3 _position;
-
-
-    protected LandingZone() : this(Vector3.right)
-    {
-
-    }
-
-    protected LandingZone(Vector3 position)
-    {
-        Position = position;
-    }
+    
+    protected abstract LZbehaviour prefToInstantiate();
+    
 
 }

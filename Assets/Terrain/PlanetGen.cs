@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class PlanetGen : MonoBehaviour
 {
+    [SerializeField] private int crystalsCount = 1000;
+    
+    
     public List<RandomLayer> layers = new List<RandomLayer>();
     
     public List<LandingZone> landingZones = new List<LandingZone>();
+    public List<Crystal> crystals = new List<Crystal>();
     
     
     private void Awake() {
@@ -15,7 +19,20 @@ public class PlanetGen : MonoBehaviour
         
         landingZones.Add( new LZrefuel(Vector3.right) );
         landingZones.Add( new LZrefuel(Vector3.up) );
+        
+        
+        generateCrystals();
     }
+    
+    
+    private void generateCrystals() {
+        
+        for( int i=0; i<crystalsCount; i++ ) {
+            crystals.Add( new Crystal( Random.onUnitSphere ) );
+        }
+        
+    }
+    
     
     public float GetHeight( Vector3 position ) {
         float height = 0;
