@@ -266,6 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc1f28bcbb5ee3940a4e230095852f3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mass: 5
   linesResolution: 10
   textureResolution: 100
   iconWidth: 0.003
@@ -674,6 +675,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1043752562}
   m_Mesh: {fileID: -8231350184676764614, guid: 5517e194d85a5824fa88cf64cc72f43e, type: 3}
+--- !u!114 &1043752565 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+  m_PrefabInstance: {fileID: 9197805573061585789}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043752562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 308ea28a2dff1524ba365556d697431d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!61 &1043752567 stripped
 BoxCollider2D:
   m_CorrespondingSourceObject: {fileID: 1043752569, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
@@ -763,7 +775,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bde48a53d0e921e428ad90d5a6eaf098, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lander: {fileID: 1043752573}
+  _currentLander: {fileID: 1043752565}
+  instrumentsInstances:
+  - {fileID: 265022604}
   _canvasRect: {fileID: 1291580803}
 --- !u!1 &1291580799
 GameObject:
@@ -1569,6 +1583,18 @@ PrefabInstance:
     - target: {fileID: 1043752569, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: thrust
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: minMass
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: angularThrust
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: destructionEffect

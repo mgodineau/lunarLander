@@ -64,7 +64,7 @@ public class Map : Instrument
     /// </summary>
     private void UpdateLanderLocation() {
         Vector3 landerDir = TerrainManager.Instance.convertXtoDir(
-            InstrumentsManager.Instance.Lander.position.x
+            InstrumentsManager.Instance.CurrentLander.transform.position.x
         );
         Vector3 landerLocalCenter = localToGlobal( dirToLocalPos(landerDir) );
         landerPos.points = CreateSquareLine( landerLocalCenter, iconWidth );

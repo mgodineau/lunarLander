@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class LocalizedObject : ScriptableObject
+
+public abstract class LocalizedObject
 {
     
     public Vector3 Position

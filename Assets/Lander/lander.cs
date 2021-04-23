@@ -7,14 +7,21 @@ public class Lander : MonoBehaviour
 {
     
     [SerializeField]
+    private float minMass = 1.0f;
+    
+    
+    [SerializeField]
     private float thrust = 1.0f;
     [SerializeField]
     private float angularThrust = 1.0f;
     
     [SerializeField]
-    private Animator thrustAnim;
+    private float fuelConsumption = 10.0f;
     
+    [SerializeField]
+    private Animator thrustAnim;
     private Rigidbody2D rb;
+    
     
     [SerializeField]
     private float worldRotationSpeed = 10.0f;
@@ -24,15 +31,30 @@ public class Lander : MonoBehaviour
     [SerializeField] private DestructionEffect destructionEffect;
     
     
+    private InventoryManager inventory = new InventoryManager();
+    private FuelTank tank = new FuelTank(5000);
+    
+    
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
+        
+        inventory.AddItem(tank);
     }
+    
+    private void Start() {
+        InstrumentsManager.Instance.EnableInstrument( InstrumentsManager.InstrumentType.Map );
+    }
+    
     
     private void FixedUpdate()
     {
+        //MAJ de la masse du lander
+        rb.mass = inventory.Mass + minMass;
+        
+        
         //déplacement du lander
         bool thrustInput = Input.GetKey(KeyCode.Z);
-        if( thrustInput) {
+        if( thrustInput && tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime ) ) {
             rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
         }
         thrustAnim.SetBool("thrust", thrustInput);
@@ -45,6 +67,8 @@ public class Lander : MonoBehaviour
             torqueDir--;
         }
         rb.AddTorque(angularThrust * torqueDir, ForceMode2D.Force);
+        
+        
         
     }
     
@@ -65,6 +89,9 @@ public class Lander : MonoBehaviour
         if( rotationDir != 0 ) {
             TerrainManager.Instance.RotateAround( transform.position.x, rotationDir * worldRotationSpeed * Time.deltaTime );
         }
+        
+        
+        Debug.Log( "fuel = " + tank.FuelQuantity );
     }
     
     
@@ -95,6 +122,17 @@ public class Lander : MonoBehaviour
         
         //Destruction de l'objet lander
         Destroy(gameObject);
+    }
+    
+    
+    
+    
+    public bool AddInstrument(Instrument instrument) {
+        return inventory.AddItem(instrument);
+    }
+    
+    public bool RemoveInstrument( Instrument instrument ) {
+        return inventory.RemoveItem(instrument);
     }
     
     

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(RectTransform))]
-public abstract class Instrument : MonoBehaviour
+public abstract class Instrument : MonoBehaviour, IinventoryItem
 {
 
-
-    private float _weight = 0;
-    public float Weight
+    [SerializeField]
+    private float _mass = 0;
+    public float Mass
     {
-        get { return _weight; }
+        get { return _mass; }
     }
 
     private LineData borderLine = new LineData();

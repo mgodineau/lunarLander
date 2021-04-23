@@ -11,12 +11,20 @@ public class InstrumentsManager : MonoBehaviour
         get { return _instance; }
     }
     
+    
     //instance de Lander controllée par le joueur
-    [SerializeField] private Transform _lander;
-    public Transform Lander
+    [SerializeField] private Lander _currentLander;
+    public Lander CurrentLander
     {
-        get { return _lander; }
+        get { return _currentLander; }
     }
+    
+    
+    
+    //Accès à tous les instruments
+    [SerializeField] private Instrument[] instrumentsInstances;
+    
+    
     
     
     //rectangle du canvas global dans lequel les instruments se trouvent
@@ -33,28 +41,40 @@ public class InstrumentsManager : MonoBehaviour
     }
     
         
-    //types des instruments possibles
-    public enum InstrumentType { Map }
+    // types des instruments possibles
+    public enum InstrumentType : int { Map }
 
 
     public void Awake()
     {
         _instance = this;
+        foreach( Instrument inst in instrumentsInstances ) {
+            inst.gameObject.SetActive(false);
+        }
     }
 
     private void Start()
     {
-        AddInstrument(InstrumentType.Map);
     }
 
-
-
-    void AddInstrument(InstrumentType instrument)
+    
+    
+    public void EnableInstrument(InstrumentType instrument)
     {
-        //TODO
+        EnableInstrument( instrumentsInstances[(int)instrument] );
+    }
+
+    public void EnableInstrument(Instrument instrument)
+    {
+        if(_currentLander.AddInstrument(instrument) ) {
+            instrument.gameObject.SetActive(true);
+        }
     }
     
-    
+    public void DisableInstrument( Instrument instrument ) {
+        instrument.gameObject.SetActive(false);
+        _currentLander.RemoveInstrument(instrument);
+    }
     
 
 }
