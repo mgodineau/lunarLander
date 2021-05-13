@@ -260,11 +260,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 308ea28a2dff1524ba365556d697431d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minMass: 1
   thrust: 10
   angularThrust: 1
+  fuelConsumption: 10
   thrustAnim: {fileID: 590398268}
   worldRotationSpeed: 10
   destructionVelocity: 10
+  destructionEffect: {fileID: 2681067708670959720, guid: 2c7e27c8a3960e74593b772f67b321e7, type: 3}
 --- !u!95 &590398268
 Animator:
   serializedVersion: 3

@@ -42,7 +42,7 @@ public class InstrumentsManager : MonoBehaviour
     
         
     // types des instruments possibles
-    public enum InstrumentType : int { Map }
+    public enum InstrumentType : int { Map, FuelGauge }
 
 
     public void Awake()

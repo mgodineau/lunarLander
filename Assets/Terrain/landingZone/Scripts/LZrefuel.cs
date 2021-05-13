@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class LZrefuel : LandingZone
 {
-
+    
     public LZrefuel(Vector3 position) : base(position)
     {
     }
 
 
-    protected override LZbehaviour prefToInstantiate()
+    protected override GameObject prefToInstantiate()
     {
-        return TerrainManager.Instance.lzPref;
+        return TerrainManager.Instance.lzFuelPref;
     }
 
     

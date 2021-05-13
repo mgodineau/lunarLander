@@ -81,7 +81,7 @@ public class TerrainDebug : MonoBehaviour
     }
     
     public void UpdateLanderPos() {
-        userDir = terrainManager.convertXtoDir( lander.position.x );
+        userDir = terrainManager.ConvertXtoDir( lander.position.x );
     }
     
 }

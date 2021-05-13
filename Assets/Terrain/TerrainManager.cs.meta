@@ -3,7 +3,15 @@ guid: 799765279747f9b47a651c1dbbaf6f2e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - lightReference: {instanceID: 0}
+  - mainLight: {instanceID: 0}
+  - terrainSideMaterial: {fileID: 2100000, guid: 4d388fc0e112ff440bc100656ea78a35, type: 2}
+  - terrainMaterial: {fileID: 2100000, guid: d7310ee0a6c355a4ea49ef0d53a59095, type: 2}
+  - _planet: {instanceID: 0}
+  - lzDefaultPref: {fileID: 677897606091750695, guid: c9d043661dcdfbb4092a4d4503cbba4b, type: 3}
+  - lzFuelPref: {fileID: 4094698436792350765, guid: 55d377c43a882be49b556e9c3283dcbd, type: 3}
+  - crystalPref: {fileID: 4948769186678932839, guid: 25432f750c2b8594b906a1e7453309db, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

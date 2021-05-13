@@ -31,9 +31,9 @@ public class Lander : MonoBehaviour
     [SerializeField] private DestructionEffect destructionEffect;
     
     
-    private InventoryManager inventory = new InventoryManager();
-    private FuelTank tank = new FuelTank(5000);
+    private InventoryManager inventory = new InventoryManager( 4000 );
     
+    private FuelTank tank = new FuelTank(3000);
     
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -43,6 +43,7 @@ public class Lander : MonoBehaviour
     
     private void Start() {
         InstrumentsManager.Instance.EnableInstrument( InstrumentsManager.InstrumentType.Map );
+        InstrumentsManager.Instance.EnableInstrument( InstrumentsManager.InstrumentType.FuelGauge );
     }
     
     
@@ -53,11 +54,12 @@ public class Lander : MonoBehaviour
         
         
         //déplacement du lander
-        bool thrustInput = Input.GetKey(KeyCode.Z);
-        if( thrustInput && tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime ) ) {
+        bool thrustInput = Input.GetKey(KeyCode.Z) && tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
+        if( thrustInput ) {
             rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
         }
         thrustAnim.SetBool("thrust", thrustInput);
+        
         
         float torqueDir = 0;
         if( Input.GetKey(KeyCode.Q) ) {
@@ -89,13 +91,19 @@ public class Lander : MonoBehaviour
         if( rotationDir != 0 ) {
             TerrainManager.Instance.RotateAround( transform.position.x, rotationDir * worldRotationSpeed * Time.deltaTime );
         }
-        
-        
-        Debug.Log( "fuel = " + tank.FuelQuantity );
     }
     
     
     private void OnCollisionEnter2D(Collision2D other) {
+        
+        
+        //ramassage automatique d'un objet
+        CrystalBehaviour crystal = other.gameObject.GetComponent<CrystalBehaviour>();
+        if( crystal != null && inventory.AddItem(crystal.crystalScript)) {
+            crystal.Pickup();
+            return;
+        }
+        
         
         //gestion de la destruction du Lander
         Vector3 relativeVelocity = other.relativeVelocity;
@@ -103,6 +111,7 @@ public class Lander : MonoBehaviour
         
         if( relativeVelocity.magnitude * Mathf.Abs(impactCos) > destructionVelocity ) {
             DestroyLander();
+            return;
         }
         
         
@@ -110,9 +119,12 @@ public class Lander : MonoBehaviour
         LZbehaviour lz = other.gameObject.GetComponent<LZbehaviour>();
         if( lz != null ) {
             InstrumentsManager.Instance.KnownLZ.Add(lz.LZscript);
+            return;
         }
         
+        
     }
+    
     
     
     private void DestroyLander() {
@@ -134,6 +146,16 @@ public class Lander : MonoBehaviour
     public bool RemoveInstrument( Instrument instrument ) {
         return inventory.RemoveItem(instrument);
     }
+    
+    
+    public float GetFuelQuantity() {
+        return tank.FuelQuantity;
+    }
+    
+    public float GetFuelCapacity() {
+        return tank.Volume;
+    }
+    
     
     
 }

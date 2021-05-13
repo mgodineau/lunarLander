@@ -63,7 +63,7 @@ public class Map : Instrument
     /// MAJ de la position du marqueur du lander
     /// </summary>
     private void UpdateLanderLocation() {
-        Vector3 landerDir = TerrainManager.Instance.convertXtoDir(
+        Vector3 landerDir = TerrainManager.Instance.ConvertXtoDir(
             InstrumentsManager.Instance.CurrentLander.transform.position.x
         );
         Vector3 landerLocalCenter = localToGlobal( dirToLocalPos(landerDir) );
@@ -142,7 +142,7 @@ public class Map : Instrument
             
             knownLZtoDisp[currentLZ].points = CreateSquareLine(
                 localToGlobal(dirToLocalPos(currentLZ.Position)) , 
-                TerrainManager.Instance.isLZvisible( currentLZ ) ? iconWidth : iconWidth / 2
+                TerrainManager.Instance.IsLZvisible( currentLZ ) ? iconWidth : iconWidth / 2
             );
             
         }

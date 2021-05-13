@@ -267,6 +267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mass: 5
+  _volume: 0
   linesResolution: 10
   textureResolution: 100
   iconWidth: 0.003
@@ -648,6 +649,100 @@ Transform:
   m_Father: {fileID: 654425271}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!1 &894664804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 894664805}
+  - component: {fileID: 894664808}
+  - component: {fileID: 894664807}
+  - component: {fileID: 894664806}
+  m_Layer: 5
+  m_Name: FuelGauge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &894664805
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894664804}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1216426537}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.95, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0.2000122, y: 0}
+  m_SizeDelta: {x: 0.39996, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &894664806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894664804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 947d16df197678349a8ce625f1d322e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mass: 0
+  _volume: 0
+  marginX: 0.2
+  graduationDescription: 020000000a000000
+  gradMaxWidth: 0.3
+  cursorWidth: 0.4
+--- !u!114 &894664807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894664804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: c634046b29ac5064ca8e8724642f03b1, type: 2}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &894664808
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894664804}
+  m_CullTransparentMesh: 1
 --- !u!1 &1043752562 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8314844196335448157, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
@@ -741,6 +836,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 265022603}
+  - {fileID: 894664805}
   m_Father: {fileID: 1291580803}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -778,6 +874,7 @@ MonoBehaviour:
   _currentLander: {fileID: 1043752565}
   instrumentsInstances:
   - {fileID: 265022604}
+  - {fileID: 894664806}
   _canvasRect: {fileID: 1291580803}
 --- !u!1 &1291580799
 GameObject:
@@ -945,13 +1042,14 @@ MonoBehaviour:
   sampleCount: 100
   bgSampleCount: 15
   bottomY: -1
-  bottomZ: -10
+  bottomZ: -50
   objSideThreshold: 1
   terrainSideMaterial: {fileID: 2100000, guid: 4d388fc0e112ff440bc100656ea78a35, type: 2}
   terrainMaterial: {fileID: 2100000, guid: d7310ee0a6c355a4ea49ef0d53a59095, type: 2}
   _planet: {fileID: 0}
-  lzPref: {fileID: 4757781669187661055, guid: 5beb7b23aaac55e4c9fc75254716df41, type: 3}
-  crystalPref: {fileID: -4721067741753271177, guid: 25432f750c2b8594b906a1e7453309db, type: 3}
+  lzDefaultPref: {fileID: 677897606091750695, guid: c9d043661dcdfbb4092a4d4503cbba4b, type: 3}
+  lzFuelPref: {fileID: 4094698436792350765, guid: 55d377c43a882be49b556e9c3283dcbd, type: 3}
+  crystalPref: {fileID: 4948769186678932839, guid: 25432f750c2b8594b906a1e7453309db, type: 3}
 --- !u!4 &1815430506 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3928438630851948834, guid: 67c2f7d7643552d4e913fabc4754baa2, type: 3}

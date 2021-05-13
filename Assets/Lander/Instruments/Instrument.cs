@@ -6,13 +6,18 @@ using UnityEngine;
 public abstract class Instrument : MonoBehaviour, IinventoryItem
 {
 
-    [SerializeField]
-    private float _mass = 0;
+    [SerializeField] private float _mass = 0;
     public float Mass
     {
         get { return _mass; }
     }
-
+    
+    
+    [SerializeField] private float _volume = 0;
+    public float Volume {
+        get {return _volume;}
+    }
+    
     private LineData borderLine = new LineData();
     private RectTransform rectTransform;
 

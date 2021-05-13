@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryManager
+public class InventoryManager : IinventoryItem
 {
     
     private List<IinventoryItem> _items = new List<IinventoryItem>();
@@ -21,16 +21,22 @@ public class InventoryManager
             return mass;
         }
     }
-
-    private float _maxMass;
-    public float MaxWeight
+    
+    private float _volume;
+    public float Volume {
+        get {return _volume;}
+    }
+    
+    
+    private float _maxVolume;
+    public float MaxVolume
     {
-        get { return _maxMass; }
+        get { return _maxVolume; }
         set
         {
-            if (value >= _mass)
+            if (value >= Volume)
             {
-                _maxMass = value;
+                _maxVolume = value;
             }
         }
     }
@@ -38,13 +44,13 @@ public class InventoryManager
 
     public bool AddItem(IinventoryItem item)
     {
-        if (_items.Contains(item) || _mass + item.Mass > _maxMass)
+        if (_items.Contains(item) || Mass + item.Mass > _maxVolume)
         {
             return false;
         }
         
         _items.Add(item);
-        _mass += item.Mass;
+        _volume += item.Volume;
         
         if( item is Instrument ) {
             InstrumentsManager.Instance.EnableInstrument(item as Instrument);
@@ -58,7 +64,7 @@ public class InventoryManager
         bool result = _items.Remove(item);
         if (result)
         {
-            _mass -= item.Mass;
+            _volume -= item.Volume;
             if( item is Instrument ) {
                 InstrumentsManager.Instance.DisableInstrument( item as Instrument );
             }
@@ -68,8 +74,8 @@ public class InventoryManager
 
 
     
-    public InventoryManager( float maxMass = 20.0f ) {
-        _maxMass = Mathf.Max(maxMass, 0);
+    public InventoryManager( float maxVolume = 20.0f ) {
+        _maxVolume = Mathf.Max(maxVolume, 0);
     }
 
     

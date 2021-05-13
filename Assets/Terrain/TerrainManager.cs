@@ -21,9 +21,9 @@ public class TerrainManager : MonoBehaviour
     }
 
 
-    
+
     [SerializeField] private Transform lightReference;      //l'objet depuis lequel calculer l'orientation de la lumière (souvent le lander)
-    [Range(0,1)]
+    [Range(0, 1)]
     [SerializeField] private float lightFadeLimit = 0.1f;
     public Light mainLight;
     public Vector3 globalLightDir = Vector3.right;
@@ -50,25 +50,31 @@ public class TerrainManager : MonoBehaviour
     //générateur le la planète
     [SerializeField]
     private PlanetGen _planet;
-    public PlanetGen Planet {
-        get{ return _planet; }
+    public PlanetGen Planet
+    {
+        get { return _planet; }
     }
 
     //prefab des objets
-    [SerializeField] public LZbehaviour lzPref;
-    [SerializeField] public CrystalBehaviour crystalPref;
+    [SerializeField] public GameObject lzDefaultPref;
+    [SerializeField] public GameObject lzFuelPref;
+
+    [SerializeField] public GameObject crystalPref;
+
 
     //instances des ZA
     private Dictionary<LocalizedObject, GameObject> objToPrefInstance = new Dictionary<LocalizedObject, GameObject>();
 
     //propriétés de la tranche visualisée
     private Vector3 _sliceNormal = Vector3.up;
-    public Vector3 SliceNormal {
-        get{ return _sliceNormal; }
+    public Vector3 SliceNormal
+    {
+        get { return _sliceNormal; }
     }
     private Vector3 _sliceOrigine = Vector3.forward;
-    public Vector3 SliceOrigin {
-        get{ return _sliceOrigine; }
+    public Vector3 SliceOrigin
+    {
+        get { return _sliceOrigine; }
     }
 
     //propriétés privées du terrain
@@ -133,12 +139,12 @@ public class TerrainManager : MonoBehaviour
     private void Update()
     {
         //MAJ de l'orientation de la lumière
-        Vector3 localLightDir = Quaternion.Inverse( Quaternion.LookRotation( _sliceNormal, convertXtoDir(lightReference.position.x) ) ) * globalLightDir;
-        
-        mainLight.transform.rotation = Quaternion.LookRotation( localLightDir, Vector3.up );
-        mainLight.intensity = Mathf.Clamp01( Mathf.Asin(-localLightDir.y) * 2.0f/Mathf.PI / lightFadeLimit );
+        Vector3 localLightDir = Quaternion.Inverse(Quaternion.LookRotation(_sliceNormal, ConvertXtoDir(lightReference.position.x))) * globalLightDir;
+
+        mainLight.transform.rotation = Quaternion.LookRotation(localLightDir, Vector3.up);
+        mainLight.intensity = Mathf.Clamp01(Mathf.Asin(-localLightDir.y) * 2.0f / Mathf.PI / lightFadeLimit);
         // mainLight.enabled = localLightDir.y <= 0;
-        
+
     }
 
 
@@ -238,7 +244,7 @@ public class TerrainManager : MonoBehaviour
     /// <remarks>les tableaux points, vertices et bgVertices doivent être initialisés, ainsi que mesh</remarks>
     private void UpdateTerrain()
     {
-        
+
         //MAJ des vertices du premier plan
         for (int i = 0; i <= sampleCount; i++)
         {
@@ -254,13 +260,9 @@ public class TerrainManager : MonoBehaviour
             vertices[i * 2].y = sample;
 
         }
-        
-        
-        //MAJ des zones d'atterrissages et des cristaux
-        UpdateObjetsDisplay( _planet.landingZones, true );
-        UpdateObjetsDisplay( _planet.crystals, false );
-        
-        
+
+
+
         terrainSideMesh.vertices = vertices;
         terrainSideMesh.RecalculateBounds();
         foreach (EdgeCollider2D col in terrainColliders)
@@ -368,44 +370,75 @@ public class TerrainManager : MonoBehaviour
             WireframeRender.Instance.linePaths.Add(line);
         }
         //TODO factoriser ce bordel
+
+
+
+
+
+        //MAJ des zones d'atterrissages et des cristaux
+        UpdateObjetsDisplay(_planet.landingZones, true);
+        UpdateObjetsDisplay(_planet.crystals, false);
+
     }
-    
-    
-    
-    private void UpdateObjetsDisplay( IEnumerable<LocalizedObject> objects, bool flattenTerrain ) {
+
+
+
+    private void UpdateObjetsDisplay(IEnumerable<LocalizedObject> objects, bool flattenTerrain)
+    {
         float objCosThreshold = objSideThreshold / _terrainWidth;
-        
+
         foreach (LocalizedObject obj in objects)
         {
             float normalCos = Mathf.Abs(Vector3.Dot(obj.Position, _sliceNormal));
-            
+
             if (normalCos < objCosThreshold)
             {
                 Vector3 displayPosition = Vector3.ProjectOnPlane(obj.Position, _sliceNormal);
                 float angle = Vector3.SignedAngle(_sliceOrigine, displayPosition, _sliceNormal);
-                if(angle < 0) {
+                if (angle < 0)
+                {
                     angle += 360.0f;
                 }
-                
+
                 int positionId = (int)(sampleCount * angle / 360.0f);
-                
-                float heightMean = Mathf.Lerp(points[positionId].y, points[positionId + 1].y, 
-                    flattenTerrain ? 0.5f : (angle * sampleCount / 360.0f) % 1.0f );
-                if( flattenTerrain ) {
-                    points[positionId].y = heightMean;
-                    points[positionId + 1].y = heightMean;
-                    vertices[positionId * 2].y = heightMean;
-                    vertices[(positionId + 1) * 2].y = heightMean;
+
+                float localRatio = flattenTerrain ? 0.5f : (angle * sampleCount / 360.0f) % 1.0f;
+
+                float y = Mathf.Lerp(points[positionId].y, points[positionId + 1].y, localRatio);
+
+                if (flattenTerrain)
+                {
+                    points[positionId].y = y;
+                    points[positionId + 1].y = y;
+                    vertices[positionId * 2].y = y;
+                    vertices[(positionId + 1) * 2].y = y;
                 }
-                
+
+
+
+
+                float x = points[positionId].x;
+                x += _terrainWidth / sampleCount * localRatio;
+
+                if (x > TerrainWidth * 0.5f)
+                {
+                    x -= TerrainWidth;
+                }
+
+                float z = _terrainWidth / (sampleCount * 2);
+                Vector3 position = new Vector3(x, y, z);
+
                 if (!objToPrefInstance.ContainsKey(obj))
                 {
-                    objToPrefInstance.Add(obj, obj.createInstance() );
+                    objToPrefInstance.Add(obj, obj.createInstance(position, Quaternion.identity, transform));
                 }
-                GameObject instance = objToPrefInstance[obj];
-                
-                instance.transform.SetParent(transform, false);
-                instance.transform.localPosition = new Vector3(points[positionId].x + _terrainWidth / sampleCount * 0.5f, heightMean, 0);
+                else
+                {
+                    GameObject instance = objToPrefInstance[obj];
+                    instance.transform.SetParent(transform, false);
+                    instance.transform.localPosition = position;
+                }
+
 
 
             }
@@ -416,9 +449,9 @@ public class TerrainManager : MonoBehaviour
             }
         }
     }
-    
-    
-    
+
+
+
 
 
     private List<Vector3> ShiftLine(List<Vector3> line, float Xoffset)
@@ -434,10 +467,7 @@ public class TerrainManager : MonoBehaviour
     /// <param name="angle">L'angle de rotation, en degré</param>
     public void RotateAround(float axis2dPosition, float angle)
     {
-        // axis2dPosition = axis2dPosition % _terrainWidth;
-        // Vector3 axis = Quaternion.AngleAxis(360.0f * axis2dPosition / _terrainWidth, sliceNormal) * sliceOrigine;
-
-        RotateAround( convertXtoDir(axis2dPosition) , angle);
+        RotateAround(ConvertXtoDir(axis2dPosition), angle);
     }
 
     /// <summary>
@@ -453,14 +483,59 @@ public class TerrainManager : MonoBehaviour
 
         UpdateTerrain();
     }
-    
-    
-    public bool isLZvisible( LandingZone lz ) {
+
+
+    public bool IsLZvisible(LandingZone lz)
+    {
         return objToPrefInstance.ContainsKey(lz);
     }
 
-    public Vector3 convertXtoDir( float x ) {
+    public Vector3 ConvertXtoDir(float x)
+    {
         x = x % _terrainWidth;
         return (Quaternion.AngleAxis(360.0f * x / _terrainWidth, _sliceNormal) * _sliceOrigine).normalized;
     }
+
+
+    public float GetHeightOf(Vector3 pos)
+    {
+
+        if (pos.x < 0)
+        {
+            pos.x += TerrainWidth;
+        }
+
+        float sampleSize = _terrainWidth / sampleCount;
+
+
+        int idX = (int)(pos.x / sampleSize);
+        int idZ = (int)(pos.z / sampleSize);
+        
+        
+        float xRatio = (pos.x / sampleSize) - idX;
+        float heightFront = HeightXLerp(idX, idZ, xRatio);
+        float heightBack = HeightXLerp(idX, idZ+1, xRatio);
+        
+        float zRatio = (pos.z / sampleSize) - idZ;
+        
+        return Mathf.Lerp( heightFront, heightBack, zRatio );
+        
+        // float heightXmin = bgVertices[idX + idZ * (sampleCount + 1)].y;
+        // float heightMax = bgVertices[(idX + 1) + idZ * (sampleCount + 1)].y;
+
+
+        // return Mathf.Lerp(heightXmin, heightMax, xRatio);
+    }
+
+
+    private float HeightXLerp(int idX, int idZ, float ratio)
+    {
+
+        return Mathf.Lerp(
+            bgVertices[idX + idZ * (sampleCount + 1)].y,
+            bgVertices[(idX + 1) + idZ * (sampleCount + 1)].y,
+            ratio);
+    }
+
+
 }

@@ -6,9 +6,8 @@ public class FuelTank : IinventoryItem
 {
     
     private float _capacity;
-    public float Capacity
-    {
-        get { return _capacity; }
+    public float Volume {
+        get{ return _capacity; }
     }
     
     
@@ -21,8 +20,12 @@ public class FuelTank : IinventoryItem
     
     public float Mass
     {
-        get { return _fuelQuantity; }
+        get { return _fuelQuantity * fuelDensity; }
     }
+    
+    
+    private float fuelDensity = 1;
+    
     
     
     public bool IsEmpty() {
@@ -37,12 +40,13 @@ public class FuelTank : IinventoryItem
     
     
     
-    public FuelTank(float capacity = 1000) : this(capacity, capacity) { }
+    public FuelTank(float capacity = 1000, float fuelDensity = 1) : this(capacity, capacity, fuelDensity) { }
     
-    public FuelTank(float capacity, float fuelQuantity)
+    public FuelTank(float capacity, float fuelQuantity, float fuelDensity)
     {
         _capacity = Mathf.Max(0, capacity);
         FuelQuantity = fuelQuantity;
+        this.fuelDensity =fuelDensity;
     }
     
 }
