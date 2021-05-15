@@ -6,6 +6,9 @@ Shader "Custom/addWireframe"
         _LineColor("Line color", Color) = (1,1,1,1)
         _Width ("Width", Int) = 10
         _BrightnessThreshold("Brightness threshold", Float) = 0.2
+        
+        _AfterImageFactor("After image fade factor", Float) = 0.9
+        _AfterImageThreshold("After image thresholf", Float) = 0.01
     }
     SubShader
     {
@@ -14,7 +17,7 @@ Shader "Custom/addWireframe"
 
         Pass
         {
-            ZWrite Off
+            ZTest Always Cull Off ZWrite Off   
             
             CGPROGRAM
             #pragma vertex vert
@@ -33,7 +36,13 @@ Shader "Custom/addWireframe"
                 float4 position : SV_POSITION;
                 float2 uv : TEXCOORD0;
             };
-
+            
+            struct f2a {
+                fixed4 color : COLOR0;
+                fixed4 afterImageColor : COLOR1;
+            };
+            
+            
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
             
@@ -41,8 +50,16 @@ Shader "Custom/addWireframe"
             float4 _WireframeTex_TexelSize;
             float4 _LineColor;
             
+            sampler2D _AfterImageTex;
+            
             int _Width;
             float _BrightnessThreshold;
+            
+            
+            float _AfterImageFactor;
+            float _AfterImageThreshold;
+            
+            float _DetlaTime;
             
             v2f vert (appdata_img v)
             {
@@ -52,6 +69,8 @@ Shader "Custom/addWireframe"
                 
                 return o;
             }
+            
+            
             
             
             float brightness( float3 color ) {
@@ -79,7 +98,7 @@ Shader "Custom/addWireframe"
                 return tex2D(_WireframeTex, uv ).a > 0.1 && getMaxBrightness(uv) < _BrightnessThreshold;
             }
             
-            fixed4 frag (v2f i) : SV_Target
+            f2a frag (v2f i)
             {
                 
                 
@@ -104,9 +123,20 @@ Shader "Custom/addWireframe"
                 }//for x
                 
                 fixed4 originalColor = tex2D( _MainTex, i.uv );
-                // return originalColor + maxWeight * wireColor;
+                
                 float brightnessFactor = (1 - maxBrightness/_BrightnessThreshold);
-                return originalColor + brightnessFactor * maxWeight * wireColor;
+                
+                float4 wireFinalColor = maxWeight * wireColor;
+                wireFinalColor = max(wireFinalColor, tex2D(_AfterImageTex, i.uv));
+                
+                float4 afterImageColor = wireFinalColor - _AfterImageFactor * _DetlaTime;
+                afterImageColor = brightness( afterImageColor.rgb ) > _AfterImageThreshold ? afterImageColor : 0;
+                
+                f2a o;
+                o.color = originalColor + wireFinalColor * brightnessFactor;
+                o.afterImageColor = afterImageColor;
+                
+                return o;
             }
             ENDCG
         }//Pass

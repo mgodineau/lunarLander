@@ -12,44 +12,52 @@ public class WireframeRender : MonoBehaviour
     }
     
     private Camera cam;
-    private RenderTexture wireframeRT;
+    private RenderTexture sourceCopy;
+    private RenderTexture afterImageRT;
     
-    [SerializeField]
-    private Material linePostProcMaterial;
-    [SerializeField]
-    private Material lineDrawMaterial;
-    [SerializeField]
-    private Material uiLineDrawMaterial;
+    [SerializeField] private Material linePostProcMaterial;
+    
+    [SerializeField] private Material lineDrawMaterial;
+    [SerializeField] private Material uiLineDrawMaterial;
+    
+    private Material mrtMaterial;
+    
     
     public List<List<Vector3>> linePaths = new List<List<Vector3>>();
     
-    // public List<List<Vector3>> linePathsUI = new List<List<Vector3>>();
     public List<LineData> linesUI = new List<LineData>();
+    
+    
     
     private void Awake() {
         _instance = this;
         cam = GetComponent<Camera>();
         cam.depthTextureMode = DepthTextureMode.Depth;
         
-        wireframeRT = new RenderTexture( cam.pixelWidth, cam.pixelHeight, 16, RenderTextureFormat.Default );
-        wireframeRT.useDynamicScale = true;
+        
+        sourceCopy = CreateScreenRT();
+        afterImageRT = CreateScreenRT();
+        
+        mrtMaterial = new Material( Shader.Find("MRT") );
     }
     
     
     private void OnDestroy() {
-        wireframeRT.Release();
+        sourceCopy.Release();
+        afterImageRT.Release();
     }
     
     
     
     private void OnRenderImage( RenderTexture source, RenderTexture dest ) {
         
-        if( cam.pixelHeight != wireframeRT.height || cam.pixelWidth != wireframeRT.width ) {
-            wireframeRT.Release();
-            wireframeRT = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 16, RenderTextureFormat.Default);
+        if( cam.pixelHeight != sourceCopy.height || cam.pixelWidth != sourceCopy.width ) {
+            sourceCopy.Release();
+            sourceCopy = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 16, RenderTextureFormat.Default);
         }
         
-        Graphics.Blit( source, wireframeRT ); //rendu des lignes sur source, et copie de la vraie source dans wireframeRT, parce que ça parche pas dans l'autre sens
+         //rendu des lignes sur source, et copie de la vraie source dans wireframeRT, parce que ça parche pas dans l'autre sens
+        Graphics.Blit( source, sourceCopy );
         Graphics.SetRenderTarget(source);
         GL.Clear( false, true, Color.clear, 1 );
         
@@ -87,9 +95,27 @@ public class WireframeRender : MonoBehaviour
         }
         GL.PopMatrix();
         
+        // linePostProcMaterial.SetFloat("truc", 0.5f);
         
+        RenderTexture afterImageBuffer = RenderTexture.GetTemporary( afterImageRT.descriptor );
+        
+        linePostProcMaterial.SetTexture("_MainTex", sourceCopy);
         linePostProcMaterial.SetTexture("_WireframeTex", source);
-        Graphics.Blit(wireframeRT, dest, linePostProcMaterial);
+        linePostProcMaterial.SetTexture("_AfterImageTex", afterImageRT);
+        linePostProcMaterial.SetFloat("_DetlaTime", Time.deltaTime);
+        
+        RenderTexture tmpDest = RenderTexture.GetTemporary(source.descriptor);
+        RenderBuffer[] buffers = { tmpDest.colorBuffer, afterImageBuffer.colorBuffer };
+        
+        MRT( buffers, tmpDest.depthBuffer, linePostProcMaterial);
+        
+        Graphics.Blit(tmpDest, dest);
+        
+        RenderTexture.ReleaseTemporary(tmpDest);
+        
+        Graphics.CopyTexture(afterImageBuffer, afterImageRT);
+        RenderTexture.ReleaseTemporary(afterImageBuffer);
+        
         
         // Graphics.Blit(source, dest); //DEBUG : montre juste les lignes
     }
@@ -100,6 +126,41 @@ public class WireframeRender : MonoBehaviour
         proj[2,3] -= offset;
         return proj;
     }
+    
+    
+    private RenderTexture CreateScreenRT() {
+        RenderTexture tex = new RenderTexture( cam.pixelWidth, cam.pixelHeight, 16, RenderTextureFormat.ARGB32 );
+        tex.useDynamicScale = true;
+        tex.enableRandomWrite = true;
+        
+        Graphics.SetRenderTarget(tex);
+        GL.Clear(true, true, Color.clear, 1);
+        
+        return tex;
+    }
+    
+    private void MRT (RenderBuffer[] rb, RenderBuffer depth, Material mat)
+    {
+        
+        Graphics.SetRenderTarget(rb, depth);
+        // GL.Clear(false, true, Color.clear, 1);
+        GL.PushMatrix();
+            GL.LoadOrtho();
+            mat.SetPass(0);
+            GL.Begin(GL.QUADS);
+                GL.TexCoord2(0.0f, 0.0f);
+                GL.Vertex3(0.0f, 0.0f, 0.1f);
+                GL.TexCoord2(1.0f, 0.0f);
+                GL.Vertex3(1.0f, 0.0f, 0.1f);
+                GL.TexCoord2(1.0f, 1.0f);
+                GL.Vertex3(1.0f, 1.0f, 0.1f);
+                GL.TexCoord2(0.0f, 1.0f);
+                GL.Vertex3(0.0f, 1.0f, 0.1f);
+            GL.End();
+        GL.PopMatrix();
+    }
+    
+    
     
     
 }
