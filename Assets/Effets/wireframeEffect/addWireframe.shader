@@ -8,7 +8,8 @@ Shader "Custom/addWireframe"
         _BrightnessThreshold("Brightness threshold", Float) = 0.2
         
         _AfterImageFactor("After image fade factor", Float) = 0.9
-        _AfterImageThreshold("After image thresholf", Float) = 0.01
+        _AfterImageThreshold("After image thresholf", Range(0, 1)) = 0.01
+        _AfterImageMaxBrightness("After image max brightness", Range(0, 1)) = 0.5
     }
     SubShader
     {
@@ -58,6 +59,7 @@ Shader "Custom/addWireframe"
             
             float _AfterImageFactor;
             float _AfterImageThreshold;
+            float _AfterImageMaxBrightness;
             
             float _DetlaTime;
             
@@ -124,16 +126,17 @@ Shader "Custom/addWireframe"
                 
                 fixed4 originalColor = tex2D( _MainTex, i.uv );
                 
-                float brightnessFactor = (1 - maxBrightness/_BrightnessThreshold);
+                float activeWireBrightness = (1 - maxBrightness/_BrightnessThreshold);
+                float afterImageWireBrightness = _AfterImageMaxBrightness * (1 - brightness(originalColor)/_BrightnessThreshold);
                 
-                float4 wireFinalColor = maxWeight * wireColor;
-                wireFinalColor = max(wireFinalColor, tex2D(_AfterImageTex, i.uv));
+                float4 activeWireColor = maxWeight * wireColor;
                 
-                float4 afterImageColor = wireFinalColor - _AfterImageFactor * _DetlaTime;
+                float4 afterImageColor = max( activeWireColor, tex2D(_AfterImageTex, i.uv) );
+                afterImageColor -= _AfterImageFactor * _DetlaTime;
                 afterImageColor = brightness( afterImageColor.rgb ) > _AfterImageThreshold ? afterImageColor : 0;
                 
                 f2a o;
-                o.color = originalColor + wireFinalColor * brightnessFactor;
+                o.color = originalColor + activeWireColor * activeWireBrightness + afterImageColor * afterImageWireBrightness;
                 o.afterImageColor = afterImageColor;
                 
                 return o;

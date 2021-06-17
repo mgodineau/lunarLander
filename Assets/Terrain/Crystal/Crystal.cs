@@ -17,6 +17,10 @@ public class Crystal : LocalizedObject, IinventoryItem
         get { return Mass / density; }
     }
     
+    public string Name {
+        get{ return "Crystal"; }
+    }
+    
 
     public Crystal(Vector3 position, float mass = 1.0f) : base(position) {
         _mass = Mathf.Max(mass, 0);

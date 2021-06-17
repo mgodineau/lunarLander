@@ -13,5 +13,9 @@ public interface IinventoryItem
         get;
     }
     
+    string Name {
+        get;
+    }
+    
     
 }

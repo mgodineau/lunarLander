@@ -22,8 +22,11 @@ public class FuelTank : IinventoryItem
     {
         get { return _fuelQuantity * fuelDensity; }
     }
-    
-    
+
+    public string Name {
+        get{ return "Fuel tank"; }
+    }
+
     private float fuelDensity = 1;
     
     

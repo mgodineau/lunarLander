@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Lander : MonoBehaviour
+public class Lander : InputConsumer
 {
     
     [SerializeField]
@@ -38,12 +38,13 @@ public class Lander : MonoBehaviour
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         
+        EnableInputProcessing();
         inventory.AddItem(tank);
     }
     
     private void Start() {
-        InstrumentsManager.Instance.EnableInstrument( InstrumentsManager.InstrumentType.Map );
-        InstrumentsManager.Instance.EnableInstrument( InstrumentsManager.InstrumentType.FuelGauge );
+        UImanager.Instance.instrumentsManager.EnableInstrument( InstrumentsManager.InstrumentType.Map );
+        UImanager.Instance.instrumentsManager.EnableInstrument( InstrumentsManager.InstrumentType.FuelGauge );
     }
     
     
@@ -54,22 +55,24 @@ public class Lander : MonoBehaviour
         
         
         //déplacement du lander
-        bool thrustInput = Input.GetKey(KeyCode.Z) && tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
-        if( thrustInput ) {
-            rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
-        }
-        thrustAnim.SetBool("thrust", thrustInput);
+        if( ProcessInput() ) {
+            bool thrustInput = Input.GetKey(KeyCode.Z) && tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
+            if( thrustInput ) {
+                rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
+            }
+            thrustAnim.SetBool("thrust", thrustInput);
         
         
-        float torqueDir = 0;
-        if( Input.GetKey(KeyCode.Q) ) {
-            torqueDir++;
-        }
-        if( Input.GetKey(KeyCode.D) ) {
-            torqueDir--;
-        }
-        rb.AddTorque(angularThrust * torqueDir, ForceMode2D.Force);
         
+            float torqueDir = 0;
+            if( Input.GetKey(KeyCode.Q) ) {
+                torqueDir++;
+            }
+            if( Input.GetKey(KeyCode.D) ) {
+                torqueDir--;
+            }
+            rb.AddTorque(angularThrust * torqueDir, ForceMode2D.Force);
+        }
         
         
     }
@@ -91,6 +94,15 @@ public class Lander : MonoBehaviour
         if( rotationDir != 0 ) {
             TerrainManager.Instance.RotateAround( transform.position.x, rotationDir * worldRotationSpeed * Time.deltaTime );
         }
+        
+        
+        
+        // affichage du menu
+        if( ProcessInput() && Input.GetKeyDown(KeyCode.S) ) {
+            SubMenu mainMenu = CreateMainMenu();
+            UImanager.Instance.menuManager.SetMenu( mainMenu );
+        }
+        
     }
     
     
@@ -118,7 +130,7 @@ public class Lander : MonoBehaviour
         //gestion de l'atterrissage sur une LZ
         LZbehaviour lz = other.gameObject.GetComponent<LZbehaviour>();
         if( lz != null ) {
-            InstrumentsManager.Instance.KnownLZ.Add(lz.LZscript);
+            UImanager.Instance.instrumentsManager.KnownLZ.Add(lz.LZscript);
             return;
         }
         
@@ -130,7 +142,7 @@ public class Lander : MonoBehaviour
     private void DestroyLander() {
         
         GameObject.Instantiate( destructionEffect ).InitEffect(rb);
-        InstrumentsManager.Instance.gameObject.SetActive(false);
+        UImanager.Instance.instrumentsManager.gameObject.SetActive(false);
         
         //Destruction de l'objet lander
         Destroy(gameObject);
@@ -154,6 +166,16 @@ public class Lander : MonoBehaviour
     
     public float GetFuelCapacity() {
         return tank.Volume;
+    }
+    
+    
+    private SubMenu CreateMainMenu() {
+        
+        List<MenuEntry> menuContent = new List<MenuEntry>();
+        menuContent.Add( inventory.GetMenu() );
+        
+        return new SubMenu("menu", menuContent);
+        
     }
     
     

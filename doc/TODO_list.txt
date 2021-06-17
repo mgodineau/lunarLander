@@ -1,11 +1,12 @@
 cosmétique :
 	rotation thrust
-	effet de rémanence
+	glox sur la rémanence
 	ajouter de la musique + des sons
 	
 	
 gameplay :
 	LZ rafinerie + interaction avec LZ
+	système d'interface basique
 	
 instruments :
 	- attitude indicator
@@ -13,6 +14,7 @@ instruments :
 	
 	
 fini:
+	effet de rémanence
 	position des cristaux
 	fuel gauge
 	texture du lander

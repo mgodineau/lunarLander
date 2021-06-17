@@ -30,6 +30,19 @@ public class Map : Instrument
     LineData sliceLine;   //section visitée
     Dictionary< LandingZone, LineData> knownLZtoDisp = new Dictionary<LandingZone, LineData>();
     
+    public override float Mass {
+        get{ return 1; }
+    }
+
+    public override float Volume {
+        get{ return 1; }
+    }
+    
+    public override string Name {
+        get{ return "Map"; }
+    }
+
+
     new private void Awake() {
         base.Awake();
         
@@ -46,7 +59,6 @@ public class Map : Instrument
         
         EnableLayout();
         EnableInfos();
-        EnableBorder();
         
         UpdateHeightmap();
     }
@@ -64,9 +76,9 @@ public class Map : Instrument
     /// </summary>
     private void UpdateLanderLocation() {
         Vector3 landerDir = TerrainManager.Instance.ConvertXtoDir(
-            InstrumentsManager.Instance.CurrentLander.transform.position.x
+            UImanager.Instance.lander.transform.position.x
         );
-        Vector3 landerLocalCenter = localToGlobal( dirToLocalPos(landerDir) );
+        Vector3 landerLocalCenter = LocalToGlobal( dirToLocalPos(landerDir) );
         landerPos.points = CreateSquareLine( landerLocalCenter, iconWidth );
     }
     
@@ -83,13 +95,13 @@ public class Map : Instrument
         }
         Vector3 originDir = TerrainManager.Instance.SliceOrigin;
         Vector3 originLocalPos = dirToLocalPos(originDir);
-        linePoints.AddLast(  localToGlobal(originLocalPos) );
+        linePoints.AddLast(  LocalToGlobal(originLocalPos) );
         
         Vector2 sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(sliceDelta, sliceNormal) * originDir );
         Vector2 prevSample = dirToLocalPos(originDir);
         int i=2;
         while( sampleLocalPos.x > originLocalPos.x ) {
-            linePoints.AddLast(localToGlobal(sampleLocalPos) );
+            linePoints.AddLast(LocalToGlobal(sampleLocalPos) );
             prevSample = sampleLocalPos;
             sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(sliceDelta * i, sliceNormal) * originDir );
             i++;
@@ -98,14 +110,14 @@ public class Map : Instrument
         //ajout du dernier point, calé sur le bord droit de la map
         sampleLocalPos.x += 1;
         sampleLocalPos -= (sampleLocalPos - prevSample) * (sampleLocalPos.x - 1.0f) / (sampleLocalPos.x - prevSample.x);
-        linePoints.AddLast( localToGlobal(sampleLocalPos) );
+        linePoints.AddLast( LocalToGlobal(sampleLocalPos) );
         
         
         i = 2;
         sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(-sliceDelta, sliceNormal) * originDir );
         prevSample = dirToLocalPos(originDir);
         while( sampleLocalPos.x < originLocalPos.x ) {
-            linePoints.AddFirst(localToGlobal(sampleLocalPos) );
+            linePoints.AddFirst(LocalToGlobal(sampleLocalPos) );
             prevSample = sampleLocalPos;
             sampleLocalPos = dirToLocalPos( Quaternion.AngleAxis(-sliceDelta * i, sliceNormal) * originDir );
             i++;
@@ -114,7 +126,7 @@ public class Map : Instrument
         //ajout du dernier point, calé sur le bord gauche de la map
         sampleLocalPos.x -= 1;
         sampleLocalPos -= (sampleLocalPos - prevSample) * sampleLocalPos.x / (sampleLocalPos.x - prevSample.x);
-        linePoints.AddFirst( localToGlobal(sampleLocalPos) );
+        linePoints.AddFirst( LocalToGlobal(sampleLocalPos) );
         
         
         //ajout de la nouvelle ligne au rendu
@@ -128,7 +140,7 @@ public class Map : Instrument
     private void UpdateLZ()
     {
         
-        foreach( LandingZone currentLZ in InstrumentsManager.Instance.KnownLZ ) {
+        foreach( LandingZone currentLZ in UImanager.Instance.instrumentsManager.KnownLZ ) {
             
             
             if( !knownLZtoDisp.ContainsKey(currentLZ) ) {
@@ -141,7 +153,7 @@ public class Map : Instrument
             }
             
             knownLZtoDisp[currentLZ].points = CreateSquareLine(
-                localToGlobal(dirToLocalPos(currentLZ.Position)) , 
+                LocalToGlobal(dirToLocalPos(currentLZ.Position)) , 
                 TerrainManager.Instance.IsLZvisible( currentLZ ) ? iconWidth : iconWidth / 2
             );
             
@@ -233,8 +245,8 @@ public class Map : Instrument
             float x = left ? 0 : 1;
             left = !left;
             
-            bgHorizontal.points.Add( localToGlobal( new Vector3( x, height * (i-1), 0) ));
-            bgHorizontal.points.Add( localToGlobal( new Vector3(x, height * i, 0) ));
+            bgHorizontal.points.Add( LocalToGlobal( new Vector3( x, height * (i-1), 0) ));
+            bgHorizontal.points.Add( LocalToGlobal( new Vector3(x, height * i, 0) ));
         }
         
         //lignes verticales
@@ -244,8 +256,8 @@ public class Map : Instrument
             float y = down ? 0 : 1;
             down = !down;
             
-            bgVertical.points.Add( localToGlobal( new Vector3( width * (i-1), y, 0) ));
-            bgVertical.points.Add( localToGlobal( new Vector3( width * i, y, 0) ));
+            bgVertical.points.Add( LocalToGlobal( new Vector3( width * (i-1), y, 0) ));
+            bgVertical.points.Add( LocalToGlobal( new Vector3( width * i, y, 0) ));
         }
     }
     

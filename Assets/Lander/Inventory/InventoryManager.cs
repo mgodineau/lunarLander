@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,8 +41,14 @@ public class InventoryManager : IinventoryItem
             }
         }
     }
-
-
+    
+    public string Name {
+        get{ return "Inventory"; }
+    }
+    
+    private List<MenuEntry> publicEntries = new List<MenuEntry>();
+    
+    
     public bool AddItem(IinventoryItem item)
     {
         if (_items.Contains(item) || Mass + item.Mass > _maxVolume)
@@ -52,8 +59,13 @@ public class InventoryManager : IinventoryItem
         _items.Add(item);
         _volume += item.Volume;
         
+        publicEntries.Add( new MenuEntryDropItem(this, item) );
+        if( UImanager.Instance != null ) {
+            UImanager.Instance.menuManager.UpdateMenuUI();            
+        }
+        
         if( item is Instrument ) {
-            InstrumentsManager.Instance.EnableInstrument(item as Instrument);
+            UImanager.Instance.instrumentsManager.EnableInstrument(item as Instrument);
         }
         return true;
     }
@@ -64,9 +76,14 @@ public class InventoryManager : IinventoryItem
         bool result = _items.Remove(item);
         if (result)
         {
+            publicEntries.RemoveAll( entry => entry is MenuEntryDropItem && (entry as MenuEntryDropItem).Item == item );
+            if( UImanager.Instance != null) {
+                UImanager.Instance.menuManager.UpdateMenuUI();
+            }
+            
             _volume -= item.Volume;
             if( item is Instrument ) {
-                InstrumentsManager.Instance.DisableInstrument( item as Instrument );
+                UImanager.Instance.instrumentsManager.DisableInstrument( item as Instrument );
             }
         }
         return result;
@@ -78,7 +95,15 @@ public class InventoryManager : IinventoryItem
         _maxVolume = Mathf.Max(maxVolume, 0);
     }
 
-    
-    
-
+    public SubMenu GetMenu()
+    {
+        // publicEntries.Clear();
+        
+        // foreach( IinventoryItem item in Items ) {
+        //     // content.Add( new MenuEntryEmpty(item.Name) );
+        //     publicEntries.Add( new MenuEntryDropItem(this, item) );
+        // }
+        
+        return new SubMenu( Name, publicEntries);
+    }
 }

@@ -4,21 +4,6 @@ using UnityEngine;
 
 public class InstrumentsManager : MonoBehaviour
 {
-    //instrument Manager est un singleton
-    private static InstrumentsManager _instance;
-    public static InstrumentsManager Instance
-    {
-        get { return _instance; }
-    }
-    
-    
-    //instance de Lander controllée par le joueur
-    [SerializeField] private Lander _currentLander;
-    public Lander CurrentLander
-    {
-        get { return _currentLander; }
-    }
-    
     
     
     //Accès à tous les instruments
@@ -47,7 +32,6 @@ public class InstrumentsManager : MonoBehaviour
 
     public void Awake()
     {
-        _instance = this;
         foreach( Instrument inst in instrumentsInstances ) {
             inst.gameObject.SetActive(false);
         }
@@ -66,14 +50,14 @@ public class InstrumentsManager : MonoBehaviour
 
     public void EnableInstrument(Instrument instrument)
     {
-        if(_currentLander.AddInstrument(instrument) ) {
+        if(UImanager.Instance.lander.AddInstrument(instrument) ) {
             instrument.gameObject.SetActive(true);
         }
     }
     
     public void DisableInstrument( Instrument instrument ) {
         instrument.gameObject.SetActive(false);
-        _currentLander.RemoveInstrument(instrument);
+        UImanager.Instance.lander.RemoveInstrument(instrument);
     }
     
 

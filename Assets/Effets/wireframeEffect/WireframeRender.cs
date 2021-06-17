@@ -20,12 +20,10 @@ public class WireframeRender : MonoBehaviour
     [SerializeField] private Material lineDrawMaterial;
     [SerializeField] private Material uiLineDrawMaterial;
     
-    private Material mrtMaterial;
-    
     
     public List<List<Vector3>> linePaths = new List<List<Vector3>>();
+    public HashSet<LineData> linesUI = new HashSet<LineData>();
     
-    public List<LineData> linesUI = new List<LineData>();
     
     
     
@@ -37,8 +35,6 @@ public class WireframeRender : MonoBehaviour
         
         sourceCopy = CreateScreenRT();
         afterImageRT = CreateScreenRT();
-        
-        mrtMaterial = new Material( Shader.Find("MRT") );
     }
     
     

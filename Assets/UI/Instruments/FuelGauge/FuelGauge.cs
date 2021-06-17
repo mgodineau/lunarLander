@@ -15,10 +15,22 @@ public class FuelGauge : Instrument
     private List<LineData> graduations = new List<LineData>();
     private LineData cursor = new LineData();
     
+    
+    public override float Mass {
+        get{ return 1; }
+    }
+
+    public override float Volume {
+        get{ return 1; }
+    }
+    
+    public override string Name {
+        get{ return "Fuel gauge"; }
+    }
+
     new private void Start() {
         base.Start();
         
-        EnableBorder();
         
         CreateGraduation();
         CreateCursor();
@@ -43,8 +55,8 @@ public class FuelGauge : Instrument
         float marginY = marginX * 0.5f;
         
         List<Vector3> verticalLine = new List<Vector3>();
-        verticalLine.Add( localToGlobal( new Vector3(xRight, 1.0f - marginY, 0)) );
-        verticalLine.Add( localToGlobal( new Vector3(xRight, marginY, 0)) );
+        verticalLine.Add( LocalToGlobal( new Vector3(xRight, 1.0f - marginY, 0)) );
+        verticalLine.Add( LocalToGlobal( new Vector3(xRight, marginY, 0)) );
         
         graduations.Add( new LineData( verticalLine ) );
         
@@ -59,8 +71,8 @@ public class FuelGauge : Instrument
                 float y = marginY + gradHeight * j / graduationDescription[i];
                 
                 List<Vector3> currentLine = new List<Vector3>();
-                currentLine.Add( localToGlobal( new Vector3(xRight, y, 0) ) );
-                currentLine.Add( localToGlobal( new Vector3(xRight - currentWidth, y, 0) ) );
+                currentLine.Add( LocalToGlobal( new Vector3(xRight, y, 0) ) );
+                currentLine.Add( LocalToGlobal( new Vector3(xRight - currentWidth, y, 0) ) );
                 graduations.Add( new LineData(currentLine) );
             }
             
@@ -82,11 +94,11 @@ public class FuelGauge : Instrument
         WireframeRender.Instance.linesUI.Remove(cursor);
         
         List<Vector3> cursorPath = new List<Vector3>();
-        cursorPath.Add( localToGlobal( new Vector3(0, 0, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(cursorWidth-marginY, 0, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(cursorWidth, marginY*0.5f, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(cursorWidth-marginY, marginY, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(0, marginY, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(0, 0, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(cursorWidth-marginY, 0, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(cursorWidth, marginY*0.5f, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(cursorWidth-marginY, marginY, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(0, marginY, 0) ) );
         
         cursor = new LineData(cursorPath);
         
@@ -98,7 +110,7 @@ public class FuelGauge : Instrument
         
         float marginY = marginX * 0.5f;
         
-        Lander lander = InstrumentsManager.Instance.CurrentLander;
+        Lander lander = UImanager.Instance.lander;
         float fuelRatio = lander.GetFuelQuantity() / lander.GetFuelCapacity();
         
         float yCenter = marginY + fuelRatio * (1.0f - marginY*2);
@@ -106,11 +118,11 @@ public class FuelGauge : Instrument
         float yLower = yCenter - marginY*0.5f;
         
         List<Vector3> cursorPath = new List<Vector3>();
-        cursorPath.Add( localToGlobal( new Vector3( 0 , yLower, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(cursorWidth-marginY, yLower, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(cursorWidth, yCenter, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(cursorWidth-marginY, yUpper, 0) ) );
-        cursorPath.Add( localToGlobal( new Vector3(0, yUpper, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3( 0 , yLower, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(cursorWidth-marginY, yLower, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(cursorWidth, yCenter, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(cursorWidth-marginY, yUpper, 0) ) );
+        cursorPath.Add( LocalToGlobal( new Vector3(0, yUpper, 0) ) );
         cursor.points = cursorPath;
         
     }
