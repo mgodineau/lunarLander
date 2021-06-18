@@ -61,7 +61,7 @@ public class MenuManager : InputConsumer
                 PopMenu();
             }
             
-            if( Input.GetKeyDown(KeyCode.D) ) {
+            if( Input.GetKeyDown(KeyCode.D) && buttonsList.Count > 0) {
                 buttonsList[SelectedEntryId].OnClick();
             }
             

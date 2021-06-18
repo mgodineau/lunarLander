@@ -64,6 +64,22 @@ public class Map : Instrument
     }
     
     
+    new private void OnEnable() {
+        base.OnEnable();
+        
+        EnableLayout();
+        EnableInfos();
+    }
+    
+    new private void OnDisable() {
+        base.OnDisable();
+        
+        DisableLayout();
+        DisableInfos();
+    }
+    
+    
+    
     private void Update() {
         UpdateLanderLocation();
         UpdateSliceLine();
@@ -267,8 +283,12 @@ public class Map : Instrument
     /// Active l'affichage des lignes d'arrière plan
     /// </summary>
     public void EnableLayout() {
-        WireframeRender.Instance.linesUI.Add( bgVertical );
-        WireframeRender.Instance.linesUI.Add( bgHorizontal );
+        WireframeRender wireframeRender = WireframeRender.Instance;
+        if(wireframeRender == null) {
+            return;
+        }
+        wireframeRender.linesUI.Add( bgVertical );
+        wireframeRender.linesUI.Add( bgHorizontal );
     }
     
     
@@ -276,19 +296,27 @@ public class Map : Instrument
     /// Désactive l'affichage des lignes d'arrière plan
     /// </summary>
     public void DisableLayout() {
-        WireframeRender.Instance.linesUI.Remove( bgVertical );
-        WireframeRender.Instance.linesUI.Remove( bgHorizontal );
+        WireframeRender wireframeRender = WireframeRender.Instance;
+        if(wireframeRender == null) {
+            return;
+        }
+        wireframeRender.linesUI.Remove( bgVertical );
+        wireframeRender.linesUI.Remove( bgHorizontal );
     }
     
     /// <summary>
     /// Active l'affichage des informations sur la carte, telles que la position du lander, ou la section visitée
     /// </summary>
     public void EnableInfos() {
-        WireframeRender.Instance.linesUI.Add( landerPos );
-        WireframeRender.Instance.linesUI.Add( sliceLine );
+        WireframeRender wireframeRender = WireframeRender.Instance;
+        if(wireframeRender == null) {
+            return;
+        }
+        wireframeRender.linesUI.Add( landerPos );
+        wireframeRender.linesUI.Add( sliceLine );
         
         foreach( LineData line in knownLZtoDisp.Values ) {
-            WireframeRender.Instance.linesUI.Add( line );
+            wireframeRender.linesUI.Add( line );
         }
     }
     
@@ -296,11 +324,15 @@ public class Map : Instrument
     /// Désactive l'affichage des informations sur la carte
     /// </summary>
     public void DisableInfos() {
-        WireframeRender.Instance.linesUI.Remove( landerPos );
-        WireframeRender.Instance.linesUI.Remove( sliceLine );
+        WireframeRender wireframeRender = WireframeRender.Instance;
+        if(wireframeRender == null) {
+            return;
+        }
+        wireframeRender.linesUI.Remove( landerPos );
+        wireframeRender.linesUI.Remove( sliceLine );
         
         foreach( LineData line in knownLZtoDisp.Values ) {
-            WireframeRender.Instance.linesUI.Remove( line );
+            wireframeRender.linesUI.Remove( line );
         }
     }
     

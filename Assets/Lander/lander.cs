@@ -32,8 +32,11 @@ public class Lander : InputConsumer
     
     
     private InventoryManager inventory = new InventoryManager( 4000 );
-    
     private FuelTank tank = new FuelTank(3000);
+    
+    private HashSet<CrystalBehaviour> pickableItem = new HashSet<CrystalBehaviour>();
+    private List<MenuEntry> pickableItemEntries = new List<MenuEntry>();
+    
     
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -56,6 +59,7 @@ public class Lander : InputConsumer
         
         //déplacement du lander
         if( ProcessInput() ) {
+            //propulsiion du lander
             bool thrustInput = Input.GetKey(KeyCode.Z) && tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
             if( thrustInput ) {
                 rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
@@ -63,7 +67,7 @@ public class Lander : InputConsumer
             thrustAnim.SetBool("thrust", thrustInput);
         
         
-        
+            // rotation du lander
             float torqueDir = 0;
             if( Input.GetKey(KeyCode.Q) ) {
                 torqueDir++;
@@ -109,14 +113,6 @@ public class Lander : InputConsumer
     private void OnCollisionEnter2D(Collision2D other) {
         
         
-        //ramassage automatique d'un objet
-        CrystalBehaviour crystal = other.gameObject.GetComponent<CrystalBehaviour>();
-        if( crystal != null && inventory.AddItem(crystal.crystalScript)) {
-            crystal.Pickup();
-            return;
-        }
-        
-        
         //gestion de la destruction du Lander
         Vector3 relativeVelocity = other.relativeVelocity;
         float impactCos = relativeVelocity.normalized.x;
@@ -135,6 +131,30 @@ public class Lander : InputConsumer
         }
         
         
+    }
+    
+    
+    private void OnTriggerEnter2D( Collider2D other ) {
+        //ajout d'un objet a la liste de ramassage
+        CrystalBehaviour crystal = other.gameObject.GetComponent<CrystalBehaviour>();
+        if( crystal != null ) {
+            pickableItem.Add(crystal);
+            
+            UpdatePickableItemEntries();
+            UImanager.Instance.menuManager.UpdateMenuUI();
+        }
+        
+    }
+    
+    private void OnTriggerExit2D( Collider2D other ) {
+        //ajout d'un objet a la liste de ramassage
+        CrystalBehaviour crystal = other.gameObject.GetComponent<CrystalBehaviour>();
+        if( crystal != null ) {
+            pickableItem.Remove(crystal);
+            
+            UpdatePickableItemEntries();
+            UImanager.Instance.menuManager.UpdateMenuUI();
+        }
     }
     
     
@@ -172,6 +192,7 @@ public class Lander : InputConsumer
     private SubMenu CreateMainMenu() {
         
         List<MenuEntry> menuContent = new List<MenuEntry>();
+        menuContent.Add( CreatePickupMenu() );
         menuContent.Add( inventory.GetMenu() );
         
         return new SubMenu("menu", menuContent);
@@ -179,5 +200,17 @@ public class Lander : InputConsumer
     }
     
     
+    private SubMenu CreatePickupMenu() {
+        UpdatePickableItemEntries();
+        return new SubMenu("pickup", pickableItemEntries);
+    }
+    
+    private void UpdatePickableItemEntries() {
+        pickableItemEntries.Clear();
+        foreach( CrystalBehaviour crystal in pickableItem ) {
+            pickableItemEntries.Add( new MenuEntryPickupItem(inventory, crystal) );
+        }
+        
+    }
     
 }

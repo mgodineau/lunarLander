@@ -34,7 +34,24 @@ public class FuelGauge : Instrument
         
         CreateGraduation();
         CreateCursor();
+        EnableDisplay();
     }
+    
+    
+    new private void OnEnable() {
+        base.OnEnable();
+        
+        EnableDisplay();
+    }
+    
+    
+    new private void OnDisable() {
+        base.OnDisable();
+        
+        DisableDisplay();
+    }
+    
+    
     
     private void Update() {
         UpdateCursor();
@@ -45,9 +62,9 @@ public class FuelGauge : Instrument
     
     private void CreateGraduation() {
         
-        foreach( LineData line in graduations ) {
-            WireframeRender.Instance.linesUI.Remove(line);
-        }
+        // foreach( LineData line in graduations ) {
+        //     WireframeRender.Instance.linesUI.Remove(line);
+        // }
         graduations = new List<LineData>();
         
         
@@ -79,9 +96,9 @@ public class FuelGauge : Instrument
         }
         
         
-        foreach( LineData line in graduations ) {
-            WireframeRender.Instance.linesUI.Add(line);
-        }
+        // foreach( LineData line in graduations ) {
+        //     WireframeRender.Instance.linesUI.Add(line);
+        // }
         
     }
     
@@ -91,7 +108,7 @@ public class FuelGauge : Instrument
         
         float marginY = marginX *0.5f;
         
-        WireframeRender.Instance.linesUI.Remove(cursor);
+        // WireframeRender.Instance.linesUI.Remove(cursor);
         
         List<Vector3> cursorPath = new List<Vector3>();
         cursorPath.Add( LocalToGlobal( new Vector3(0, 0, 0) ) );
@@ -102,7 +119,7 @@ public class FuelGauge : Instrument
         
         cursor = new LineData(cursorPath);
         
-        WireframeRender.Instance.linesUI.Add(cursor);
+        // WireframeRender.Instance.linesUI.Add(cursor);
     }
     
     
@@ -126,6 +143,37 @@ public class FuelGauge : Instrument
         cursor.points = cursorPath;
         
     }
+    
+    
+    private void EnableDisplay() {
+        WireframeRender wireframeRender = WireframeRender.Instance;
+        if( wireframeRender == null ) {
+            return;
+        }
+        
+        wireframeRender.linesUI.Add(cursor);
+        foreach( LineData line in graduations ) {
+            wireframeRender.linesUI.Add(line);
+        }
+        
+    }
+    
+    
+    
+    private void DisableDisplay() {
+        WireframeRender wireframeRender = WireframeRender.Instance;
+        if( wireframeRender == null ) {
+            return;
+        }
+        
+        wireframeRender.linesUI.Remove(cursor);
+        foreach( LineData line in graduations ) {
+            wireframeRender.linesUI.Remove(line);
+        }
+    }
+    
+    
+    
     
     
 }

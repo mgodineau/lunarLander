@@ -1405,9 +1405,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _borderEnabled: 1
-  _text: opqrstuvwxyz
+  _text: 
   _verticalSize: 0.4
-  _alignment: 0
+  _alignment: 1
 --- !u!1 &2021517598
 GameObject:
   m_ObjectHideFlags: 0
