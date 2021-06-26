@@ -41,6 +41,11 @@ public class FuelTank : IinventoryItem
         return !IsEmpty();
     }
     
+    public float Refuel( float qty ) {
+        float oldQty = FuelQuantity;
+        FuelQuantity += qty;
+        return FuelQuantity - oldQty;
+    }
     
     
     public FuelTank(float capacity = 1000, float fuelDensity = 1) : this(capacity, capacity, fuelDensity) { }

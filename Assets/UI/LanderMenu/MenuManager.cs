@@ -40,16 +40,7 @@ public class MenuManager : InputConsumer
     
     private void Start()
     {
-
-        // List<MenuEntry> entryList = new List<MenuEntry>();
-        // entryList.Add(new MenuEntryEmpty("truc"));
-        // entryList.Add(new MenuEntryEmpty("machin"));
-
-        // SubMenu testMenu = new SubMenu("Test Menu", entryList);
-        // SetMenu(testMenu);
-
         UpdateMenuUI();
-
     }
     
     
@@ -101,7 +92,11 @@ public class MenuManager : InputConsumer
         menuPath.Clear();
         UpdateMenuUI();
     }
-
+    
+    public SubMenu GetCurrentMenu() {
+        return menuPath.Count == 0 ? null : menuPath.Peek();
+    }
+    
 
     public void UpdateMenuUI()
     {

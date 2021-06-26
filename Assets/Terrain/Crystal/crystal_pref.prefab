@@ -30,6 +30,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1001 &5218799552410728502
 PrefabInstance:
   m_ObjectHideFlags: 0

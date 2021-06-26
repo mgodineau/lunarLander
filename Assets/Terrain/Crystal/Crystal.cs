@@ -27,7 +27,7 @@ public class Crystal : LocalizedObject, IinventoryItem
     }
     
 
-    public override GameObject createInstance( Vector3 position, Quaternion rotation, Transform parent )
+    public override GameObject CreateInstance( Vector3 position, Quaternion rotation, Transform parent )
     {
         GameObject instance = GameObject.Instantiate( TerrainManager.Instance.crystalPref.gameObject, position, rotation, parent );
         instance.AddComponent<CrystalBehaviour>().crystalScript = this;

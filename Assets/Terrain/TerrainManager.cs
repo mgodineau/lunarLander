@@ -22,7 +22,11 @@ public class TerrainManager : MonoBehaviour
 
 
 
-    [SerializeField] private Transform lightReference;      //l'objet depuis lequel calculer l'orientation de la lumière (souvent le lander)
+    [SerializeField] private Transform _lightReference;      //l'objet depuis lequel calculer l'orientation de la lumière (souvent le lander)
+    public Transform LightReference {
+        get{ return _lightReference; }
+    }
+    
     [Range(0, 1)]
     [SerializeField] private float lightFadeLimit = 0.1f;
     public Light mainLight;
@@ -87,9 +91,9 @@ public class TerrainManager : MonoBehaviour
     private Vector3[] bgVertices;
 
     //rendu wireframe du terrain
-    private List<Vector3> frontLine;
-    private List<Vector3>[] backgroundXlines;
-    private List<Vector3>[] backgroundZlines;
+    private LineData frontLine;
+    private LineData[] backgroundXlines;
+    private LineData[] backgroundZlines;
 
     private void Awake()
     {
@@ -106,12 +110,19 @@ public class TerrainManager : MonoBehaviour
         //creation des objets du terrain
         terrainSideMesh = new Mesh();
         terrainMesh = new Mesh();
-
+        
+        frontLine = new LineData();
+        
         int terrainCount = 2;
         terrainColliders = new EdgeCollider2D[terrainCount];
-        backgroundXlines = new List<Vector3>[terrainCount];
-        backgroundZlines = new List<Vector3>[terrainCount];
-
+        backgroundXlines = new LineData[terrainCount];
+        backgroundZlines = new LineData[terrainCount];
+        for( int i=0; i<terrainCount; i++ ) {
+            backgroundXlines[i] = new LineData();
+            backgroundZlines[i] = new LineData();
+        }
+        
+        
         for (int i = 0; i < terrainCount; i++)
         {
             //création de l'objet sur le côté, et ajustement de sa position
@@ -134,12 +145,25 @@ public class TerrainManager : MonoBehaviour
         //création de la géométrie du terrain et du collider
         UpdateTerrainStructure();
     }
-
+    
+    
+    
+    private void Start() {
+        
+        foreach( LineData line in backgroundXlines ) {
+            WireframeRender.Instance.linesGeometry.Add(line);
+        }
+        foreach( LineData line in backgroundZlines ) {
+            WireframeRender.Instance.linesGeometry.Add(line);
+        }
+        WireframeRender.Instance.linesGeometry.Add(frontLine);
+    }
+    
 
     private void Update()
     {
         //MAJ de l'orientation de la lumière
-        Vector3 localLightDir = Quaternion.Inverse(Quaternion.LookRotation(_sliceNormal, ConvertXtoDir(lightReference.position.x))) * globalLightDir;
+        Vector3 localLightDir = Quaternion.Inverse(Quaternion.LookRotation(_sliceNormal, ConvertXtoDir(_lightReference.position.x))) * globalLightDir;
 
         mainLight.transform.rotation = Quaternion.LookRotation(localLightDir, Vector3.up);
         mainLight.intensity = Mathf.Clamp01(Mathf.Asin(-localLightDir.y) * 2.0f / Mathf.PI / lightFadeLimit);
@@ -286,28 +310,20 @@ public class TerrainManager : MonoBehaviour
                 samplePosition = Quaternion.AngleAxis(angleX, Vector3.Cross(samplePosition, _sliceNormal)) * samplePosition;
                 bgVertices[z * (sampleCount + 1) + x].y = _planet.GetHeight(samplePosition);
             }
-            // bgVertices[ (z+1)*sampleCount ].y = bgVertices[z * sampleCount].y;
         }
         terrainMesh.vertices = bgVertices;
         terrainMesh.RecalculateBounds();
         terrainMesh.RecalculateNormals();
-
-
-
+        
+        
+        
         //MAJ du rendu de la surface du terrain
-        WireframeRender.Instance.linePaths.Remove(frontLine);
-        frontLine = new List<Vector2>(points).ConvertAll(v2 => new Vector3(v2.x - _terrainWidth, v2.y, 0));
-        frontLine.AddRange(ShiftLine(frontLine, _terrainWidth));
-        WireframeRender.Instance.linePaths.Add(frontLine);
-
-
-        //MAJ du rendu wireframe de l'arrière plan
-        foreach (List<Vector3> line in backgroundXlines)
-        {
-            WireframeRender.Instance.linePaths.Remove(line);
-        }
-        backgroundXlines[0] = new List<Vector3>();
-        backgroundXlines[0].Add(bgVertices[0]);
+        frontLine.points = new List<Vector2>(points).ConvertAll(v2 => new Vector3(v2.x - _terrainWidth, v2.y, 0));
+        frontLine.points.AddRange(ShiftLine(frontLine.points, _terrainWidth));
+        
+        
+        backgroundXlines[0].points.Clear();
+        backgroundXlines[0].points.Add(bgVertices[0]);
         bool leftToRight = true;
         for (int z = 1; z <= bgSampleCount; z++)
         {
@@ -316,7 +332,7 @@ public class TerrainManager : MonoBehaviour
                 for (int x = 0; x <= sampleCount; x++)
                 {
                     int verticeId = z * (sampleCount + 1) + x;
-                    backgroundXlines[0].Add(bgVertices[verticeId]);
+                    backgroundXlines[0].points.Add(bgVertices[verticeId]);
                 }
             }
             else
@@ -324,24 +340,16 @@ public class TerrainManager : MonoBehaviour
                 for (int x = sampleCount; x >= 0; x--)
                 {
                     int verticeId = z * (sampleCount + 1) + x;
-                    backgroundXlines[0].Add(bgVertices[verticeId]);
+                    backgroundXlines[0].points.Add(bgVertices[verticeId]);
                 }
             }
             leftToRight = !leftToRight;
         }
-        backgroundXlines[1] = ShiftLine(backgroundXlines[0], -_terrainWidth);
-
-        foreach (List<Vector3> line in backgroundXlines)
-        {
-            WireframeRender.Instance.linePaths.Add(line);
-        }
-
-
-        foreach (List<Vector3> line in backgroundZlines)
-        {
-            WireframeRender.Instance.linePaths.Remove(line);
-        }
-        backgroundZlines[0] = new List<Vector3>();
+        backgroundXlines[1].points = ShiftLine(backgroundXlines[0].points, -_terrainWidth);
+        
+        
+        backgroundZlines[0].points.Clear();
+        
         bool frontToBack = true;
         for (int x = 0; x <= sampleCount; x++)
         {
@@ -350,7 +358,7 @@ public class TerrainManager : MonoBehaviour
                 for (int z = 0; z <= bgSampleCount; z++)
                 {
                     int verticeId = z * (sampleCount + 1) + x;
-                    backgroundZlines[0].Add(bgVertices[verticeId]);
+                    backgroundZlines[0].points.Add(bgVertices[verticeId]);
                 }
             }
             else
@@ -358,17 +366,13 @@ public class TerrainManager : MonoBehaviour
                 for (int z = bgSampleCount; z >= 0; z--)
                 {
                     int verticeId = z * (sampleCount + 1) + x;
-                    backgroundZlines[0].Add(bgVertices[verticeId]);
+                    backgroundZlines[0].points.Add(bgVertices[verticeId]);
                 }
             }
             frontToBack = !frontToBack;
         }
-        backgroundZlines[1] = ShiftLine(backgroundZlines[0], -_terrainWidth);
-
-        foreach (List<Vector3> line in backgroundZlines)
-        {
-            WireframeRender.Instance.linePaths.Add(line);
-        }
+        backgroundZlines[1].points = ShiftLine(backgroundZlines[0].points, -_terrainWidth);
+        
         //TODO factoriser ce bordel
 
 
@@ -430,7 +434,7 @@ public class TerrainManager : MonoBehaviour
 
                 if (!objToPrefInstance.ContainsKey(obj))
                 {
-                    objToPrefInstance.Add(obj, obj.createInstance(position, Quaternion.identity, transform));
+                    objToPrefInstance.Add(obj, obj.CreateInstance(position, Quaternion.identity, transform));
                 }
                 else
                 {

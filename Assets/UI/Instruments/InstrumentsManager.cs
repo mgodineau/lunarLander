@@ -20,8 +20,8 @@ public class InstrumentsManager : MonoBehaviour
     
     
     //zones d'atterrissage connues
-    private List<LandingZone> _knownLZ = new List<LandingZone>();
-    public List<LandingZone> KnownLZ {
+    private HashSet<LandingZone> _knownLZ = new HashSet<LandingZone>();
+    public HashSet<LandingZone> KnownLZ {
         get{ return _knownLZ; }
     }
     

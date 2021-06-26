@@ -14,7 +14,7 @@ public abstract class LocalizedObject
     private Vector3 _position;
     
     
-    public abstract GameObject createInstance( Vector3 position, Quaternion rotation, Transform parent );
+    public abstract GameObject CreateInstance( Vector3 position, Quaternion rotation, Transform parent );
     
     
     protected LocalizedObject() : this(Vector3.right) {}

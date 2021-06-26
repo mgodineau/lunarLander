@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -8,11 +9,43 @@ public class LZrefuel : LandingZone
     {
     }
 
+    public override SubMenu GetMenu( Lander lander )
+    {
+        List<MenuEntry> entries = new List<MenuEntry>();
+        
+        foreach( IinventoryItem item in lander.Inventory.Items ){
+            if( item is Crystal ) {
+                entries.Add( new RefuelMenuEntry(item, lander) );
+            }
+        }
+        
+        return new SubMenu( "refuel station", entries );
+    }
+    
 
-    protected override GameObject prefToInstantiate()
+    protected override GameObject PrefToInstantiate()
     {
         return TerrainManager.Instance.lzFuelPref;
     }
 
-    
+
+
+    private class RefuelMenuEntry : MenuEntry
+    {
+        private IinventoryItem item;
+        private Lander lander;
+        
+        public override void OnClick()
+        {
+            UImanager.Instance.lander.Inventory.RemoveItem(item);
+            UImanager.Instance.lander.Tank.Refuel( item.Mass );
+            lander.RefreshMainMenu();
+        }
+        
+        public RefuelMenuEntry( IinventoryItem item, Lander lander ) : base( "convert " + item.Name ) {
+            this.item = item;
+            this.lander = lander;
+        }
+    }
+
 }

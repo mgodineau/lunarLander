@@ -31,18 +31,26 @@ public class Lander : InputConsumer
     [SerializeField] private DestructionEffect destructionEffect;
     
     
-    private InventoryManager inventory = new InventoryManager( 4000 );
-    private FuelTank tank = new FuelTank(3000);
+    private InventoryManager _inventory = new InventoryManager( 4000 );
+    public InventoryManager Inventory {
+        get{ return _inventory; }
+    }
+    private FuelTank _tank = new FuelTank(3000);
+    public FuelTank Tank {
+        get{ return _tank; }
+    }
     
     private HashSet<CrystalBehaviour> pickableItem = new HashSet<CrystalBehaviour>();
     private List<MenuEntry> pickableItemEntries = new List<MenuEntry>();
+    
+    private LZbehaviour currentLZ = null;
     
     
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         
         EnableInputProcessing();
-        inventory.AddItem(tank);
+        _inventory.AddItem(_tank);
     }
     
     private void Start() {
@@ -54,13 +62,13 @@ public class Lander : InputConsumer
     private void FixedUpdate()
     {
         //MAJ de la masse du lander
-        rb.mass = inventory.Mass + minMass;
+        rb.mass = _inventory.Mass + minMass;
         
         
         //déplacement du lander
         if( ProcessInput() ) {
             //propulsiion du lander
-            bool thrustInput = Input.GetKey(KeyCode.Z) && tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
+            bool thrustInput = Input.GetKey(KeyCode.Z) && _tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
             if( thrustInput ) {
                 rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
             }
@@ -127,11 +135,17 @@ public class Lander : InputConsumer
         LZbehaviour lz = other.gameObject.GetComponent<LZbehaviour>();
         if( lz != null ) {
             UImanager.Instance.instrumentsManager.KnownLZ.Add(lz.LZscript);
-            return;
+            currentLZ = lz;
         }
         
-        
     }
+    
+    private void OnCollisionExit2D( Collision2D other ) {
+        if( currentLZ != null && currentLZ.gameObject == other.gameObject ) {
+            currentLZ = null;
+        }
+    }
+    
     
     
     private void OnTriggerEnter2D( Collider2D other ) {
@@ -172,28 +186,37 @@ public class Lander : InputConsumer
     
     
     public bool AddInstrument(Instrument instrument) {
-        return inventory.AddItem(instrument);
+        return _inventory.AddItem(instrument);
     }
     
     public bool RemoveInstrument( Instrument instrument ) {
-        return inventory.RemoveItem(instrument);
+        return _inventory.RemoveItem(instrument);
     }
     
     
     public float GetFuelQuantity() {
-        return tank.FuelQuantity;
+        return _tank.FuelQuantity;
     }
     
     public float GetFuelCapacity() {
-        return tank.Volume;
+        return _tank.Volume;
     }
     
+    
+    public void RefreshMainMenu() {
+        if( UImanager.Instance.menuManager.GetCurrentMenu() != null ) {
+            UImanager.Instance.menuManager.SetMenu( CreateMainMenu() );
+        }
+    }
     
     private SubMenu CreateMainMenu() {
         
         List<MenuEntry> menuContent = new List<MenuEntry>();
         menuContent.Add( CreatePickupMenu() );
-        menuContent.Add( inventory.GetMenu() );
+        menuContent.Add( _inventory.GetMenu() );
+        if( currentLZ != null ) {
+            menuContent.Add( currentLZ.LZscript.GetMenu(this) );
+        }
         
         return new SubMenu("menu", menuContent);
         
@@ -208,7 +231,7 @@ public class Lander : InputConsumer
     private void UpdatePickableItemEntries() {
         pickableItemEntries.Clear();
         foreach( CrystalBehaviour crystal in pickableItem ) {
-            pickableItemEntries.Add( new MenuEntryPickupItem(inventory, crystal) );
+            pickableItemEntries.Add( new MenuEntryPickupItem(_inventory, crystal) );
         }
         
     }

@@ -17,11 +17,13 @@ public class WireframeRender : MonoBehaviour
     
     [SerializeField] private Material linePostProcMaterial;
     
-    [SerializeField] private Material lineDrawMaterial;
+    [SerializeField] private Material lineGeometryDrawMaterial;
+    [SerializeField] private Material lineBackgroundDrawMaterial;
     [SerializeField] private Material uiLineDrawMaterial;
     
-    
-    public List<List<Vector3>> linePaths = new List<List<Vector3>>();
+
+    public List<LineData> linesGeometry = new List<LineData>();
+    public List<LineData> linesBackground = new List<LineData>();
     public HashSet<LineData> linesUI = new HashSet<LineData>();
     
     
@@ -58,13 +60,29 @@ public class WireframeRender : MonoBehaviour
         GL.Clear( false, true, Color.clear, 1 );
         
         
-        //rendu des lignes en 3d
-        lineDrawMaterial.SetPass(0);
-        foreach( List<Vector3> path in linePaths ) {
+        //rendu de l'arrière plan
+        lineBackgroundDrawMaterial.SetPass(0);
+        GL.PushMatrix();
+        GL.LoadOrtho();
+        
+        foreach( LineData line in linesBackground ) {
             GL.Begin( GL.LINE_STRIP );
-            GL.Color( Color.white );
+            GL.Color(line.LineColor);
             
-            foreach( Vector3 pos in path ) {
+            foreach( Vector3 pos in line.points ) {
+                GL.Vertex(pos);
+            }
+            GL.End();
+        }
+        GL.PopMatrix();
+        
+        //rendu des lignes en 3d
+        lineGeometryDrawMaterial.SetPass(0);
+        foreach( LineData line in linesGeometry ) {
+            GL.Begin( GL.LINE_STRIP );
+            GL.Color( line.LineColor );
+            
+            foreach( Vector3 pos in line.points ) {
                 GL.Vertex(pos);
             }
             

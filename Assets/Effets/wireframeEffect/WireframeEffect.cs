@@ -11,12 +11,14 @@ public class WireframeEffect : MonoBehaviour
     private static Dictionary<Mesh, List<List<Vector3>>> meshToLinesLocal = new Dictionary<Mesh, List<List<Vector3>>>();
     
     private List<List<Vector3>> linesLocal;
-    private List<List<Vector3>> linesGlobal;
+    private List<LineData> linesGlobal;
     
     [SerializeField]
     private bool removeDiagonals = true;
     [SerializeField]
     private float diagThreshold = 1.0f;
+    [SerializeField]
+    private Color color = Color.white;
     
     private MeshFilter meshFilter;
     
@@ -25,18 +27,27 @@ public class WireframeEffect : MonoBehaviour
         meshFilter = GetComponent<MeshFilter>(); 
         
         linesLocal = new List<List<Vector3>>();
-        linesGlobal = new List<List<Vector3>>();
+        linesGlobal = new List<LineData>();
         UpdateLinesFromMesh();
     }
 
 
     private void Start() {
-        WireframeRender.Instance.linePaths.AddRange(linesGlobal);
+        WireframeRender.Instance.linesGeometry.AddRange(linesGlobal);
     }
     
     private void OnDisable() {
-        foreach( List<Vector3> line in linesGlobal ) {
-        WireframeRender.Instance.linePaths.Remove(line);
+        foreach( LineData line in linesGlobal ) {
+            WireframeRender.Instance.linesGeometry.Remove(line);
+        }
+    }
+    
+    private void OnEnable() {
+        WireframeRender renderInstance = WireframeRender.Instance;
+        if( renderInstance != null ) {
+            foreach( LineData line in linesGlobal ) {
+                renderInstance.linesGeometry.Remove(line);
+            }
         }
     }
     
@@ -45,7 +56,7 @@ public class WireframeEffect : MonoBehaviour
         
         for( int i=0; i<linesLocal.Count; i++ ) {
             for( int j=0; j<linesLocal[i].Count; j++ ) {
-                linesGlobal[i][j] = transform.TransformPoint( linesLocal[i][j] );
+                linesGlobal[i].points[j] = transform.TransformPoint( linesLocal[i][j] );
             }
         }
         
@@ -56,16 +67,13 @@ public class WireframeEffect : MonoBehaviour
     /// </summary>
     public void UpdateLines() {
         UpdateLinesFromMesh();
-        WireframeRender.Instance.linePaths.AddRange(linesGlobal);
+        WireframeRender.Instance.linesGeometry.AddRange(linesGlobal);
     }
     
     private void UpdateLinesFromMesh() {
         
-        foreach( List<Vector3> path in linesGlobal ) {
-            WireframeRender.Instance.linePaths.Remove( path );
-        }
         linesLocal = ExtractLines( meshFilter.sharedMesh );
-        linesGlobal = linesLocal.ConvertAll( line => line.ConvertAll(vLocal => transform.TransformPoint(vLocal)) );
+        linesGlobal = linesLocal.ConvertAll( line => new LineData( line.ConvertAll(vLocal => transform.TransformPoint(vLocal)), color ) );
     }
     
     
