@@ -56,8 +56,7 @@ Shader "Unlit/drawWires"
             
             
             float getDepthBrightness( float z ) {
-                // return 1.0 - clamp(abs(z - _Zfocus) / _ZfocusDepth, 0.0, 1.0);
-                return 1.0f;
+                return 1.0 - clamp(abs(z - _Zfocus) / _ZfocusDepth, 0.0, 1.0);
             }
             
             

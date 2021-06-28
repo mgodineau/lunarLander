@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(AudioSource))]
 public class Lander : InputConsumer
 {
     
@@ -21,6 +22,7 @@ public class Lander : InputConsumer
     [SerializeField]
     private Animator thrustAnim;
     private Rigidbody2D rb;
+    private AudioSource audioSource;
     
     
     [SerializeField]
@@ -46,8 +48,16 @@ public class Lander : InputConsumer
     private LZbehaviour currentLZ = null;
     
     
+    [SerializeField]
+    private AudioClip clipThrust;
+    
+    private bool playSoundThrust = false;
+    
+    
+    
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
         
         EnableInputProcessing();
         _inventory.AddItem(_tank);
@@ -67,14 +77,15 @@ public class Lander : InputConsumer
         
         //déplacement du lander
         if( ProcessInput() ) {
-            //propulsiion du lander
+            //propulsion du lander
             bool thrustInput = Input.GetKey(KeyCode.Z) && _tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
             if( thrustInput ) {
                 rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
             }
             thrustAnim.SetBool("thrust", thrustInput);
-        
-        
+            playSoundThrust = thrustInput;
+            
+            
             // rotation du lander
             float torqueDir = 0;
             if( Input.GetKey(KeyCode.Q) ) {
@@ -105,6 +116,18 @@ public class Lander : InputConsumer
         
         if( rotationDir != 0 ) {
             TerrainManager.Instance.RotateAround( transform.position.x, rotationDir * worldRotationSpeed * Time.deltaTime );
+        }
+        
+        
+        
+        // gestion du son
+        if( playSoundThrust ) {
+            if( audioSource.clip != clipThrust || !audioSource.isPlaying ) {
+                audioSource.clip = clipThrust;
+                audioSource.Play();
+            }
+        } else if ( audioSource.isPlaying && audioSource.clip == clipThrust ) {
+            audioSource.Stop();
         }
         
         

@@ -235,7 +235,7 @@ public class TerrainManager : MonoBehaviour
             float realZ = _terrainWidth * z / sampleCount;
             for (int x = 0; x <= sampleCount; x++)
             {
-                bgVertices[z * (sampleCount + 1) + x] = new Vector3(_terrainWidth * x / sampleCount, 0, realZ);
+                bgVertices[GetBgVertexId(x, z)] = new Vector3(_terrainWidth * x / sampleCount, 0, realZ);
             }
         }
         //création des triangles
@@ -281,24 +281,16 @@ public class TerrainManager : MonoBehaviour
             //création des points du collider et du mesh
             float x = _terrainWidth * ratio;
             points[i].y = sample;
-            vertices[i * 2].y = sample;
+            vertices[GetVertexId(i)].y = sample;
 
         }
-
-
-
-        terrainSideMesh.vertices = vertices;
-        terrainSideMesh.RecalculateBounds();
-        foreach (EdgeCollider2D col in terrainColliders)
-        { //MAJ des colliders
-            col.points = points;
-        }
-
-
+        
+        
+        
         //création de la hauteur de l'arrière plan
         for (int x = 0; x <= sampleCount; x++)
         {
-            bgVertices[x].y = points[x].y;
+            bgVertices[GetBgVertexId(x, 0)].y = points[x].y;
         }
         for (int z = 1; z <= bgSampleCount; z++)
         {
@@ -308,12 +300,10 @@ public class TerrainManager : MonoBehaviour
                 float angleX = 360.0f * z / sampleCount;
                 Vector3 samplePosition = Quaternion.AngleAxis(angleZ, _sliceNormal) * _sliceOrigine;
                 samplePosition = Quaternion.AngleAxis(angleX, Vector3.Cross(samplePosition, _sliceNormal)) * samplePosition;
-                bgVertices[z * (sampleCount + 1) + x].y = _planet.GetHeight(samplePosition);
+                bgVertices[GetBgVertexId(x, z)].y = _planet.GetHeight(samplePosition);
             }
         }
-        terrainMesh.vertices = bgVertices;
-        terrainMesh.RecalculateBounds();
-        terrainMesh.RecalculateNormals();
+        
         
         
         
@@ -331,16 +321,14 @@ public class TerrainManager : MonoBehaviour
             {
                 for (int x = 0; x <= sampleCount; x++)
                 {
-                    int verticeId = z * (sampleCount + 1) + x;
-                    backgroundXlines[0].points.Add(bgVertices[verticeId]);
+                    backgroundXlines[0].points.Add(bgVertices[GetBgVertexId(x, z)]);
                 }
             }
             else
             {
                 for (int x = sampleCount; x >= 0; x--)
                 {
-                    int verticeId = z * (sampleCount + 1) + x;
-                    backgroundXlines[0].points.Add(bgVertices[verticeId]);
+                    backgroundXlines[0].points.Add(bgVertices[GetBgVertexId(x, z)]);
                 }
             }
             leftToRight = !leftToRight;
@@ -357,16 +345,14 @@ public class TerrainManager : MonoBehaviour
             {
                 for (int z = 0; z <= bgSampleCount; z++)
                 {
-                    int verticeId = z * (sampleCount + 1) + x;
-                    backgroundZlines[0].points.Add(bgVertices[verticeId]);
+                    backgroundZlines[0].points.Add(bgVertices[GetBgVertexId(x, z)]);
                 }
             }
             else
             {
                 for (int z = bgSampleCount; z >= 0; z--)
                 {
-                    int verticeId = z * (sampleCount + 1) + x;
-                    backgroundZlines[0].points.Add(bgVertices[verticeId]);
+                    backgroundZlines[0].points.Add(bgVertices[GetBgVertexId(x, z)]);
                 }
             }
             frontToBack = !frontToBack;
@@ -382,11 +368,32 @@ public class TerrainManager : MonoBehaviour
         //MAJ des zones d'atterrissages et des cristaux
         UpdateObjetsDisplay(_planet.landingZones, true);
         UpdateObjetsDisplay(_planet.crystals, false);
-
+        
+        
+        
+        //MAJ des vertices du premier plan
+        terrainSideMesh.vertices = vertices;
+        terrainSideMesh.RecalculateBounds();
+        
+        foreach (EdgeCollider2D col in terrainColliders)
+        { //MAJ des colliders
+            col.points = points;
+        }
+        
+        //MAJ des vertices de l'arrière plan
+        terrainMesh.vertices = bgVertices;
+        terrainMesh.RecalculateBounds();
+        terrainMesh.RecalculateNormals();
+        
     }
 
 
-
+    /// <summary>
+    /// Met à jour l'affichage d'une collection d'objets sur le terrain. Si l'objet n'est pas présent, il est créé. Sinon, sa position est mise à jour.
+    /// </summary>
+    /// <param name="objects"> une collection d'objets à afficher </param>
+    /// <param name="flattenTerrain">  détermine si le terrain doit être applatit autour de l'objet</param>
+    /// <remarks> Les listes vertices et bgVertices peuvent être modifées si flattenTerrain = true </remarks>
     private void UpdateObjetsDisplay(IEnumerable<LocalizedObject> objects, bool flattenTerrain)
     {
         float objCosThreshold = objSideThreshold / _terrainWidth;
@@ -403,25 +410,27 @@ public class TerrainManager : MonoBehaviour
                 {
                     angle += 360.0f;
                 }
-
-                int positionId = (int)(sampleCount * angle / 360.0f);
+                
+                int xId = (int)(sampleCount * angle / 360.0f);
 
                 float localRatio = flattenTerrain ? 0.5f : (angle * sampleCount / 360.0f) % 1.0f;
 
-                float y = Mathf.Lerp(points[positionId].y, points[positionId + 1].y, localRatio);
+                float y = Mathf.Lerp(points[xId].y, points[xId + 1].y, localRatio);
 
                 if (flattenTerrain)
                 {
-                    points[positionId].y = y;
-                    points[positionId + 1].y = y;
-                    vertices[positionId * 2].y = y;
-                    vertices[(positionId + 1) * 2].y = y;
+                    for( int offset = 0; offset<2; offset++ ) {
+                        // SetVerticeHeight(xId+offset, 0, 0);
+                        SetVerticeHeight(xId+offset, 0, y);
+                        // SetVerticeHeight(xId+offset, 1, 15);
+                        SetVerticeHeight(xId+offset, 1, (bgVertices[GetBgVertexId(xId, 1)].y + y) / 2);
+                    }
                 }
 
 
 
 
-                float x = points[positionId].x;
+                float x = points[xId].x;
                 x += _terrainWidth / sampleCount * localRatio;
 
                 if (x > TerrainWidth * 0.5f)
@@ -429,8 +438,7 @@ public class TerrainManager : MonoBehaviour
                     x -= TerrainWidth;
                 }
 
-                float z = _terrainWidth / (sampleCount * 2);
-                Vector3 position = new Vector3(x, y, z);
+                Vector3 position = new Vector3(x, y, 0);
 
                 if (!objToPrefInstance.ContainsKey(obj))
                 {
@@ -457,7 +465,12 @@ public class TerrainManager : MonoBehaviour
 
 
 
-
+    /// <summary>
+    /// copie une liste de <c>Vector3</c> en effectuant un décalage de <c>Xoffset</c> sur les coordonnées x
+    /// </summary>
+    /// <param name="line"> une liste de <c>Vector3</c> </param>
+    /// <param name="Xoffset"> le décalage en x </param>
+    /// <returns> une copie de la liste ou les coordonnées ont étés décalées </returns>
     private List<Vector3> ShiftLine(List<Vector3> line, float Xoffset)
     {
         return line.ConvertAll(pos => new Vector3(pos.x + Xoffset, pos.y, pos.z));
@@ -488,7 +501,11 @@ public class TerrainManager : MonoBehaviour
         UpdateTerrain();
     }
 
-
+    /// <summary>
+    /// détermine si une zone d'atterrissage spécifiée est visible
+    /// </summary>
+    /// <param name="lz"> une zone d'atterrissage </param>
+    /// <returns>si une zone d'atterrissage spécifiée est visible</returns>
     public bool IsLZvisible(LandingZone lz)
     {
         return objToPrefInstance.ContainsKey(lz);
@@ -500,8 +517,13 @@ public class TerrainManager : MonoBehaviour
         return (Quaternion.AngleAxis(360.0f * x / _terrainWidth, _sliceNormal) * _sliceOrigine).normalized;
     }
 
-
-    public float GetHeightOf(Vector3 pos)
+    /// <summary>
+    /// renvoie la hauteur du terrain pour la position spécifiée, en effectuant une interpolation
+    /// </summary>
+    /// <param name="pos"> la position d'un objet dans la scène </param>
+    /// <remark> pos doit être sur le terrain </remark>
+    /// <returns> la hauteur du terrain pour la position spécifiée </returns>
+    public float GetHeightAt(Vector3 pos)
     {
 
         if (pos.x < 0)
@@ -523,23 +545,85 @@ public class TerrainManager : MonoBehaviour
         float zRatio = (pos.z / sampleSize) - idZ;
         
         return Mathf.Lerp( heightFront, heightBack, zRatio );
-        
-        // float heightXmin = bgVertices[idX + idZ * (sampleCount + 1)].y;
-        // float heightMax = bgVertices[(idX + 1) + idZ * (sampleCount + 1)].y;
-
-
-        // return Mathf.Lerp(heightXmin, heightMax, xRatio);
     }
-
-
+    
+    /// <summary>
+    /// calcul et renvoie une interpolation de la hauteur entre les vertices aux positions (idX, idZ) et (idX+1, idZ)
+    /// </summary>
+    /// <param name="idX">l'indice x de l'espace ou faire l'interpolation</param>
+    /// <param name="idZ">l'indice z des vertices de l'interpolation</param>
+    /// <param name="ratio"> le ratio utilisé pour faire l'interpolation </param>
+    /// <remark> idX et idZ doivent être des coordonnées valide </remark>
+    /// <returns> l'interpolation de la hauteur désirée </returns>
     private float HeightXLerp(int idX, int idZ, float ratio)
     {
 
         return Mathf.Lerp(
-            bgVertices[idX + idZ * (sampleCount + 1)].y,
-            bgVertices[(idX + 1) + idZ * (sampleCount + 1)].y,
+            bgVertices[GetBgVertexId(idX, idZ)].y,
+            bgVertices[GetBgVertexId(idX+1, idZ)].y,
             ratio);
     }
+    
+    
+    /// <summary>
+    /// Calcul et renvoie l'indice d'une vertex dans le tableau vetices
+    /// </summary>
+    /// <param name="x"> l'indice x de la vertex </param>
+    /// <param name="down"> détermine si il s'agit de la vertice de la surface, ou celle du bas </param>
+    /// <remark> x doit être une coordonnée valide </remark>
+    /// <returns> l'indice d'une vertex dans le tableau vetices </returns>
+    private int GetVertexId( int x, bool down = false) {
+        return x*2 + (down ? 1 : 0);
+    }
+    
+    /// <summary>
+    /// Calcul et renvoie l'indice d'une vertice dans le tableau bgVertices
+    /// </summary>
+    /// <param name="x"> la coordonnée x de la vertice dans la grille des vertices </param>
+    /// <param name="z"> la coordonnée z de la vertice </param>
+    /// <remark> les coordonnées x et z doient être valides </remark>
+    /// <returns>Calcul et renvoie l'indice d'une vertice dans le tableau bgVertices</returns>
+    private int GetBgVertexId( int x, int z ) {
+        return z * (sampleCount + 1) + x;
+    }
+    
+    
 
+    private void SetVerticeHeight( int x, int z, float height ) {
+        
+        //MAJ des vertices de l'arière plan
+        int bgVertexId = GetBgVertexId(x, z);
+        bgVertices[bgVertexId].y = height;
+        
+        
+        //MAJ des lignes de l'arrière plan
+        int zLineVertexId = (bgSampleCount+1) * x + (x%2==0 ? z : bgSampleCount-z);
+        Vector3 bgVertex = bgVertices[bgVertexId];
+        
+        backgroundZlines[0].points[zLineVertexId] = bgVertex;
+        bgVertex.x -= TerrainWidth;
+        backgroundZlines[1].points[zLineVertexId] = bgVertex;
+         
+        
+        //MAJ du premier plan si nécessaire
+        if( z == 0 ) {
+            points[x].y = height;
+            
+            int vertexId = GetVertexId(x);
+            Vector3 vertex = vertices[GetVertexId(x)];
+            vertex.y = height;
+            vertices[GetVertexId(x)] = vertex;
+            
+            frontLine.points[x + points.Length] = vertex;
+            vertex.x = frontLine.points[x].x;
+            frontLine.points[x] = vertex;
+        } else {    
+            int xLineVertexId = sampleCount * (z-1) + ( z%2==1 ? x+1 : sampleCount-x);
+            backgroundXlines[1].points[xLineVertexId] = bgVertex;
+            bgVertex.x += TerrainWidth;
+            backgroundXlines[0].points[xLineVertexId] = bgVertex;
+        }
+        
+    }
 
 }

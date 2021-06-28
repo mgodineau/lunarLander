@@ -6,12 +6,12 @@ using UnityEngine;
 public abstract class LocalizedObject
 {
     
+    private Vector3 _position;
     public Vector3 Position
     {
         get { return _position; }
         set { _position = value.normalized; }
     }
-    private Vector3 _position;
     
     
     public abstract GameObject CreateInstance( Vector3 position, Quaternion rotation, Transform parent );

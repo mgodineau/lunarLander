@@ -29,11 +29,12 @@ public class LZbehaviour : MonoBehaviour
             
             Vector3 pos = transform.position;
             pos += Quaternion.AngleAxis( Random.Range(-180, 0), Vector3.up ) * (Vector3.right * installationsDist);
-            pos.y = TerrainManager.Instance.GetHeightOf(pos);
+            pos.y = TerrainManager.Instance.GetHeightAt(pos);
             
             Quaternion rot = Quaternion.AngleAxis( Random.Range(0, 360), Vector3.up);
             
             GameObject instance = GameObject.Instantiate(pref, pos, rot, transform);
+            instance.transform.GetChild(0).localScale = new Vector3(1, 10, 1);
             installationsInstances.Add(instance);
             
         }
