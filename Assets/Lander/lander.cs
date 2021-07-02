@@ -241,8 +241,7 @@ public class Lander : InputConsumer
             menuContent.Add( currentLZ.LZscript.GetMenu(this) );
         }
         
-        return new SubMenu("menu", menuContent);
-        
+        return new SubMenu("menu", menuContent);        
     }
     
     

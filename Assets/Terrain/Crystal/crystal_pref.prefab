@@ -90,6 +90,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: crystal_pref
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 60cfb90c26ac1a1448fabf9c115d0503, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60cfb90c26ac1a1448fabf9c115d0503, type: 3}
 --- !u!1 &4948769186678932839 stripped

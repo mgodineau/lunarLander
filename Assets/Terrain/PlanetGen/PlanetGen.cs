@@ -47,19 +47,29 @@ public class PlanetGen : MonoBehaviour
     }
     
     
-    public float getMaxHeight() {
-        float maxHeight = 0;
+    public float GetMaxHeight() {
+        float maxHeight = -Mathf.Infinity;
         foreach( TerrainLayer layer in layers ) {
-            maxHeight += layer.MaxHeight;
+            maxHeight = Mathf.Max(layer.MaxHeight);
         }
-        return maxHeight;
+        return maxHeight * 1.5f; //TODO trouver une meilleure méthode
     }
+    
+    
+    internal float GetMinHeight()
+    {
+        float minHeight = Mathf.Infinity;
+        foreach( TerrainLayer layer in layers ) {
+            minHeight = Mathf.Min(layer.MinHeight);
+        }
+        return minHeight;
+    }
+    
     
     private void OnValidate() {
         foreach( TerrainLayer layer in layers ) {
             layer.OnValidate();
         }
     }
-    
-    
+
 }

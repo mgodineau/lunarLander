@@ -198,14 +198,15 @@ public class Map : Instrument
     /// </summary>
     private void UpdateHeightmap() {
         
-        float maxHeight = TerrainManager.Instance.Planet.getMaxHeight();
+        float maxHeight = TerrainManager.Instance.Planet.GetMaxHeight();
+        float minHeight = TerrainManager.Instance.Planet.GetMinHeight();
         
         Color[] colors = new Color[textureResolution * textureResolution * 2];
         for( int u=0; u<textureResolution*2; u++ ) {
             for( int v=0; v<textureResolution; v++ ) {
                 Vector2 localPos = new Vector2( (float)u / (textureResolution*2), (float)v / textureResolution );
                 float height = TerrainManager.Instance.Planet.GetHeight( localPosToDir(localPos) );
-                float brightness = height / maxHeight;
+                float brightness = (height - minHeight) / (maxHeight - minHeight);
                 colors[ v * textureResolution*2 + u ] = new Color(brightness, brightness, brightness, 1 );
             }
         }

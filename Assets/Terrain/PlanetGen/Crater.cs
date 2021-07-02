@@ -14,7 +14,11 @@ public class Crater : TerrainLayer
     public override float MaxHeight {
         get{ return height * 0.5f; }
     }
-
+    
+    public override float MinHeight {
+        get{ return -height * 0.5f; }
+    }
+    
     public override float GetHeight(Vector3 position)
     {
         float localAngle = Vector3.Angle( position, center ) * Mathf.Deg2Rad;

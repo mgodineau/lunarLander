@@ -12,6 +12,10 @@ public abstract class TerrainLayer {
         get;
     }
     
+    public abstract float MinHeight {
+        get;
+    }
+    
     public abstract void OnValidate();
     
     

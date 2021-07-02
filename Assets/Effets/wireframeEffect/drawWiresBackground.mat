@@ -79,7 +79,7 @@ Material:
     - _UVSec: 0
     - _Width: 10
     - _ZWrite: 1
-    - _Zfocus: 1
+    - _Zfocus: 0
     - _ZfocusDepth: 1
     - _Zoffset: 0
     m_Colors:

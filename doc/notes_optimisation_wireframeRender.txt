@@ -1,0 +1,18 @@
+WireframeRender :
+
+Mesures 1:
+1.8ms de base
+0.08ms sans aucune lignes
+1.72ms sans l'arrière plan
+0.5ms sans les lignes des meshs
+1.84ms sans les lignes du HUD
+
+
+1.2ms sans les lignes du lander et des objets (mais tjs du terrain)
+1.37ms sans les lignes du terrain
+
+1.86 en optimisant la création des lignes pour chaque mesh
+
+Mesures 2:
+2.14ms de base
+1.95ms avec du culling sur les objets

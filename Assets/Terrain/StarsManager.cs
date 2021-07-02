@@ -13,6 +13,9 @@ public class StarsManager : MonoBehaviour
     [SerializeField] private float starDepth = 100;
     [SerializeField] private float fov = 90.0f;
     
+    [SerializeField] private SunManager sun;
+    
+    
     private LineData[] starsDisplay;
     
     private Vector3[] stars;
@@ -52,43 +55,44 @@ public class StarsManager : MonoBehaviour
     private void UpdateStars() {
         
         Vector3 pixelOffset = Vector3.up / Screen.height;
+        float verticalFOV = fov * Screen.height / Screen.width;
         
+        TerrainManager terrain = TerrainManager.Instance;
+        Quaternion globalToLocalRot = Quaternion.Inverse(
+                Quaternion.LookRotation( 
+                    -terrain.SliceNormal, 
+                    -terrain.ConvertXtoDir(terrain.LightReference.position.x)
+                )
+            );
+        
+        // affichage des étoiles
         for( int i=0; i<starCount; i++ ) {
             
-            Vector3 screenPos = GetScreenPos( stars[i] );
+            Vector3 localStarDir = globalToLocalRot * stars[i];
+            Vector3 screenPos = localStarDir.z >= 0 ? 
+                new Vector3( 
+                    ConvertAngleToScreenPos( Mathf.Asin(localStarDir.x), fov ),
+                    ConvertAngleToScreenPos( Mathf.Asin(localStarDir.y), verticalFOV ),
+                    starDepth ) :
+                Vector3.zero;
+            
             
             starsDisplay[i].points[0] = screenPos;
             starsDisplay[i].points[1] = screenPos + pixelOffset;
         }
         
-    }
-    
-    public Vector3 GetScreenPos( Vector3 dir ) {
         
-        TerrainManager terrain = TerrainManager.Instance;
+        //affichage du soleil
+        Vector3 sunLocalDir = globalToLocalRot * TerrainManager.Instance.mainLight.transform.rotation * Vector3.forward;
+        sun.ScreenPos = new Vector2( 
+            ConvertAngleToScreenPos( Mathf.Asin(sunLocalDir.x), fov ),
+            ConvertAngleToScreenPos( Mathf.Asin(sunLocalDir.y), verticalFOV ));
         
-        Vector3 localStarDir = Quaternion.Inverse(
-                Quaternion.LookRotation( 
-                    -terrain.SliceNormal, 
-                    -terrain.ConvertXtoDir(terrain.LightReference.position.x)
-                )
-            ) * dir;
-        
-        
-        
-        return localStarDir.z >= 0 ? 
-            new Vector3( 
-                ConvertAngleToScreenPos( Mathf.Asin(localStarDir.x), true ),
-                ConvertAngleToScreenPos( Mathf.Asin(localStarDir.y), false ),
-                starDepth ) :
-            Vector3.zero;
-            ;
     }
     
     
-    private float ConvertAngleToScreenPos( float angle, bool x ) {
+    private float ConvertAngleToScreenPos( float angle, float currentFOV ) {
         
-        float currentFOV = x ? fov : fov * Screen.height / Screen.width;
         return (angle / (currentFOV*0.5f*Mathf.Deg2Rad)) * 0.5f + 0.5f;
     }
     

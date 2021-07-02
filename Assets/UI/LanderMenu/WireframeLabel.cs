@@ -73,9 +73,17 @@ public class WireframeLabel : UIwireframeElement
         textGeometry.Clear();
 
         float ratioInv = 1.0f / (RectRatio() * Screen.width / Screen.height);
-        float horizontalSize = VerticalSize * ratioInv;
-
-        float offsetY = (1.0f - VerticalSize) * 0.5f;
+        
+        float realVerticalSize = (2.0f - ratioInv*(_text.Length+1)) / (ratioInv * (_text.Length-1)); //formule magique
+        realVerticalSize = Mathf.Min( VerticalSize, realVerticalSize );
+        
+        // float realVerticalSize = VerticalSize;
+        float horizontalSize = realVerticalSize * ratioInv;
+        
+        
+        
+        
+        float offsetY = (1.0f - realVerticalSize) * 0.5f;
         float offsetX = offsetY * ratioInv;
         
         float startX = 0;
@@ -95,7 +103,7 @@ public class WireframeLabel : UIwireframeElement
             for (int j = 0; j < rawPath.Length; j += 2)
             {
                 float x = (horizontalSize) * (rawPath[j] + i) + ((1 + i) * offsetX) + startX;
-                float y = rawPath[j + 1] * VerticalSize + offsetY;
+                float y = rawPath[j + 1] * realVerticalSize + offsetY;
                 coords.Add(LocalToGlobal(new Vector3(x, y, 0)));
             }
 

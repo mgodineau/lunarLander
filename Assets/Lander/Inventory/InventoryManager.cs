@@ -43,7 +43,7 @@ public class InventoryManager : IinventoryItem
     }
     
     public string Name {
-        get{ return "Inventory"; }
+        get{ return "Inventory (" + Volume + "/" + MaxVolume + ")"; }
     }
     
     private List<MenuEntry> publicEntries = new List<MenuEntry>();
@@ -97,13 +97,6 @@ public class InventoryManager : IinventoryItem
 
     public SubMenu GetMenu()
     {
-        // publicEntries.Clear();
-        
-        // foreach( IinventoryItem item in Items ) {
-        //     // content.Add( new MenuEntryEmpty(item.Name) );
-        //     publicEntries.Add( new MenuEntryDropItem(this, item) );
-        // }
-        
         return new SubMenu( Name, publicEntries);
     }
 }

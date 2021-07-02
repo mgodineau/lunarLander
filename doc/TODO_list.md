@@ -1,45 +1,48 @@
 # cosmétique :
-- rotation thrust
+## visuel :
+- rotation thrust visibles
 - soleil visible dans le fond
 - écran titre
-- ajouter des options de mise en forme des boutons
+- ajouter les minuscules dans la police wireframe
 
-
-# sons : 
+## sons : 
 - rotation thrust
 - destruction
 - click des menus
 
-	
 # gameplay :
-- ajustement des constantes 		<= **IMPORTANT**
-- ajuster les textes du menu		<= **IMPORTANT**
+- ajustement des constantes
+- drop les objets
 - station de trade
 - station radar
-
+- merge crystals in inventory
 
 # instruments :
 - attitude indicator
 - H/V speedometer
 - basic fuel gauge
+- SAS
 
-
-
+# bugs
+- gerer l'apparition les objets dans le TerrainManager
+- optimiser le rendu wireframe du terrain (frustrum culling)
 
 # fini:
-ajouter des cratères dans la génération du terrain
-ajouter de la musique + des sons
-LZ rafinerie + interaction avec LZ
-système d'interface basique
-p'tites étoiles
-effet de rémanence
-position des cristaux
-fuel gauge
-texture du lander
-gestion de la masse
-ramasser les cristaux
-gestion du fuel
-ajouter les cristaux
-destruction si atterrissage trop violents
-transition douce avec la lumière
-fix le pb de lignes à travers le sol
+- ajuster les textes du menu
+- ajouter les chiffres dans la police de caractère
+- ajouter des cratères dans la génération du terrain
+- ajouter de la musique + des sons
+- LZ rafinerie + interaction avec LZ
+- système d'interface basique
+- p'tites étoiles
+- effet de rémanence
+- position des cristaux
+- fuel gauge
+- texture du lander
+- gestion de la masse
+- ramasser les cristaux
+- gestion du fuel
+- ajouter les cristaux
+- destruction si atterrissage trop violents
+- transition douce avec la lumière
+- fix le pb de lignes à travers le sol

@@ -16,7 +16,13 @@ public class BetterMesh
     {
         get { return _triangles; }
     }
-
+    
+    private List<Edge> _edges;
+    public List<Edge> Edges {
+        get{return _edges;}
+    }
+    
+    
     private Mesh _linkedMesh;
     public Mesh LinkedMesh
     {
@@ -24,7 +30,8 @@ public class BetterMesh
         set
         {
             _linkedMesh = value;
-
+            
+            //initialisation des vertices
             _vertices = new List<Vertex>();
             if (_linkedMesh.normals.Length < _linkedMesh.vertexCount)
             {
@@ -47,12 +54,23 @@ public class BetterMesh
                     _vertices.Add(new Vertex(_linkedMesh.vertices[i], _linkedMesh.normals[i], _linkedMesh.uv[i]));
                 }
             }
-
+            
+            //initialisation des triangles
             _triangles = new List<Triangle>();
             int[] meshTriangles = _linkedMesh.triangles;
             for (int i = 0; i < meshTriangles.Length; i += 3)
             {
                 _triangles.Add(new Triangle(_vertices[meshTriangles[i]], _vertices[meshTriangles[i + 1]], _vertices[meshTriangles[i + 2]]));
+            }
+            
+            //initialisation des edges
+            _edges = new List<Edge>();
+            foreach( Triangle triangle in _triangles ) {
+                foreach( Edge edge in triangle.GetEdges() ) {
+                    if( !_edges.Contains(edge) ) {
+                        _edges.Add(edge);
+                    }
+                }
             }
         }
     }
@@ -76,20 +94,33 @@ public class BetterMesh
         return output.ToArray();
     }
 
-    public void RemoveVertex(Vertex vertice)
+    public void RemoveVertex(Vertex vertex)
     {
-        if (!_vertices.Contains(vertice))
+        if (!_vertices.Contains(vertex))
         {
             return;
         }
 
-        _triangles.RemoveAll(triangle => new List<Vertex>(triangle.Vertices).Contains(vertice));
-        _vertices.Remove(vertice);
+        _triangles.RemoveAll(triangle => new List<Vertex>(triangle.Vertices).Contains(vertex));
+        _edges.RemoveAll( edge => edge.ContainsVertex(vertex) );
+        _vertices.Remove(vertex);
     }
 
     public void RemoveTriangle(Triangle triangle)
     {
         _triangles.Remove(triangle);
+        foreach( Edge edge in triangle.GetEdges() ) {
+            bool containsEdge = false;
+            foreach( Triangle currentTri in _triangles ) {
+                if( currentTri.ContainsEdge(edge) ) {
+                    containsEdge = true;
+                    break;
+                }
+            }
+            if(!containsEdge) {
+                _edges.Remove(edge);
+            }
+        }
     }
 
 
@@ -117,6 +148,11 @@ public class BetterMesh
             foreach (Vertex vertice in triangle.Vertices)
             {
                 AddVertex(vertice);
+            }
+            foreach( Edge edge in triangle.GetEdges() ) {
+                if( !_edges.Contains(edge) ) {
+                    _edges.Add(edge);
+                }
             }
         }
     }
@@ -184,7 +220,7 @@ public class Vertex
     public Vector2 uv;
 
 
-    private static Vector2 GetLocalUVCoord(Edge edge1, Edge edge2, Vector3 position)
+    public static Vector2 GetLocalUVCoord(Edge edge1, Edge edge2, Vector3 position)
     {
         Vertex sharedVertex = GetVertexInCommon(edge1, edge2);
         Vector3 vect1 = edge1.vertex_1.position - edge1.vertex_0.position;
@@ -245,7 +281,7 @@ public class Vertex
         return coords;
     }
 
-    private static Vertex GetVertexInCommon(Edge edge1, Edge edge2)
+    public static Vertex GetVertexInCommon(Edge edge1, Edge edge2)
     {
         if (edge1.ContainsVertex(edge2.vertex_0))
         {
@@ -387,7 +423,19 @@ public class Triangle
         }
         return normal;
     }
-
+    
+    
+    public bool ContainsVertex( Vertex vertex ) {
+        return _vertices[0] == vertex 
+            || _vertices[1] == vertex 
+            || _vertices[2] == vertex;
+    }
+    
+    public bool ContainsEdge( Edge edge ) {
+        return ContainsVertex(edge.vertex_0) && ContainsVertex(edge.vertex_1);
+    }
+    
+    
     public Triangle(Vertex vertex_0, Vertex vertex_1, Vertex vertex_2)
     {
         _vertices = new Vertex[3] { vertex_0, vertex_1, vertex_2 };

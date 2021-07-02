@@ -27,16 +27,15 @@ public class RandomLayer : TerrainLayer {
     }
     public override float MaxHeight {
         get{ return _maxHeight; }
-        // set{ 
-        //     _maxHeight = Mathf.Abs(value);
-        //     maxHeightHalf = _maxHeight / 2;
-        // }
+    }
+    
+    public override float MinHeight {
+        get{ return 0; }
     }
     
     
     public override void OnValidate() {
         Scale = _scale;
-        // MaxHeight = _maxHeight;
     }
     
     

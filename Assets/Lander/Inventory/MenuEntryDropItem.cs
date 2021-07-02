@@ -17,7 +17,7 @@ class MenuEntryDropItem : MenuEntry
     }
     
     
-    public MenuEntryDropItem( InventoryManager inventory, IinventoryItem item ) : base(item.Name){
+    public MenuEntryDropItem( InventoryManager inventory, IinventoryItem item ) : base(item.Name + "(" + item.Volume + ")"){
         this.inventory = inventory;
         this._item = item;
     }

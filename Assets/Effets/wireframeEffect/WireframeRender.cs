@@ -22,8 +22,8 @@ public class WireframeRender : MonoBehaviour
     [SerializeField] private Material uiLineDrawMaterial;
     
 
-    public List<LineData> linesGeometry = new List<LineData>();
-    public List<LineData> linesBackground = new List<LineData>();
+    public HashSet<LineData> linesGeometry = new HashSet<LineData>();
+    public HashSet<LineData> linesBackground = new HashSet<LineData>();
     public HashSet<LineData> linesUI = new HashSet<LineData>();
     
     
@@ -76,6 +76,8 @@ public class WireframeRender : MonoBehaviour
         }
         GL.PopMatrix();
         
+        
+        //TODO optimiser les perfs
         //rendu des lignes en 3d
         lineGeometryDrawMaterial.SetPass(0);
         foreach( LineData line in linesGeometry ) {
@@ -88,6 +90,7 @@ public class WireframeRender : MonoBehaviour
             
             GL.End();
         }
+        
         
         //rendu des lignes du HUD
         uiLineDrawMaterial.SetPass(0);
@@ -109,7 +112,6 @@ public class WireframeRender : MonoBehaviour
         }
         GL.PopMatrix();
         
-        // linePostProcMaterial.SetFloat("truc", 0.5f);
         
         RenderTexture afterImageBuffer = RenderTexture.GetTemporary( afterImageRT.descriptor );
         
@@ -157,7 +159,6 @@ public class WireframeRender : MonoBehaviour
     {
         
         Graphics.SetRenderTarget(rb, depth);
-        // GL.Clear(false, true, Color.clear, 1);
         GL.PushMatrix();
             GL.LoadOrtho();
             mat.SetPass(0);
