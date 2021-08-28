@@ -163,7 +163,7 @@ public class TerrainManager : MonoBehaviour
     private void Update()
     {
         //MAJ de l'orientation de la lumière
-        Vector3 localLightDir = Quaternion.Inverse(Quaternion.LookRotation(_sliceNormal, ConvertXtoDir(_lightReference.position.x))) * globalLightDir;
+        Vector3 localLightDir = Quaternion.Inverse(Quaternion.LookRotation(-_sliceNormal, -ConvertXtoDir(_lightReference.position.x))) * globalLightDir;
 
         mainLight.transform.rotation = Quaternion.LookRotation(localLightDir, Vector3.up);
         mainLight.intensity = Mathf.Clamp01(Mathf.Asin(-localLightDir.y) * 2.0f / Mathf.PI / lightFadeLimit);
@@ -513,7 +513,10 @@ public class TerrainManager : MonoBehaviour
 
     public Vector3 ConvertXtoDir(float x)
     {
-        x = x % _terrainWidth;
+        // x = x % _terrainWidth;
+        while( x <= 0 ) {
+            x += _terrainWidth;
+        }
         return (Quaternion.AngleAxis(360.0f * x / _terrainWidth, _sliceNormal) * _sliceOrigine).normalized;
     }
 

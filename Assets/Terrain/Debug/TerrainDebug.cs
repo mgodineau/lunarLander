@@ -70,7 +70,7 @@ public class TerrainDebug : MonoBehaviour
     }
     
     public void UpdateLight() {
-        debugLight.rotation = Quaternion.LookRotation( terrainManager.globalLightDir, Vector3.up );
+        debugLight.rotation = Quaternion.LookRotation( -terrainManager.globalLightDir, Vector3.up );
     }
     
     public void UpdateLZs() {

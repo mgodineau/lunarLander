@@ -34,6 +34,7 @@ public class SunManager : MonoBehaviour
         VerticalScreenSize = rect.anchorMax.y - rect.anchorMin.y;
         
         UpdateDisplay();
+        // ScreenPos = new Vector2(0.2f, 0.7f);
     }
     
     

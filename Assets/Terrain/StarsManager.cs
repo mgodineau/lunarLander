@@ -11,9 +11,12 @@ public class StarsManager : MonoBehaviour
     
     [SerializeField] private uint starCount = 1000;
     [SerializeField] private float starDepth = 100;
-    [SerializeField] private float fov = 90.0f;
+    // [SerializeField] private float fov = 90.0f;
+    [SerializeField] private float maxCamSize = 150;
+    [SerializeField] private float maxFOV = 120;
     
-    [SerializeField] private SunManager sun;
+    // [SerializeField] private SunManager sun;
+    [SerializeField] private ScreenSpaceSprite sun;
     
     
     private LineData[] starsDisplay;
@@ -55,6 +58,7 @@ public class StarsManager : MonoBehaviour
     private void UpdateStars() {
         
         Vector3 pixelOffset = Vector3.up / Screen.height;
+        float fov = Camera.main.orthographicSize * maxFOV / maxCamSize;
         float verticalFOV = fov * Screen.height / Screen.width;
         
         TerrainManager terrain = TerrainManager.Instance;
@@ -83,11 +87,15 @@ public class StarsManager : MonoBehaviour
         
         
         //affichage du soleil
-        Vector3 sunLocalDir = globalToLocalRot * TerrainManager.Instance.mainLight.transform.rotation * Vector3.forward;
-        sun.ScreenPos = new Vector2( 
-            ConvertAngleToScreenPos( Mathf.Asin(sunLocalDir.x), fov ),
-            ConvertAngleToScreenPos( Mathf.Asin(sunLocalDir.y), verticalFOV ));
+        Vector3 sunLocalDir = globalToLocalRot * -TerrainManager.Instance.globalLightDir;
+        // sun.ScreenPos = new Vector2( 
+        //     ConvertAngleToScreenPos( Mathf.Asin(Mathf.Clamp(sunLocalDir.x, -1, 1)), fov ),
+        //     ConvertAngleToScreenPos( Mathf.Asin(Mathf.Clamp(sunLocalDir.y, -1, 1)), verticalFOV ));
+        sun.screenPos = new Vector2( 
+            ConvertAngleToScreenPos( Mathf.Asin(Mathf.Clamp(sunLocalDir.x, -1, 1)), fov ),
+            ConvertAngleToScreenPos( Mathf.Asin(Mathf.Clamp(sunLocalDir.y, -1, 1)), verticalFOV ));
         
+        sun.gameObject.SetActive( sunLocalDir.z >= 0 );
     }
     
     
