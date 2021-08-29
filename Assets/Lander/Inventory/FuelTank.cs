@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FuelTank : IinventoryItem
+public class FuelTank : InventoryItem
 {
     
     private float _capacity;
-    public float Volume {
+    public override float Volume {
         get{ return _capacity; }
     }
     
@@ -18,16 +18,27 @@ public class FuelTank : IinventoryItem
         set { _fuelQuantity = Mathf.Clamp(value, 0, _capacity); }
     }
     
-    public float Mass
+    public override float Mass
     {
         get { return _fuelQuantity * fuelDensity; }
     }
 
-    public string Name {
+    public override string Name {
         get{ return "Fuel tank"; }
     }
-
+    
     private float fuelDensity = 1;
+    
+    
+    
+    public override ItemBehaviour InstantiateWorldItem( LocalizedItem locItem )
+    {
+        GameObject instance = GameObject.Instantiate( TerrainManager.Instance.cratePref.gameObject );
+        ItemBehaviour itemObj = instance.AddComponent<ItemBehaviour>();
+        itemObj.item = locItem;
+        
+        return itemObj;
+    }
     
     
     
@@ -48,7 +59,11 @@ public class FuelTank : IinventoryItem
     }
     
     
-    public FuelTank(float capacity = 1000, float fuelDensity = 1) : this(capacity, capacity, fuelDensity) { }
+    
+    public FuelTank(float capacity = 1000, float fuelDensity = 1) 
+        : this(capacity, capacity, fuelDensity) 
+    { }
+    
     
     public FuelTank(float capacity, float fuelQuantity, float fuelDensity)
     {

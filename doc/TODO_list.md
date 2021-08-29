@@ -1,7 +1,6 @@
 # cosmétique :
 ## visuel :
 - rotation thrust visibles
-- soleil visible dans le fond
 - écran titre
 - ajouter les minuscules dans la police wireframe
 
@@ -12,7 +11,6 @@
 
 # gameplay :
 - ajustement des constantes
-- drop les objets
 - station de trade
 - station radar
 - merge crystals in inventory
@@ -21,13 +19,16 @@
 - attitude indicator
 - H/V speedometer
 - basic fuel gauge
-- SAS
+- SAS (stabilisateur)
 
 # bugs
 - gerer l'apparition les objets dans le TerrainManager
 - optimiser le rendu wireframe du terrain (frustrum culling)
 
+
 # fini:
+- drop les objets
+- soleil visible dans le fond
 - ajuster les textes du menu
 - ajouter les chiffres dans la police de caractère
 - ajouter des cratères dans la génération du terrain

@@ -3,20 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryManager : IinventoryItem
+public class InventoryManager : InventoryItem
 {
     
-    private List<IinventoryItem> _items = new List<IinventoryItem>();
-    public IEnumerable<IinventoryItem> Items
+    private Lander lander;
+    
+    private List<InventoryItem> _items = new List<InventoryItem>();
+    public IEnumerable<InventoryItem> Items
     {
         get { return _items; }
     }
 
-    public float Mass
+    public override float Mass
     {
         get { 
             float mass = 0;
-            foreach( IinventoryItem item in Items ) {
+            foreach( InventoryItem item in Items ) {
                 mass += item.Mass;
             }
             return mass;
@@ -24,7 +26,7 @@ public class InventoryManager : IinventoryItem
     }
     
     private float _volume;
-    public float Volume {
+    public override float Volume {
         get {return _volume;}
     }
     
@@ -42,14 +44,26 @@ public class InventoryManager : IinventoryItem
         }
     }
     
-    public string Name {
+    public override string Name {
         get{ return "Inventory (" + Volume + "/" + MaxVolume + ")"; }
     }
     
     private List<MenuEntry> publicEntries = new List<MenuEntry>();
     
     
-    public bool AddItem(IinventoryItem item)
+    
+    public override ItemBehaviour InstantiateWorldItem( LocalizedItem locItem )
+    {
+        GameObject instance = GameObject.Instantiate( TerrainManager.Instance.cratePref.gameObject );
+        ItemBehaviour itemObj = instance.AddComponent<ItemBehaviour>();
+        itemObj.item = new LocalizedItem(this);
+        
+        return itemObj;
+    }
+    
+    
+    
+    public bool AddItem(InventoryItem item)
     {
         if (_items.Contains(item) || Mass + item.Mass > _maxVolume)
         {
@@ -57,33 +71,35 @@ public class InventoryManager : IinventoryItem
         }
         
         _items.Add(item);
+        item.inventory = this;
         _volume += item.Volume;
         
-        publicEntries.Add( new MenuEntryDropItem(this, item) );
+        publicEntries.Add( new MenuEntryDropItem( this, item) );
         if( UImanager.Instance != null ) {
             UImanager.Instance.menuManager.UpdateMenuUI();            
         }
         
-        if( item is Instrument ) {
-            UImanager.Instance.instrumentsManager.EnableInstrument(item as Instrument);
+        if( item is InstrumentItem ) {
+            (item as InstrumentItem).OnItemPickup();
         }
         return true;
     }
     
     
-    public bool RemoveItem(IinventoryItem item)
+    public bool RemoveItem(InventoryItem item)
     {
         bool result = _items.Remove(item);
         if (result)
         {
+            item.inventory = null;
             publicEntries.RemoveAll( entry => entry is MenuEntryDropItem && (entry as MenuEntryDropItem).Item == item );
             if( UImanager.Instance != null) {
                 UImanager.Instance.menuManager.UpdateMenuUI();
             }
             
             _volume -= item.Volume;
-            if( item is Instrument ) {
-                UImanager.Instance.instrumentsManager.DisableInstrument( item as Instrument );
+            if( item is InstrumentItem ) {
+                ( item as InstrumentItem ).OnItemDrop();
             }
         }
         return result;
@@ -91,12 +107,21 @@ public class InventoryManager : IinventoryItem
 
 
     
-    public InventoryManager( float maxVolume = 20.0f ) {
-        _maxVolume = Mathf.Max(maxVolume, 0);
-    }
 
     public SubMenu GetMenu()
     {
         return new SubMenu( Name, publicEntries);
     }
+    
+    public Vector3 GetDropPosition() {
+        return TerrainManager.Instance.ConvertXtoDir( lander.transform.position.x );
+    }
+    
+    
+    
+    public InventoryManager( Lander lander, float maxVolume = 20.0f ) {
+        this.lander = lander;
+        _maxVolume = Mathf.Max(maxVolume, 0);
+    }
+    
 }

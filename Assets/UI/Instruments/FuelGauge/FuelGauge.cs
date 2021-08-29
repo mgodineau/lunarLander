@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FuelGauge : Instrument
+public class FuelGauge : InstrumentBehaviour
 {
     
     [SerializeField] private float marginX = 0.1f;

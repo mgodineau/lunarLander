@@ -2,20 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IinventoryItem
+public abstract class InventoryItem
 {
     
-    float Volume {
+    public abstract float Volume {
         get;
     }
     
-    float Mass {
+    public abstract float Mass {
         get;
     }
     
-    string Name {
+    public abstract string Name {
         get;
     }
     
+    public InventoryManager inventory;
+    
+    
+    public ItemBehaviour InstantiateWorldItem() {
+        Vector3 itemPosition = inventory == null ? Vector3.right : inventory.GetDropPosition();
+        return InstantiateWorldItem( new LocalizedItem(this, itemPosition) );
+    }
+    
+    public abstract ItemBehaviour InstantiateWorldItem( LocalizedItem locItem );
+    
+    
+    public InventoryItem( InventoryManager inventory = null ) {
+        this.inventory = inventory;
+    }
     
 }

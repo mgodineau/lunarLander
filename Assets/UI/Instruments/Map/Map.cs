@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
-public class Map : Instrument
+public class Map : InstrumentBehaviour
 {
     
     [SerializeField] private int linesResolution = 10;

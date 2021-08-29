@@ -33,16 +33,16 @@ public class Lander : InputConsumer
     [SerializeField] private DestructionEffect destructionEffect;
     
     
-    private InventoryManager _inventory = new InventoryManager( 4000 );
+    private InventoryManager _inventory;
     public InventoryManager Inventory {
         get{ return _inventory; }
     }
-    private FuelTank _tank = new FuelTank(3000);
+    private FuelTank _tank;
     public FuelTank Tank {
         get{ return _tank; }
     }
     
-    private HashSet<CrystalBehaviour> pickableItem = new HashSet<CrystalBehaviour>();
+    private HashSet<ItemBehaviour> pickableItems = new HashSet<ItemBehaviour>();
     private List<MenuEntry> pickableItemEntries = new List<MenuEntry>();
     
     private LZbehaviour currentLZ = null;
@@ -60,12 +60,16 @@ public class Lander : InputConsumer
         audioSource = GetComponent<AudioSource>();
         
         EnableInputProcessing();
+        
+        _inventory = new InventoryManager( this, 4000 );
+        
+        _tank = new FuelTank(3000);
         _inventory.AddItem(_tank);
     }
     
     private void Start() {
-        UImanager.Instance.instrumentsManager.EnableInstrument( InstrumentsManager.InstrumentType.Map );
-        UImanager.Instance.instrumentsManager.EnableInstrument( InstrumentsManager.InstrumentType.FuelGauge );
+        AddInstrument( UImanager.Instance.instrumentsManager.GetInstrumentInstance(InstrumentsManager.InstrumentType.Map) );
+        AddInstrument( UImanager.Instance.instrumentsManager.GetInstrumentInstance(InstrumentsManager.InstrumentType.FuelGauge) );
     }
     
     
@@ -173,9 +177,9 @@ public class Lander : InputConsumer
     
     private void OnTriggerEnter2D( Collider2D other ) {
         //ajout d'un objet a la liste de ramassage
-        CrystalBehaviour crystal = other.gameObject.GetComponent<CrystalBehaviour>();
-        if( crystal != null ) {
-            pickableItem.Add(crystal);
+        ItemBehaviour item = other.gameObject.GetComponent<ItemBehaviour>();
+        if( item != null ) {
+            pickableItems.Add(item);
             
             UpdatePickableItemEntries();
             UImanager.Instance.menuManager.UpdateMenuUI();
@@ -185,9 +189,9 @@ public class Lander : InputConsumer
     
     private void OnTriggerExit2D( Collider2D other ) {
         //ajout d'un objet a la liste de ramassage
-        CrystalBehaviour crystal = other.gameObject.GetComponent<CrystalBehaviour>();
-        if( crystal != null ) {
-            pickableItem.Remove(crystal);
+        ItemBehaviour item = other.gameObject.GetComponent<ItemBehaviour>();
+        if( item != null ) {
+            pickableItems.Remove(item);
             
             UpdatePickableItemEntries();
             UImanager.Instance.menuManager.UpdateMenuUI();
@@ -208,12 +212,12 @@ public class Lander : InputConsumer
     
     
     
-    public bool AddInstrument(Instrument instrument) {
-        return _inventory.AddItem(instrument);
+    public bool AddInstrument(InstrumentBehaviour instrument) {
+        return _inventory.AddItem(instrument.GetInstrumentItem());
     }
     
-    public bool RemoveInstrument( Instrument instrument ) {
-        return _inventory.RemoveItem(instrument);
+    public bool RemoveInstrument( InstrumentBehaviour instrument ) {
+        return _inventory.RemoveItem(instrument.GetInstrumentItem());
     }
     
     
@@ -252,7 +256,7 @@ public class Lander : InputConsumer
     
     private void UpdatePickableItemEntries() {
         pickableItemEntries.Clear();
-        foreach( CrystalBehaviour crystal in pickableItem ) {
+        foreach( ItemBehaviour crystal in pickableItems ) {
             pickableItemEntries.Add( new MenuEntryPickupItem(_inventory, crystal) );
         }
         

@@ -7,7 +7,7 @@ public class InstrumentsManager : MonoBehaviour
     
     
     //Accès à tous les instruments
-    [SerializeField] private Instrument[] instrumentsInstances;
+    [SerializeField] private InstrumentBehaviour[] instrumentsInstances;
     
     
     
@@ -32,7 +32,7 @@ public class InstrumentsManager : MonoBehaviour
 
     public void Awake()
     {
-        foreach( Instrument inst in instrumentsInstances ) {
+        foreach( InstrumentBehaviour inst in instrumentsInstances ) {
             inst.gameObject.SetActive(false);
         }
     }
@@ -40,7 +40,10 @@ public class InstrumentsManager : MonoBehaviour
     private void Start()
     {
     }
-
+    
+    public InstrumentBehaviour GetInstrumentInstance( InstrumentType type ) {
+        return instrumentsInstances[(int)type];
+    }
     
     
     public void EnableInstrument(InstrumentType instrument)
@@ -48,14 +51,14 @@ public class InstrumentsManager : MonoBehaviour
         EnableInstrument( instrumentsInstances[(int)instrument] );
     }
 
-    public void EnableInstrument(Instrument instrument)
+    public void EnableInstrument(InstrumentBehaviour instrument)
     {
-        if(UImanager.Instance.lander.AddInstrument(instrument) ) {
+        // if(UImanager.Instance.lander.AddInstrument(instrument) ) {
             instrument.gameObject.SetActive(true);
-        }
+        // }
     }
     
-    public void DisableInstrument( Instrument instrument ) {
+    public void DisableInstrument( InstrumentBehaviour instrument ) {
         instrument.gameObject.SetActive(false);
         UImanager.Instance.lander.RemoveInstrument(instrument);
     }

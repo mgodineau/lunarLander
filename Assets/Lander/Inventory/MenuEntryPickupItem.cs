@@ -6,20 +6,20 @@ public class MenuEntryPickupItem : MenuEntry
 {
     
     InventoryManager inventory;
-    CrystalBehaviour item;
+    ItemBehaviour itemObj;
     
     
     public override void OnClick()
     {
-        if( inventory.AddItem(item.crystalScript) ) {
-            item.Pickup();
+        if( inventory.AddItem(itemObj.item.Item) ) {
+            itemObj.Pickup();
         }
     }
     
     
-    public MenuEntryPickupItem( InventoryManager inventory, CrystalBehaviour item ) : base(item.crystalScript.Name) {
+    public MenuEntryPickupItem( InventoryManager inventory, ItemBehaviour itemObj ) : base(itemObj.item.Item.Name) {
         this.inventory = inventory;
-        this.item = item;
+        this.itemObj = itemObj;
     }
     
 }

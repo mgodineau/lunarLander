@@ -3,8 +3,8 @@
 class MenuEntryDropItem : MenuEntry
 {
     
-    private IinventoryItem _item;
-    public IinventoryItem Item {
+    private InventoryItem _item;
+    public InventoryItem Item {
         get { return _item; }
     }
     
@@ -13,11 +13,12 @@ class MenuEntryDropItem : MenuEntry
     public override void OnClick()
     {
         inventory.RemoveItem(_item);
-        
+        TerrainManager.Instance.Planet.AddItem(_item, inventory.GetDropPosition() );
+        TerrainManager.Instance.UpdateObjetsDisplay();
     }
     
     
-    public MenuEntryDropItem( InventoryManager inventory, IinventoryItem item ) : base(item.Name + "(" + item.Volume + ")"){
+    public MenuEntryDropItem( InventoryManager inventory, InventoryItem item ) : base(item.Name + "(" + item.Volume + ")"){
         this.inventory = inventory;
         this._item = item;
     }

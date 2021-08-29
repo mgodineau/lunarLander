@@ -64,6 +64,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] public GameObject lzFuelPref;
 
     [SerializeField] public GameObject crystalPref;
+    [SerializeField] public GameObject cratePref;
 
 
     //instances des ZA
@@ -366,9 +367,7 @@ public class TerrainManager : MonoBehaviour
 
 
         //MAJ des zones d'atterrissages et des cristaux
-        UpdateObjetsDisplay(_planet.landingZones, true);
-        UpdateObjetsDisplay(_planet.crystals, false);
-        
+        UpdateObjetsDisplay();
         
         
         //MAJ des vertices du premier plan
@@ -386,8 +385,14 @@ public class TerrainManager : MonoBehaviour
         terrainMesh.RecalculateNormals();
         
     }
-
-
+    
+    
+    public void UpdateObjetsDisplay() {
+        UpdateObjetsDisplay(_planet.landingZones, true);
+        UpdateObjetsDisplay(_planet.items, false);
+    }
+    
+    
     /// <summary>
     /// Met à jour l'affichage d'une collection d'objets sur le terrain. Si l'objet n'est pas présent, il est créé. Sinon, sa position est mise à jour.
     /// </summary>
@@ -420,9 +425,7 @@ public class TerrainManager : MonoBehaviour
                 if (flattenTerrain)
                 {
                     for( int offset = 0; offset<2; offset++ ) {
-                        // SetVerticeHeight(xId+offset, 0, 0);
                         SetVerticeHeight(xId+offset, 0, y);
-                        // SetVerticeHeight(xId+offset, 1, 15);
                         SetVerticeHeight(xId+offset, 1, (bgVertices[GetBgVertexId(xId, 1)].y + y) / 2);
                     }
                 }
@@ -628,5 +631,11 @@ public class TerrainManager : MonoBehaviour
         }
         
     }
-
+    
+    public void RemoveObject( LocalizedObject obj ) {
+        objToPrefInstance.Remove(obj);
+        Planet.RemoveObject( obj );
+    }
+    
+    
 }

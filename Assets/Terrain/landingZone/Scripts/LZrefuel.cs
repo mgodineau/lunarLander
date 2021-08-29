@@ -13,7 +13,7 @@ public class LZrefuel : LandingZone
     {
         List<MenuEntry> entries = new List<MenuEntry>();
         
-        foreach( IinventoryItem item in lander.Inventory.Items ){
+        foreach( InventoryItem item in lander.Inventory.Items ){
             if( item is Crystal ) {
                 entries.Add( new RefuelMenuEntry(item, lander) );
             }
@@ -32,7 +32,7 @@ public class LZrefuel : LandingZone
 
     private class RefuelMenuEntry : MenuEntry
     {
-        private IinventoryItem item;
+        private InventoryItem item;
         private Lander lander;
         
         public override void OnClick()
@@ -42,7 +42,7 @@ public class LZrefuel : LandingZone
             lander.RefreshMainMenu();
         }
         
-        public RefuelMenuEntry( IinventoryItem item, Lander lander ) : base( "convert " + item.Name ) {
+        public RefuelMenuEntry( InventoryItem item, Lander lander ) : base( "convert " + item.Name ) {
             this.item = item;
             this.lander = lander;
         }

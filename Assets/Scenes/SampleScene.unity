@@ -619,7 +619,7 @@ Transform:
   - {fileID: 881344067}
   - {fileID: 742156661}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &696993977
 GameObject:
@@ -633,7 +633,7 @@ GameObject:
   - component: {fileID: 696993978}
   - component: {fileID: 696993980}
   m_Layer: 0
-  m_Name: Sun_test
+  m_Name: Sun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1385,7 +1385,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1367041152
 MonoBehaviour:
@@ -1415,6 +1415,7 @@ MonoBehaviour:
   lzDefaultPref: {fileID: 677897606091750695, guid: c9d043661dcdfbb4092a4d4503cbba4b, type: 3}
   lzFuelPref: {fileID: 4094698436792350765, guid: 55d377c43a882be49b556e9c3283dcbd, type: 3}
   crystalPref: {fileID: 4948769186678932839, guid: 25432f750c2b8594b906a1e7453309db, type: 3}
+  cratePref: {fileID: 3482537932297596152, guid: f68a993a41e25dd408bf5cdd94624016, type: 3}
 --- !u!114 &1367041153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2306,6 +2307,10 @@ PrefabInstance:
       value: lander
       objectReference: {fileID: 0}
     - target: {fileID: 8314844196335448157, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314844196335448157, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -2351,6 +2356,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8660301216745171687, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107358363492331149, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public abstract class Instrument : UIwireframeElement, IinventoryItem
+public abstract class InstrumentBehaviour : UIwireframeElement
 {
 
     public abstract float Mass
@@ -18,4 +18,18 @@ public abstract class Instrument : UIwireframeElement, IinventoryItem
     public abstract string Name {
         get;
     }
+    
+    
+    public InstrumentItem GetInstrumentItem() {
+        return new InstrumentItem(this);
+    }
+    
+    /*public ItemBehaviour InstantiateWorldItem()
+    {
+        GameObject instance = GameObject.Instantiate( TerrainManager.Instance.cratePref.gameObject );
+        ItemBehaviour itemObj = instance.AddComponent<ItemBehaviour>();
+        itemObj.item = new LocalizedItem(this);
+        
+        return itemObj;
+    }*/
 }

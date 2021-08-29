@@ -10,7 +10,10 @@ public class PlanetGen : MonoBehaviour
     public List<TerrainLayer> layers = new List<TerrainLayer>();
     
     public List<LandingZone> landingZones = new List<LandingZone>();
-    public List<Crystal> crystals = new List<Crystal>();
+
+    
+    
+    public List<LocalizedItem> items = new List<LocalizedItem>();
     
     
     private void Awake() {
@@ -29,10 +32,39 @@ public class PlanetGen : MonoBehaviour
     }
     
     
+    internal void RemoveObject(LocalizedObject obj)
+    {
+        if( obj is LocalizedItem ) {
+            RemoveItem( obj as LocalizedItem );
+        }
+    }
+    
+    public void RemoveItem(LocalizedItem item)
+    {
+        items.Remove(item);
+    }
+    
+    public void RemoveItem(InventoryItem item)
+    {
+        foreach( LocalizedItem locItem in items) {
+            if( locItem.Item == item ) {
+                RemoveItem(locItem);
+                break;
+            }
+        }
+    }
+    
+    public void AddItem(InventoryItem item, Vector3 position)
+    {
+        items.Add( new LocalizedItem(item, position) );
+    }
+    
+    
+    
     private void generateCrystals() {
         
         for( int i=0; i<crystalsCount; i++ ) {
-            crystals.Add( new Crystal( Random.onUnitSphere ) );
+            AddItem( new Crystal(), Random.onUnitSphere  );
         }
         
     }
@@ -72,4 +104,5 @@ public class PlanetGen : MonoBehaviour
         }
     }
 
+    
 }
