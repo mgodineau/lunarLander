@@ -56,7 +56,7 @@ public class InventoryManager : InventoryItem
     {
         GameObject instance = GameObject.Instantiate( TerrainManager.Instance.cratePref.gameObject );
         ItemBehaviour itemObj = instance.AddComponent<ItemBehaviour>();
-        itemObj.item = new LocalizedItem(this);
+        itemObj.LocItem = new LocalizedItem(this);
         
         return itemObj;
     }
@@ -114,7 +114,8 @@ public class InventoryManager : InventoryItem
     }
     
     public Vector3 GetDropPosition() {
-        return TerrainManager.Instance.ConvertXtoDir( lander.transform.position.x );
+        // return TerrainManager.Instance.ConvertXtoDir( lander.transform.position.x );
+        return lander.DropPosition.position;
     }
     
     

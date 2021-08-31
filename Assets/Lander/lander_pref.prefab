@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8535708413586904484
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8469233786996955420}
+  m_Layer: 0
+  m_Name: DropOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8469233786996955420
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8535708413586904484}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8660301216745171687}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1043752564
 Rigidbody2D:
   serializedVersion: 4
@@ -364,6 +394,7 @@ MonoBehaviour:
   worldRotationSpeed: 10
   destructionVelocity: 10
   destructionEffect: {fileID: 2681067708670959720, guid: 2c7e27c8a3960e74593b772f67b321e7, type: 3}
+  _dropPosition: {fileID: 8469233786996955420}
   clipThrust: {fileID: 0}
 --- !u!95 &590398268
 Animator:
@@ -489,6 +520,11 @@ PrefabInstance:
 --- !u!1 &8314844196335448157 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5517e194d85a5824fa88cf64cc72f43e, type: 3}
+  m_PrefabInstance: {fileID: 9197805573897702668}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8660301216745171687 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5517e194d85a5824fa88cf64cc72f43e, type: 3}
   m_PrefabInstance: {fileID: 9197805573897702668}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &9107358363492331149 stripped

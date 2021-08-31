@@ -28,8 +28,8 @@ public class InstrumentItem : InventoryItem
     public override ItemBehaviour InstantiateWorldItem( LocalizedItem locItem )
     {
         GameObject instance = GameObject.Instantiate( TerrainManager.Instance.cratePref.gameObject );
-        ItemBehaviour itemObj = instance.AddComponent<ItemBehaviour>();
-        itemObj.item = locItem;
+        ItemBehaviour itemObj = instance.GetComponent<ItemBehaviour>();
+        itemObj.LocItem = locItem;
         
         return itemObj;
     }

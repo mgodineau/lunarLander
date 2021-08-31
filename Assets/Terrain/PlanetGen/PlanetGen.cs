@@ -54,9 +54,14 @@ public class PlanetGen : MonoBehaviour
         }
     }
     
-    public void AddItem(InventoryItem item, Vector3 position)
+    public void AddItem(InventoryItem item, Vector3 spherePosition)
     {
-        items.Add( new LocalizedItem(item, position) );
+        items.Add( new LocalizedItem(item, spherePosition) );
+    }
+    
+    public void AddItem(InventoryItem item, Vector3 spherePosition, float height, float rotation=0)
+    {
+        items.Add( new LocalizedItem(item, spherePosition, height, rotation) );
     }
     
     

@@ -2,11 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(ObjectBehaviour))]
 public class LZbehaviour : MonoBehaviour
 {
     
+    private ObjectBehaviour objectBehaviour;
     
-    public LandingZone LZscript;
+    private LandingZone _lzScript;
+    public LandingZone LZscript {
+        get {return _lzScript;}
+        set {
+            _lzScript = value;
+            if( objectBehaviour == null ) {
+                objectBehaviour = GetComponent<ObjectBehaviour>();
+                objectBehaviour.obj = value;
+            }
+        }
+    }
     
     [SerializeField]
     private List<GameObject> installationsPrefs = new List<GameObject>();

@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 
 class MenuEntryDropItem : MenuEntry
 {
@@ -13,7 +15,13 @@ class MenuEntryDropItem : MenuEntry
     public override void OnClick()
     {
         inventory.RemoveItem(_item);
-        TerrainManager.Instance.Planet.AddItem(_item, inventory.GetDropPosition() );
+        
+        Vector3 containerPosition = inventory.GetDropPosition();
+        TerrainManager.Instance.Planet.AddItem(
+            _item, 
+            TerrainManager.Instance.ConvertXtoDir(containerPosition.x), 
+            containerPosition.y );
+        
         TerrainManager.Instance.UpdateObjetsDisplay();
     }
     

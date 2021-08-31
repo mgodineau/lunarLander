@@ -16,6 +16,19 @@ CircleCollider2D:
   m_Offset: {x: -0.24065948, y: 0.7210368}
   serializedVersion: 2
   m_Radius: 2
+--- !u!114 &1625697351226136379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4948769186678932839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e763588e2f7e8b4a968be5f3546010b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectBehaviour: {fileID: 0}
 --- !u!114 &1749676644766021823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31,6 +44,18 @@ MonoBehaviour:
   removeDiagonals: 1
   diagThreshold: 1
   color: {r: 0, g: 1, b: 0, a: 1}
+--- !u!114 &5063779971607624916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4948769186678932839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d84f96d69dd2904c86b831d5fcd7b62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5218799552410728502
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -21,7 +21,7 @@ public abstract class InventoryItem
     
     
     public ItemBehaviour InstantiateWorldItem() {
-        Vector3 itemPosition = inventory == null ? Vector3.right : inventory.GetDropPosition();
+        Vector3 itemPosition = inventory == null ? Vector3.right : TerrainManager.Instance.ConvertXtoDir( inventory.GetDropPosition().x);
         return InstantiateWorldItem( new LocalizedItem(this, itemPosition) );
     }
     

@@ -32,6 +32,12 @@ public class Lander : InputConsumer
     [SerializeField] private float destructionVelocity = 10;
     [SerializeField] private DestructionEffect destructionEffect;
     
+    [SerializeField]
+    private Transform _dropPosition;
+    public Transform DropPosition {
+        get {return _dropPosition;}
+    }
+    
     
     private InventoryManager _inventory;
     public InventoryManager Inventory {

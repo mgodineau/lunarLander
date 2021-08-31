@@ -7,19 +7,18 @@ public abstract class LandingZone : LocalizedObject
     protected LandingZone(Vector3 position) : base( position ) {}
     
     
-    public override GameObject CreateInstance( Vector3 position, Quaternion rotation, Transform parent )
+    public override ObjectBehaviour CreateInstance( Vector3 position)
     {
-        GameObject instance = GameObject.Instantiate( PrefToInstantiate(), position, rotation, parent );
-        // instance.AddComponent<LZbehaviour>().LZscript = this;
+        GameObject instance = GameObject.Instantiate( PrefToInstantiate().gameObject, position, Quaternion.identity );
         instance.GetComponent<LZbehaviour>().LZscript = this;
         
         
-        return instance;
+        return instance.GetComponent<ObjectBehaviour>();
     }
     
     public abstract SubMenu GetMenu( Lander lander );
     
-    protected abstract GameObject PrefToInstantiate();
+    protected abstract LZbehaviour PrefToInstantiate();
     
 
 }

@@ -11,13 +11,13 @@ public class MenuEntryPickupItem : MenuEntry
     
     public override void OnClick()
     {
-        if( inventory.AddItem(itemObj.item.Item) ) {
+        if( inventory.AddItem(itemObj.LocItem.Item) ) {
             itemObj.Pickup();
         }
     }
     
     
-    public MenuEntryPickupItem( InventoryManager inventory, ItemBehaviour itemObj ) : base(itemObj.item.Item.Name) {
+    public MenuEntryPickupItem( InventoryManager inventory, ItemBehaviour itemObj ) : base(itemObj.LocItem.Item.Name) {
         this.inventory = inventory;
         this.itemObj = itemObj;
     }

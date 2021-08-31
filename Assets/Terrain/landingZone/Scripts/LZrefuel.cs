@@ -23,7 +23,7 @@ public class LZrefuel : LandingZone
     }
     
 
-    protected override GameObject PrefToInstantiate()
+    protected override LZbehaviour PrefToInstantiate()
     {
         return TerrainManager.Instance.lzFuelPref;
     }

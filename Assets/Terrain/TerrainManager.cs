@@ -60,15 +60,15 @@ public class TerrainManager : MonoBehaviour
     }
 
     //prefab des objets
-    [SerializeField] public GameObject lzDefaultPref;
-    [SerializeField] public GameObject lzFuelPref;
+    [SerializeField] public LZbehaviour lzDefaultPref;
+    [SerializeField] public LZbehaviour lzFuelPref;
 
-    [SerializeField] public GameObject crystalPref;
-    [SerializeField] public GameObject cratePref;
+    [SerializeField] public ItemBehaviour crystalPref;
+    [SerializeField] public ItemBehaviour cratePref;
 
 
     //instances des ZA
-    private Dictionary<LocalizedObject, GameObject> objToPrefInstance = new Dictionary<LocalizedObject, GameObject>();
+    private Dictionary<LocalizedObject, ObjectBehaviour> objToPrefInstance = new Dictionary<LocalizedObject, ObjectBehaviour>();
 
     //propriétés de la tranche visualisée
     private Vector3 _sliceNormal = Vector3.up;
@@ -420,9 +420,11 @@ public class TerrainManager : MonoBehaviour
 
                 float localRatio = flattenTerrain ? 0.5f : (angle * sampleCount / 360.0f) % 1.0f;
 
-                float y = Mathf.Lerp(points[xId].y, points[xId + 1].y, localRatio);
-
-                if (flattenTerrain)
+                float y = obj.isGrounded ? 
+                    Mathf.Lerp(points[xId].y, points[xId + 1].y, localRatio) : 
+                    obj.height;
+                
+                if (flattenTerrain && obj.isGrounded)
                 {
                     for( int offset = 0; offset<2; offset++ ) {
                         SetVerticeHeight(xId+offset, 0, y);
@@ -445,13 +447,16 @@ public class TerrainManager : MonoBehaviour
 
                 if (!objToPrefInstance.ContainsKey(obj))
                 {
-                    objToPrefInstance.Add(obj, obj.CreateInstance(position, Quaternion.identity, transform));
+                    ObjectBehaviour instance = obj.CreateInstance(position);
+                    objToPrefInstance.Add(obj, instance);
+                    instance.transform.SetParent(transform, false);
                 }
                 else
                 {
-                    GameObject instance = objToPrefInstance[obj];
-                    instance.transform.SetParent(transform, false);
-                    instance.transform.localPosition = position;
+                    // objToPrefInstance[obj].Update //TODO
+                    // GameObject instance = objToPrefInstance[obj];
+                    // instance.transform.SetParent(transform, false);
+                    // instance.transform.localPosition = position;
                 }
 
 
@@ -459,7 +464,7 @@ public class TerrainManager : MonoBehaviour
             }
             else if (objToPrefInstance.ContainsKey(obj))
             {
-                Destroy(objToPrefInstance[obj]);
+                Destroy(objToPrefInstance[obj].gameObject);
                 objToPrefInstance.Remove(obj);
             }
         }
