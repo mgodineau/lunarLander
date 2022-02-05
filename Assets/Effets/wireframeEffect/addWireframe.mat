@@ -56,7 +56,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AfterImageFactor: 5
+    - _AfterImageFactor: 3
     - _AfterImageMaxBrightness: 0.2
     - _AfterImageThreshold: 0.01
     - _BrightnessThreshold: 0.5

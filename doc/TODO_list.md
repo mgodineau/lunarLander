@@ -1,25 +1,21 @@
 # cosmétique :
 ## visuel :
-- rotation thrust visibles
 - écran titre
 - ajouter les minuscules dans la police wireframe
 
 ## sons : 
-- rotation thrust
 - destruction
 - click des menus
 
-# gameplay :
-- ajustement des constantes
-- station de trade
-- station radar
-- merge crystals in inventory
 
-# instruments :
-- attitude indicator
-- H/V speedometer
-- basic fuel gauge
-- SAS (stabilisateur)
+# gameplay :
+- créer les items à ramasser ( + localisation sur la carte)
+- créer la zone de dépot des items pour construire la fusée
+- gérer la fin du jeu
+- ajouter les constantes de la gestion du fuel
+
+
+
 
 # bugs
 - gerer l'apparition les objets dans le TerrainManager
@@ -27,6 +23,9 @@
 
 
 # fini:
+- rotation thrust
+- rotation thrust visibles
+- station radar
 - drop les objets
 - soleil visible dans le fond
 - ajuster les textes du menu
@@ -47,3 +46,16 @@
 - destruction si atterrissage trop violents
 - transition douce avec la lumière
 - fix le pb de lignes à travers le sol
+
+
+# canceled :
+
+## gameplay :
+- station de trade
+- merge crystals in inventory
+
+## instruments :
+- attitude indicator
+- H/V speedometer
+- basic fuel gauge
+- SAS (stabilisateur)

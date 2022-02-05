@@ -1036,6 +1036,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 308ea28a2dff1524ba365556d697431d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &1043752566
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043752562}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 68c749179d12435488ff498bce80dac7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!61 &1043752567 stripped
 BoxCollider2D:
   m_CorrespondingSourceObject: {fileID: 1043752569, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
@@ -1165,7 +1184,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -73.71499, y: -0.052495956}
+  m_AnchoredPosition: {x: -73.71498, y: -0.052495956}
   m_SizeDelta: {x: 147.43, y: -0.105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1233468832
@@ -1434,6 +1453,30 @@ MonoBehaviour:
   maxCamSize: 150
   maxFOV: 120
   sun: {fileID: 696993980}
+--- !u!1 &1522312647 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8569306474291485656, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+  m_PrefabInstance: {fileID: 9197805573061585789}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1522312648
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522312647}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9b29bcd3bd551042adc64fd7bf4261a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!4 &1815430506 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3928438630851948834, guid: 67c2f7d7643552d4e913fabc4754baa2, type: 3}
@@ -2260,6 +2303,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 3fa495d1be3b71a409a5dbf8d7c912b3, type: 3}
     - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: thrustAnim
+      value: 
+      objectReference: {fileID: 1522312648}
+    - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: angularThrust
       value: 5000
       objectReference: {fileID: 0}
@@ -2267,6 +2314,14 @@ PrefabInstance:
       propertyPath: destructionEffect
       value: 
       objectReference: {fileID: 2681067708670959720, guid: 2c7e27c8a3960e74593b772f67b321e7, type: 3}
+    - target: {fileID: 940676160104187827, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3114b160d2659ec4e9f942cc39f91bdd, type: 2}
+    - target: {fileID: 1368886517796348678, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3114b160d2659ec4e9f942cc39f91bdd, type: 2}
     - target: {fileID: 1665337541376742833, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -2299,6 +2354,18 @@ PrefabInstance:
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: 4576734752029887054, guid: 2267976d2462f164b92542598e78c90d, type: 2}
+    - target: {fileID: 4144009462420141414, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3114b160d2659ec4e9f942cc39f91bdd, type: 2}
+    - target: {fileID: 4971274946856062720, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3114b160d2659ec4e9f942cc39f91bdd, type: 2}
+    - target: {fileID: 6219677531366213225, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3114b160d2659ec4e9f942cc39f91bdd, type: 2}
     - target: {fileID: 7522347070324560264, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

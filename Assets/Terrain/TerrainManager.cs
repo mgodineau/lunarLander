@@ -600,8 +600,14 @@ public class TerrainManager : MonoBehaviour
     }
     
     
-
-    private void SetVerticeHeight( int x, int z, float height ) {
+    
+    /// <summary>
+    /// Mise à jour de la hauteur d'une vertice du terrain.
+    /// </summary>
+    /// <param name="x">la coordonnée x de la vertice</param>
+    /// <param name="z">la profondeur de la vertice</param>
+    /// <param name="height">la nouvelle hauteur à affecter à la vertice</param>
+    private void SetVerticeHeight( int x, int z, float height, bool allowRecursion = true ) {
         
         //MAJ des vertices de l'arière plan
         int bgVertexId = GetBgVertexId(x, z);
@@ -636,6 +642,13 @@ public class TerrainManager : MonoBehaviour
             backgroundXlines[0].points[xLineVertexId] = bgVertex;
         }
         
+        if( allowRecursion ) {
+            if(x==0) {
+                SetVerticeHeight(sampleCount, z, height, false);
+            } else if( x==sampleCount ) {
+                SetVerticeHeight(0, z, height, false);
+            }
+        }
     }
     
     public void RemoveObject( LocalizedObject obj ) {

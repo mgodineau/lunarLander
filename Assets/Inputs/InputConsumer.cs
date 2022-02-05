@@ -8,18 +8,18 @@ public abstract class InputConsumer : MonoBehaviour
     private static Stack<InputConsumer> consumers = new Stack<InputConsumer>();
     
     
-    public bool ProcessInput() {
+    public bool CanProcessInput() {
         return consumers.Count > 0 && consumers.Peek() == this;
     }
     
     public void EnableInputProcessing() {
-        if( !ProcessInput() ) {
+        if( !CanProcessInput() ) {
             consumers.Push(this);
         }
     }
     
     public void DisableInputProcessing() {
-        if(ProcessInput()) {
+        if(CanProcessInput()) {
             consumers.Pop();
         }
     }

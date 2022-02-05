@@ -55,6 +55,8 @@ public class LZradar : LandingZone
 			
 			
 			UImanager.Instance.instrumentsManager.AddKnownObjects(detectedObject);
+			
+			UImanager.Instance.menuManager.ClearMenu();
         }
     }
 

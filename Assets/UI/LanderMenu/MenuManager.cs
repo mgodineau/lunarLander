@@ -46,7 +46,7 @@ public class MenuManager : InputConsumer
     
     private void Update() 
     {
-        if( ProcessInput() ) {
+        if( CanProcessInput() ) {
             
             if( Input.GetKeyDown(KeyCode.Q) ) {
                 PopMenu();

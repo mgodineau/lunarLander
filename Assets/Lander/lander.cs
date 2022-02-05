@@ -4,6 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(Animator))]
 public class Lander : InputConsumer
 {
     
@@ -19,8 +20,8 @@ public class Lander : InputConsumer
     [SerializeField]
     private float fuelConsumption = 10.0f;
     
-    [SerializeField]
-    private Animator thrustAnim;
+    
+    private Animator anim;
     private Rigidbody2D rb;
     private AudioSource audioSource;
     
@@ -64,6 +65,7 @@ public class Lander : InputConsumer
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
+        anim = GetComponent<Animator>();
         
         EnableInputProcessing();
         
@@ -86,18 +88,17 @@ public class Lander : InputConsumer
         
         
         //déplacement du lander
-        if( ProcessInput() ) {
+        if( CanProcessInput() ) {
             //propulsion du lander
             bool thrustInput = Input.GetKey(KeyCode.Z) && _tank.ConsumeFuel( fuelConsumption * Time.fixedDeltaTime );
             if( thrustInput ) {
                 rb.AddRelativeForce( Vector2.up * thrust, ForceMode2D.Force );
             }
-            thrustAnim.SetBool("thrust", thrustInput);
-            playSoundThrust = thrustInput;
+            anim.SetBool("mainThrust", thrustInput);
             
             
             // rotation du lander
-            float torqueDir = 0;
+            int torqueDir = 0;
             if( Input.GetKey(KeyCode.Q) ) {
                 torqueDir++;
             }
@@ -105,6 +106,10 @@ public class Lander : InputConsumer
                 torqueDir--;
             }
             rb.AddTorque(angularThrust * torqueDir, ForceMode2D.Force);
+            anim.SetInteger("rotationState", torqueDir);
+            
+            
+            playSoundThrust = thrustInput || torqueDir != 0;
         }
         
         
@@ -143,7 +148,7 @@ public class Lander : InputConsumer
         
         
         // affichage du menu
-        if( ProcessInput() && Input.GetKeyDown(KeyCode.S) ) {
+        if( CanProcessInput() && Input.GetKeyDown(KeyCode.S) ) {
             SubMenu mainMenu = CreateMainMenu();
             UImanager.Instance.menuManager.SetMenu( mainMenu );
         }

@@ -25,7 +25,7 @@ public class PlanetGen : MonoBehaviour
         landingZones.Add( new LZrefuel(Vector3.up) );
         landingZones.Add( new LZradar(Vector3.forward) );
         
-        generateCrystals();
+        //generateCrystals();
     }
     
     
