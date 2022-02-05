@@ -46,7 +46,7 @@ public class LZbehaviour : MonoBehaviour
             Quaternion rot = Quaternion.AngleAxis( Random.Range(0, 360), Vector3.up);
             
             GameObject instance = GameObject.Instantiate(pref, pos, rot, transform);
-            instance.transform.GetChild(0).localScale = new Vector3(1, 10, 1);
+            instance.transform.GetChild(0).localScale = new Vector3(1, 10, 1);  //set the ground size
             installationsInstances.Add(instance);
             
         }

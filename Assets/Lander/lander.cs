@@ -167,7 +167,7 @@ public class Lander : InputConsumer
         //gestion de l'atterrissage sur une LZ
         LZbehaviour lz = other.gameObject.GetComponent<LZbehaviour>();
         if( lz != null ) {
-            UImanager.Instance.instrumentsManager.KnownLZ.Add(lz.LZscript);
+            UImanager.Instance.instrumentsManager.AddKnownObject(lz.LZscript);
             currentLZ = lz;
         }
         

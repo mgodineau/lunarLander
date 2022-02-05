@@ -62,6 +62,7 @@ public class TerrainManager : MonoBehaviour
     //prefab des objets
     [SerializeField] public LZbehaviour lzDefaultPref;
     [SerializeField] public LZbehaviour lzFuelPref;
+    [SerializeField] public LZbehaviour lzRadarPref;
 
     [SerializeField] public ItemBehaviour crystalPref;
     [SerializeField] public ItemBehaviour cratePref;
@@ -388,8 +389,8 @@ public class TerrainManager : MonoBehaviour
     
     
     public void UpdateObjetsDisplay() {
-        UpdateObjetsDisplay(_planet.landingZones, true);
-        UpdateObjetsDisplay(_planet.items, false);
+        UpdateObjetsDisplay(_planet.getLandingZones(), true);
+        UpdateObjetsDisplay(_planet.GetItems(), false);
     }
     
     

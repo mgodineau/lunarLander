@@ -9,11 +9,8 @@ public class PlanetGen : MonoBehaviour
     
     public List<TerrainLayer> layers = new List<TerrainLayer>();
     
-    public List<LandingZone> landingZones = new List<LandingZone>();
-
-    
-    
-    public List<LocalizedItem> items = new List<LocalizedItem>();
+    private List<LandingZone> landingZones = new List<LandingZone>();
+    private List<LocalizedItem> items = new List<LocalizedItem>();
     
     
     private void Awake() {
@@ -26,7 +23,7 @@ public class PlanetGen : MonoBehaviour
         
         landingZones.Add( new LZrefuel(Vector3.right) );
         landingZones.Add( new LZrefuel(Vector3.up) );
-        
+        landingZones.Add( new LZradar(Vector3.forward) );
         
         generateCrystals();
     }
@@ -65,11 +62,26 @@ public class PlanetGen : MonoBehaviour
     }
     
     
+    public List<LocalizedObject> getObjects() {
+        List<LocalizedObject> objects = new List<LocalizedObject>();
+        objects.AddRange(landingZones);
+        objects.AddRange( items );
+        
+        return objects;
+    }
+    
+    public List<LandingZone> getLandingZones() {
+        return landingZones;
+    }
+    
+    public List<LocalizedItem> GetItems() {
+        return items;
+    }
     
     private void generateCrystals() {
         
         for( int i=0; i<crystalsCount; i++ ) {
-            AddItem( new Crystal(), Random.onUnitSphere  );
+            AddItem( new Crystal(), UnityEngine.Random.onUnitSphere  );
         }
         
     }

@@ -75,7 +75,7 @@ public class TerrainDebug : MonoBehaviour
     
     public void UpdateLZs() {
         LZsDir = new List<Vector3>();
-        foreach( LandingZone lz in planetGen.landingZones ) {
+        foreach( LandingZone lz in planetGen.getLandingZones() ) {
             LZsDir.Add( lz.Position.normalized );
         }
     }

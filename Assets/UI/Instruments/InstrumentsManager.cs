@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,6 +42,20 @@ public class InstrumentsManager : MonoBehaviour
     {
     }
     
+    
+    public void AddKnownObjects(LinkedList<LocalizedObject> knownObjects) {
+        foreach( LocalizedObject obj in knownObjects ) {
+            AddKnownObject(obj);
+        }
+    }
+    
+    public void AddKnownObject(LocalizedObject knownObject) {
+        if( knownObject is LandingZone ) {
+            KnownLZ.Add((LandingZone)knownObject);
+        }
+    }
+    
+    
     public InstrumentBehaviour GetInstrumentInstance( InstrumentType type ) {
         return instrumentsInstances[(int)type];
     }
@@ -57,7 +72,9 @@ public class InstrumentsManager : MonoBehaviour
             instrument.gameObject.SetActive(true);
         // }
     }
+
     
+
     public void DisableInstrument( InstrumentBehaviour instrument ) {
         instrument.gameObject.SetActive(false);
         UImanager.Instance.lander.RemoveInstrument(instrument);

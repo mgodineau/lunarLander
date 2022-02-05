@@ -1165,7 +1165,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -73.715, y: -0.052495956}
+  m_AnchoredPosition: {x: -73.71499, y: -0.052495956}
   m_SizeDelta: {x: 147.43, y: -0.105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1233468832
@@ -1414,6 +1414,7 @@ MonoBehaviour:
   _planet: {fileID: 1367041150}
   lzDefaultPref: {fileID: 2101822519677190122, guid: c9d043661dcdfbb4092a4d4503cbba4b, type: 3}
   lzFuelPref: {fileID: 3211073945083263712, guid: 55d377c43a882be49b556e9c3283dcbd, type: 3}
+  lzRadarPref: {fileID: 3172740961234988961, guid: f579a24806f70654aaadd8c7b323ac2e, type: 3}
   crystalPref: {fileID: 1625697351226136379, guid: 25432f750c2b8594b906a1e7453309db, type: 3}
   cratePref: {fileID: 7341252185170020034, guid: f68a993a41e25dd408bf5cdd94624016, type: 3}
 --- !u!114 &1367041153
