@@ -17,9 +17,8 @@ public class LocalizedItem : LocalizedObject
         
         instance.transform.position = position;
         instance.transform.rotation = Quaternion.Euler(0, 0, rotation);
-        // instance.transform.SetParent(parent, true);
         
-        return instance.objectBehaviour;
+        return instance;
     }
     
     
@@ -33,7 +32,7 @@ public class LocalizedItem : LocalizedObject
     {}
     
     public LocalizedItem( InventoryItem item, Vector3 position, bool isGrounded = true, float height = 0, float rotation = 0 ) 
-    : base(position, isGrounded, height, rotation) 
+    : base(position, isGrounded, false, height, rotation) 
     {
         this._item = item;
     }

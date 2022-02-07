@@ -9,6 +9,7 @@ public abstract class UIwireframeElement : MonoBehaviour
     private LineData borderLine = new LineData();
     private RectTransform rectTransform;
 
+    private Rect lastLocalRect;
     private Rect screenRect;
     
     [SerializeField]
@@ -37,6 +38,18 @@ public abstract class UIwireframeElement : MonoBehaviour
 
     protected void Start()
     {
+        BuildUI();
+    }
+    
+    protected void Update() {
+        bool resolutionChange = UImanager.Instance.instrumentsManager.CanvasRect.rect != lastLocalRect;
+        if(resolutionChange) {
+            BuildUI();
+        }
+    }
+    
+    
+    protected virtual void BuildUI() {
         UpdateScreenRect();
         UpdateBorder();
     }
@@ -74,8 +87,10 @@ public abstract class UIwireframeElement : MonoBehaviour
     private void UpdateScreenRect()
     {
         Vector3[] canvasCorners = new Vector3[4];
-        UImanager.Instance.instrumentsManager.CanvasRect.GetWorldCorners(canvasCorners);
-
+        RectTransform uiRectTransform = UImanager.Instance.instrumentsManager.CanvasRect;
+        uiRectTransform.GetWorldCorners(canvasCorners);
+        lastLocalRect = uiRectTransform.rect;
+        
         Vector3[] localCorners = new Vector3[4];
         rectTransform.GetWorldCorners(localCorners);
 

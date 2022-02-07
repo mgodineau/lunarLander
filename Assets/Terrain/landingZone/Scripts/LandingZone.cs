@@ -4,7 +4,7 @@ public abstract class LandingZone : LocalizedObject
 {
     
     
-    protected LandingZone(Vector3 position) : base( position ) {}
+    protected LandingZone(Vector3 position) : base( position, true, true ) {}
     
     
     public override ObjectBehaviour CreateInstance( Vector3 position)

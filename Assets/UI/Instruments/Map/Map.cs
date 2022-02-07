@@ -54,17 +54,6 @@ public class Map : InstrumentBehaviour
         image = GetComponent<Image>();
     }
     
-    new private void Start() {
-        base.Start();
-        
-        BuildLayout();
-        
-        EnableLayout();
-        EnableInfos();
-        
-        UpdateHeightmap();
-    }
-    
     
     new private void OnEnable() {
         base.OnEnable();
@@ -82,12 +71,28 @@ public class Map : InstrumentBehaviour
     
     
     
-    private void Update() {
+    new private void Update() {
+        base.Update();
+        
         UpdateLanderLocation();
         UpdateSliceLine();
         
         UpdateMarkers();
     }
+    
+    
+    protected override void BuildUI() {
+        base.BuildUI();
+        
+        BuildLayout();
+        
+        EnableLayout();
+        EnableInfos();
+        
+        UpdateHeightmap();
+    }
+    
+    
     
     
     /// <summary>
@@ -351,5 +356,6 @@ public class Map : InstrumentBehaviour
             wireframeRender.linesUI.Remove( line );
         }
     }
+
     
 }

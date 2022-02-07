@@ -2,24 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(ObjectBehaviour))]
-public class LZbehaviour : MonoBehaviour
+public class LZbehaviour : ObjectBehaviour
 {
-    
-    private ObjectBehaviour objectBehaviour;
-    
     private LandingZone _lzScript;
     public LandingZone LZscript {
         get {return _lzScript;}
         set {
             _lzScript = value;
-            if( objectBehaviour == null ) {
-                objectBehaviour = GetComponent<ObjectBehaviour>();
-                objectBehaviour.obj = value;
-            }
         }
     }
-    
+
+    public override LocalizedObject LocObject {
+        get {return _lzScript;}
+    }
+
     [SerializeField]
     private List<GameObject> installationsPrefs = new List<GameObject>();
     private List<GameObject> installationsInstances = new List<GameObject>();

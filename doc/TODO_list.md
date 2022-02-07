@@ -20,11 +20,13 @@
 - gerer l'apparition les objets dans le TerrainManager
 - faire disparaitre les objets ramassé de la map
 
+
 # optimisations
 - optimiser le rendu wireframe du terrain (frustrum culling)
 
 
 # fini:
+- gérer le redimensionnement de la fenêtre
 - créer les items à ramasser ( + localisation sur la carte)
 - rotation thrust
 - rotation thrust visibles

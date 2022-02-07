@@ -27,15 +27,7 @@ public class FuelGauge : InstrumentBehaviour
     public override string Name {
         get{ return "Fuel gauge"; }
     }
-
-    new private void Start() {
-        base.Start();
-        
-        
-        CreateGraduation();
-        CreateCursor();
-        EnableDisplay();
-    }
+    
     
     
     new private void OnEnable() {
@@ -53,8 +45,19 @@ public class FuelGauge : InstrumentBehaviour
     
     
     
-    private void Update() {
+    new private void Update() {
+        base.Update();
+        
         UpdateCursor();
+    }
+    
+    
+    protected override void BuildUI() {
+        base.BuildUI();
+        
+        CreateGraduation();
+        CreateCursor();
+        EnableDisplay();
     }
     
     
@@ -65,6 +68,9 @@ public class FuelGauge : InstrumentBehaviour
         // foreach( LineData line in graduations ) {
         //     WireframeRender.Instance.linesUI.Remove(line);
         // }
+        bool enabled = this.enabled;
+        this.enabled = false;
+        
         graduations = new List<LineData>();
         
         
@@ -95,7 +101,7 @@ public class FuelGauge : InstrumentBehaviour
             
         }
         
-        
+        this.enabled = enabled;
         // foreach( LineData line in graduations ) {
         //     WireframeRender.Instance.linesUI.Add(line);
         // }
@@ -106,6 +112,7 @@ public class FuelGauge : InstrumentBehaviour
     
     private void CreateCursor() {
         
+        cursor.points.Clear();
         float marginY = marginX *0.5f;
         
         // WireframeRender.Instance.linesUI.Remove(cursor);
@@ -117,7 +124,7 @@ public class FuelGauge : InstrumentBehaviour
         cursorPath.Add( LocalToGlobal( new Vector3(cursorWidth-marginY, marginY, 0) ) );
         cursorPath.Add( LocalToGlobal( new Vector3(0, marginY, 0) ) );
         
-        cursor = new LineData(cursorPath);
+        cursor.points =cursorPath;
         
         // WireframeRender.Instance.linesUI.Add(cursor);
     }

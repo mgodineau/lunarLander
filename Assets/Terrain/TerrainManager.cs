@@ -386,8 +386,9 @@ public class TerrainManager : MonoBehaviour
     
     
     public void UpdateObjetsDisplay() {
-        UpdateObjetsDisplay(_planet.getLandingZones(), true);
-        UpdateObjetsDisplay(_planet.GetItems(), false);
+        // UpdateObjetsDisplay(_planet.getLandingZones(), true);
+        // UpdateObjetsDisplay(_planet.GetItems(), false);
+        UpdateObjetsDisplay( _planet.getObjects() );
     }
     
     
@@ -395,9 +396,8 @@ public class TerrainManager : MonoBehaviour
     /// Met à jour l'affichage d'une collection d'objets sur le terrain. Si l'objet n'est pas présent, il est créé. Sinon, sa position est mise à jour.
     /// </summary>
     /// <param name="objects"> une collection d'objets à afficher </param>
-    /// <param name="flattenTerrain">  détermine si le terrain doit être applatit autour de l'objet</param>
     /// <remarks> Les listes vertices et bgVertices peuvent être modifées si flattenTerrain = true </remarks>
-    private void UpdateObjetsDisplay(IEnumerable<LocalizedObject> objects, bool flattenTerrain)
+    private void UpdateObjetsDisplay(IEnumerable<LocalizedObject> objects)
     {
         float objCosThreshold = objSideThreshold / _terrainWidth;
 
@@ -416,13 +416,13 @@ public class TerrainManager : MonoBehaviour
                 
                 int xId = (int)(sampleCount * angle / 360.0f);
 
-                float localRatio = flattenTerrain ? 0.5f : (angle * sampleCount / 360.0f) % 1.0f;
+                float localRatio = obj.flattenTerrain ? 0.5f : (angle * sampleCount / 360.0f) % 1.0f;
 
                 float y = obj.isGrounded ? 
                     Mathf.Lerp(points[xId].y, points[xId + 1].y, localRatio) : 
                     obj.height;
                 
-                if (flattenTerrain && obj.isGrounded)
+                if (obj.flattenTerrain && obj.isGrounded)
                 {
                     for( int offset = 0; offset<2; offset++ ) {
                         SetVerticeHeight(xId+offset, 0, y);
@@ -448,13 +448,6 @@ public class TerrainManager : MonoBehaviour
                     ObjectBehaviour instance = obj.CreateInstance(position);
                     objToPrefInstance.Add(obj, instance);
                     instance.transform.SetParent(transform, false);
-                }
-                else
-                {
-                    // objToPrefInstance[obj].Update //TODO
-                    // GameObject instance = objToPrefInstance[obj];
-                    // instance.transform.SetParent(transform, false);
-                    // instance.transform.localPosition = position;
                 }
 
 

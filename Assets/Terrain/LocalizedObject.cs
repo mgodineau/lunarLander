@@ -17,7 +17,7 @@ public abstract class LocalizedObject
     public float rotation;
     
     public bool isGrounded;
-    
+    public bool flattenTerrain;
     
 
     public abstract ObjectBehaviour CreateInstance(Vector3 position);
@@ -28,14 +28,15 @@ public abstract class LocalizedObject
     protected LocalizedObject() : this(Vector3.right) { }
     
     protected LocalizedObject(Vector3 position, float height, float rotation = 0) 
-        : this( position, false, height, rotation ) {}
+        : this( position, false, false, height, rotation ) {}
     
-    protected LocalizedObject(Vector3 position, bool isGrounded = true, float height = 0, float rotation = 0)
+    protected LocalizedObject(Vector3 position, bool isGrounded = true, bool flattenTerrain = false, float height = 0, float rotation = 0)
     {
         Position = position;
+        this.isGrounded = isGrounded;
+        this.flattenTerrain = flattenTerrain;
         this.height = height;
         this.rotation = rotation;
-        this.isGrounded = isGrounded;
     }
 
 }

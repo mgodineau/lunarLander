@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectBehaviour : MonoBehaviour
+public abstract class ObjectBehaviour : MonoBehaviour
 {
     
-    public LocalizedObject obj;
+    public abstract LocalizedObject LocObject {
+        get;
+    }
     
     
 }
