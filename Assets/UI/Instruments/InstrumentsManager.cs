@@ -21,9 +21,9 @@ public class InstrumentsManager : MonoBehaviour
     
     
     //zones d'atterrissage connues
-    private HashSet<LandingZone> _knownLZ = new HashSet<LandingZone>();
-    public HashSet<LandingZone> KnownLZ {
-        get{ return _knownLZ; }
+    private HashSet<LocalizedObject> _knownObjects = new HashSet<LocalizedObject>();
+    public HashSet<LocalizedObject> KnownObjects {
+        get{ return _knownObjects; }
     }
     
         
@@ -43,16 +43,14 @@ public class InstrumentsManager : MonoBehaviour
     }
     
     
-    public void AddKnownObjects(LinkedList<LocalizedObject> knownObjects) {
+    public void AddKnownObjects(IEnumerable<LocalizedObject> knownObjects) {
         foreach( LocalizedObject obj in knownObjects ) {
             AddKnownObject(obj);
         }
     }
     
     public void AddKnownObject(LocalizedObject knownObject) {
-        if( knownObject is LandingZone ) {
-            KnownLZ.Add((LandingZone)knownObject);
-        }
+        KnownObjects.Add(knownObject);
     }
     
     

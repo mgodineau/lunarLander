@@ -60,13 +60,10 @@ public class TerrainManager : MonoBehaviour
     }
 
     //prefab des objets
-    [SerializeField] public LZbehaviour lzDefaultPref;
-    [SerializeField] public LZbehaviour lzFuelPref;
-    [SerializeField] public LZbehaviour lzRadarPref;
-
-    [SerializeField] public ItemBehaviour crystalPref;
-    [SerializeField] public ItemBehaviour cratePref;
-
+    [SerializeField] private PrefabSet _prefabs;
+    public PrefabSet Prefabs {
+        get {return _prefabs;}
+    }
 
     //instances des ZA
     private Dictionary<LocalizedObject, ObjectBehaviour> objToPrefInstance = new Dictionary<LocalizedObject, ObjectBehaviour>();
@@ -513,11 +510,11 @@ public class TerrainManager : MonoBehaviour
     /// <summary>
     /// détermine si une zone d'atterrissage spécifiée est visible
     /// </summary>
-    /// <param name="lz"> une zone d'atterrissage </param>
-    /// <returns>si une zone d'atterrissage spécifiée est visible</returns>
-    public bool IsLZvisible(LandingZone lz)
+    /// <param name="obj"> un objet du monde </param>
+    /// <returns>si un objet spécifié est visible</returns>
+    public bool IsObjectVisible(LocalizedObject obj)
     {
-        return objToPrefInstance.ContainsKey(lz);
+        return objToPrefInstance.ContainsKey(obj);
     }
 
     public Vector3 ConvertXtoDir(float x)

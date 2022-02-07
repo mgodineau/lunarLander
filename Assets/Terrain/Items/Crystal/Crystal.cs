@@ -29,7 +29,7 @@ public class Crystal : InventoryItem
 
     public override ItemBehaviour InstantiateWorldItem( LocalizedItem locItem )
     {
-        GameObject instance = GameObject.Instantiate( TerrainManager.Instance.crystalPref.gameObject);
+        GameObject instance = GameObject.Instantiate( TerrainManager.Instance.Prefabs.CrystalPref.gameObject);
         ItemBehaviour behaviour = instance.GetComponent<ItemBehaviour>();
         behaviour.LocItem = locItem;
         

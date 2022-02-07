@@ -33,7 +33,7 @@ public class FuelTank : InventoryItem
     
     public override ItemBehaviour InstantiateWorldItem( LocalizedItem locItem )
     {
-        GameObject instance = GameObject.Instantiate( TerrainManager.Instance.cratePref.gameObject );
+        GameObject instance = GameObject.Instantiate( TerrainManager.Instance.Prefabs.CratePref.gameObject );
         ItemBehaviour itemBehaviour = instance.GetComponent<ItemBehaviour>();
         itemBehaviour.LocItem = locItem;
         

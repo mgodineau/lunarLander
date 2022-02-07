@@ -9,20 +9,23 @@
 
 
 # gameplay :
-- créer les items à ramasser ( + localisation sur la carte)
-- créer la zone de dépot des items pour construire la fusée
+- **créer la zone de dépot des items pour construire la fusée**
 - gérer la fin du jeu
-- ajouter les constantes de la gestion du fuel
-
-
+- ajuster les constantes de la gestion du fuel
+- faire la génération aléatoire des LZ et des objets du monde
+- retravailler le refuel
 
 
 # bugs
 - gerer l'apparition les objets dans le TerrainManager
+- faire disparaitre les objets ramassé de la map
+
+# optimisations
 - optimiser le rendu wireframe du terrain (frustrum culling)
 
 
 # fini:
+- créer les items à ramasser ( + localisation sur la carte)
 - rotation thrust
 - rotation thrust visibles
 - station radar
@@ -46,6 +49,7 @@
 - destruction si atterrissage trop violents
 - transition douce avec la lumière
 - fix le pb de lignes à travers le sol
+
 
 
 # canceled :

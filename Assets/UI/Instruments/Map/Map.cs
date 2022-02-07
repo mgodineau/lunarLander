@@ -11,12 +11,14 @@ public class Map : InstrumentBehaviour
     [SerializeField] private int linesResolution = 10;
     [SerializeField] private int textureResolution = 50;
     
-    [SerializeField]private float iconWidth = 0.01f;
+    [SerializeField] private float iconWidth = 0.01f;
     
     [SerializeField] private float sliceDelta = 10.0f;
     
-    [SerializeField] Color landerColor = Color.red;
-    [SerializeField] Color lzColor = Color.blue;
+    [SerializeField] private Color landerColor = Color.red;
+    [SerializeField] private Color lzRefuelColor = Color.yellow;
+    [SerializeField] private Color lzRadarColor = Color.blue;
+    [SerializeField] private Color rocketPartColor = Color.green;
     
     
     private Image image;
@@ -28,7 +30,7 @@ public class Map : InstrumentBehaviour
     // informations
     LineData landerPos;   //position du lander
     LineData sliceLine;   //section visitée
-    Dictionary< LandingZone, LineData> knownLZtoDisp = new Dictionary<LandingZone, LineData>();
+    Dictionary<LocalizedObject, LineData> knownObjectToMarker = new Dictionary<LocalizedObject, LineData>();
     
     public override float Mass {
         get{ return 1; }
@@ -83,7 +85,8 @@ public class Map : InstrumentBehaviour
     private void Update() {
         UpdateLanderLocation();
         UpdateSliceLine();
-        UpdateLZ();
+        
+        UpdateMarkers();
     }
     
     
@@ -150,31 +153,43 @@ public class Map : InstrumentBehaviour
     }
     
     
-    /// <summary>
-    /// MAJ des positions des LZ
-    /// </summary>
-    private void UpdateLZ()
+    
+    
+    private void UpdateMarkers()
     {
         
-        foreach( LandingZone currentLZ in UImanager.Instance.instrumentsManager.KnownLZ ) {
+        foreach( LocalizedObject currentObj in UImanager.Instance.instrumentsManager.KnownObjects ) {
             
-            
-            if( !knownLZtoDisp.ContainsKey(currentLZ) ) {
+            //creation d'un marker si besoin
+            if( !knownObjectToMarker.ContainsKey(currentObj) ) {
                 
-                LineData line = new LineData( lzColor );
+                LineData line = new LineData( GetMarkerColor(currentObj) );
                 
                 WireframeRender.Instance.linesUI.Add(line);
-                knownLZtoDisp.Add(currentLZ, line );
+                knownObjectToMarker.Add(currentObj, line );
                 
             }
             
-            knownLZtoDisp[currentLZ].points = CreateSquareLine(
-                LocalToGlobal(dirToLocalPos(currentLZ.Position)) , 
-                TerrainManager.Instance.IsLZvisible( currentLZ ) ? iconWidth : iconWidth / 2
+            //MAJ de la position du parker
+            knownObjectToMarker[currentObj].points = CreateSquareLine(
+                LocalToGlobal(dirToLocalPos(currentObj.Position)) , 
+                TerrainManager.Instance.IsObjectVisible( currentObj ) ? iconWidth : iconWidth / 2
             );
             
         }
         
+    }
+    
+    private Color GetMarkerColor( LocalizedObject obj ) {
+        Color color = landerColor;
+        if( obj is LZradar ) {
+            color = lzRadarColor;
+        } else if( obj is LZrefuel ) {
+            color = lzRefuelColor;
+        } else if( obj is LocalizedItem) {
+            color = rocketPartColor;
+        }
+        return color;
     }
     
     
@@ -316,7 +331,7 @@ public class Map : InstrumentBehaviour
         wireframeRender.linesUI.Add( landerPos );
         wireframeRender.linesUI.Add( sliceLine );
         
-        foreach( LineData line in knownLZtoDisp.Values ) {
+        foreach( LineData line in knownObjectToMarker.Values ) {
             wireframeRender.linesUI.Add( line );
         }
     }
@@ -332,7 +347,7 @@ public class Map : InstrumentBehaviour
         wireframeRender.linesUI.Remove( landerPos );
         wireframeRender.linesUI.Remove( sliceLine );
         
-        foreach( LineData line in knownLZtoDisp.Values ) {
+        foreach( LineData line in knownObjectToMarker.Values ) {
             wireframeRender.linesUI.Remove( line );
         }
     }

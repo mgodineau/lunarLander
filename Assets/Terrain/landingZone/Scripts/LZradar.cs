@@ -25,7 +25,7 @@ public class LZradar : LandingZone
 
 	protected override LZbehaviour PrefToInstantiate()
 	{
-		return TerrainManager.Instance.lzRadarPref;
+		return TerrainManager.Instance.Prefabs.LzRadarPref;
 	}
 
 

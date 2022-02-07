@@ -25,7 +25,7 @@ public class LZrefuel : LandingZone
 
     protected override LZbehaviour PrefToInstantiate()
     {
-        return TerrainManager.Instance.lzFuelPref;
+        return TerrainManager.Instance.Prefabs.LzFuelPref;
     }
 
 
