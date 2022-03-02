@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 288af5ba021c9974bb6f1a2f8ead3045, type: 3}
   m_Name: level
   m_EditorClassIdentifier: Assembly-CSharp::WorldParameters
-  _rocketPartsCount: 10
+  _rocketPartsCount: 2

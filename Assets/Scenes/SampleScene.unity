@@ -562,9 +562,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.35, y: 0}
-  m_AnchorMax: {x: 0.65, y: 0.5}
+  m_AnchorMax: {x: 0.65000004, y: 0.45}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0.0000038146973}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &581443289
 CanvasRenderer:
@@ -1430,7 +1430,7 @@ MonoBehaviour:
   bgSampleCount: 15
   bottomY: -50
   bottomZ: -50
-  objSideThreshold: 1
+  objCosThreshold: 0.05
   terrainSideMaterial: {fileID: 2100000, guid: 4d388fc0e112ff440bc100656ea78a35, type: 2}
   terrainMaterial: {fileID: 2100000, guid: d7310ee0a6c355a4ea49ef0d53a59095, type: 2}
   _planet: {fileID: 1367041150}
@@ -2297,6 +2297,10 @@ PrefabInstance:
       propertyPath: minMass
       value: 2000
       objectReference: {fileID: 0}
+    - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
+      propertyPath: clipCrash
+      value: 
+      objectReference: {fileID: 8300000, guid: 6d305d9d6584cef4c932c754edf63668, type: 3}
     - target: {fileID: 1043752572, guid: 6f76bda99855fb944a88263d551b4e91, type: 3}
       propertyPath: clipThrust
       value: 

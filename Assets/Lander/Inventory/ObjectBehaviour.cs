@@ -10,4 +10,21 @@ public abstract class ObjectBehaviour : MonoBehaviour
     }
     
     
+    [SerializeField]
+    private float _groundOffset = 0;
+    public float GroundOffset {
+        get {return _groundOffset;}
+        set {
+            _groundOffset = Mathf.Max(0, value);
+        }
+    }
+    
+    
+    public void SetPosition( Vector3 position ) {
+        
+        position.y += _groundOffset;
+        transform.position = position;
+    }
+    
+    
 }

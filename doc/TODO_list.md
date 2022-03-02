@@ -4,28 +4,31 @@
 - ajouter les minuscules dans la police wireframe
 
 ## sons : 
-- destruction
 - click des menus
 
 
 # gameplay :
-- **créer la zone de dépot des items pour construire la fusée**
 - gérer la fin du jeu
 - ajuster les constantes de la gestion du fuel
 - faire la génération aléatoire des LZ et des objets du monde
-- retravailler le refuel
+- limiter l'inventaire
 
 
 # bugs
-- gerer l'apparition les objets dans le TerrainManager
 - faire disparaitre les objets ramassé de la map
-
+- MAJ de la position des obj physiques dans le monde sous-jascent
 
 # optimisations
 - optimiser le rendu wireframe du terrain (frustrum culling)
 
 
+
 # fini:
+- fading effect quand on arrête le son du thrust
+- son de destruction
+- créer la zone de dépot des items pour construire la fusée
+- retravailler le refuel
+- gerer l'apparition les objets dans le TerrainManager
 - gérer le redimensionnement de la fenêtre
 - créer les items à ramasser ( + localisation sur la carte)
 - rotation thrust

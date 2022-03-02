@@ -9,6 +9,7 @@ public class PrefabSet : ScriptableObject
     [SerializeField] private LZbehaviour _lzDefaultPref;
     [SerializeField] private LZbehaviour _lzFuelPref;
     [SerializeField] private LZbehaviour _lzRadarPref;
+    [SerializeField] private LZbehaviour _lzRocketBuilderPref;
     
     [SerializeField] private ItemBehaviour _crystalPref;
     [SerializeField] private ItemBehaviour _cratePref;
@@ -22,6 +23,10 @@ public class PrefabSet : ScriptableObject
     }
     public LZbehaviour LzRadarPref {
         get {return _lzRadarPref;}
+    }
+    
+    public LZbehaviour LzRocketBuilderPref {
+        get {return _lzRocketBuilderPref;}
     }
     
     public ItemBehaviour CrystalPref {

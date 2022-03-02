@@ -15,5 +15,6 @@ MonoBehaviour:
   _lzDefaultPref: {fileID: 2101822519677190122, guid: c9d043661dcdfbb4092a4d4503cbba4b, type: 3}
   _lzFuelPref: {fileID: 3211073945083263712, guid: 55d377c43a882be49b556e9c3283dcbd, type: 3}
   _lzRadarPref: {fileID: 3172740961234988961, guid: f579a24806f70654aaadd8c7b323ac2e, type: 3}
+  _lzRocketBuilderPref: {fileID: 8951643057685274658, guid: adb9e828d13bb2e42bfc9a00271300f9, type: 3}
   _crystalPref: {fileID: 1625697351226136379, guid: 25432f750c2b8594b906a1e7453309db, type: 3}
   _cratePref: {fileID: 7341252185170020034, guid: f68a993a41e25dd408bf5cdd94624016, type: 3}

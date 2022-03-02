@@ -13,6 +13,8 @@ public abstract class LocalizedObject
         set { _position = value.normalized; }
     }
     
+    
+    
     public float height;
     public float rotation;
     

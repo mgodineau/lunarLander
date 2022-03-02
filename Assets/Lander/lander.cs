@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Animator))]
 public class Lander : InputConsumer
 {
@@ -49,16 +48,20 @@ public class Lander : InputConsumer
         get{ return _tank; }
     }
     
+    
+    
+    
     private HashSet<ItemBehaviour> pickableItems = new HashSet<ItemBehaviour>();
     private List<MenuEntry> pickableItemEntries = new List<MenuEntry>();
     
     private LZbehaviour currentLZ = null;
     
-    
     [SerializeField]
-    private AudioClip clipThrust;
+    private SoundFadeManager thrustSoundManager;
+    // [SerializeField]
+    // private AudioClip clipThrust;
     
-    private bool playSoundThrust = false;
+    // private bool playSoundThrust = false;
     
     
     
@@ -71,7 +74,7 @@ public class Lander : InputConsumer
         
         _inventory = new InventoryManager( this, 4000 );
         
-        _tank = new FuelTank(3000);
+        _tank = new FuelTank(500);
         _inventory.AddItem(_tank);
     }
     
@@ -109,7 +112,8 @@ public class Lander : InputConsumer
             anim.SetInteger("rotationState", torqueDir);
             
             
-            playSoundThrust = thrustInput || torqueDir != 0;
+            //playSoundThrust = thrustInput || torqueDir != 0;
+            thrustSoundManager.Play = thrustInput || torqueDir != 0;
         }
         
         
@@ -136,14 +140,14 @@ public class Lander : InputConsumer
         
         
         // gestion du son
-        if( playSoundThrust ) {
-            if( audioSource.clip != clipThrust || !audioSource.isPlaying ) {
-                audioSource.clip = clipThrust;
-                audioSource.Play();
-            }
-        } else if ( audioSource.isPlaying && audioSource.clip == clipThrust ) {
-            audioSource.Stop();
-        }
+        // if( playSoundThrust ) {
+        //     if( audioSource.clip != clipThrust || !audioSource.isPlaying ) {
+        //         audioSource.clip = clipThrust;
+        //         audioSource.Play();
+        //     }
+        // } else if ( audioSource.isPlaying && audioSource.clip == clipThrust ) {
+        //     audioSource.Stop();
+        // }
         
         
         

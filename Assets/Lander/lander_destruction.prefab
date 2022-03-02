@@ -148,6 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &385202515483171352
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,6 +297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1711133764091439785
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,6 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &2389897961002832746
 GameObject:
   m_ObjectHideFlags: 0
@@ -592,6 +595,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &2643896211655101999
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,6 +744,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &5690095909401071850
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,6 +755,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5025059207048677968}
   - component: {fileID: 2681067708670959720}
+  - component: {fileID: 7488204755208135903}
   m_Layer: 0
   m_Name: lander_destruction
   m_TagString: Untagged
@@ -802,6 +808,102 @@ MonoBehaviour:
   - {fileID: 8166137458629118183}
   - {fileID: 102048842092356933}
   - {fileID: 8166137458629118181}
+--- !u!82 &7488204755208135903
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5690095909401071850}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 4576734752029887054, guid: 2267976d2462f164b92542598e78c90d, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 6d305d9d6584cef4c932c754edf63668, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7802595898437140876
 GameObject:
   m_ObjectHideFlags: 0
@@ -950,6 +1052,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &7939089473121826460
 GameObject:
   m_ObjectHideFlags: 0
@@ -1100,6 +1203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &7986559816141638772
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,6 +1352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &8685199594397619750
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,3 +1503,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeDiagonals: 1
   diagThreshold: 1
+  color: {r: 1, g: 1, b: 1, a: 1}

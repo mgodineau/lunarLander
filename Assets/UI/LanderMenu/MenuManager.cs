@@ -182,8 +182,8 @@ public class MenuEntryEmpty : MenuEntry
 
 public class SubMenu : MenuEntry
 {
-    private List<MenuEntry> _content;
-    public List<MenuEntry> Content
+    private IEnumerable<MenuEntry> _content;
+    public IEnumerable<MenuEntry> Content
     {
         get { return _content; }
     }
@@ -194,7 +194,7 @@ public class SubMenu : MenuEntry
     }
 
 
-    public SubMenu(string name, List<MenuEntry> content) : base(name)
+    public SubMenu(string name, IEnumerable<MenuEntry> content) : base(name)
     {
         this._content = content;
     }
