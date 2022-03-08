@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TerrainManager : MonoBehaviour
+public class TerrainManager : MonoBehaviour, IObjectsView
 {
 	//singleton
 	private static TerrainManager _instance;
@@ -79,7 +79,13 @@ public class TerrainManager : MonoBehaviour
 	{
 		get { return _sliceOrigine; }
 	}
-
+	
+	
+	private LinkedList<ISliceLineView> _sliceLineViews = new LinkedList<ISliceLineView>();
+	
+	
+	
+	
 	//propriétés privées du terrain
 	private EdgeCollider2D[] terrainColliders;
 	private Mesh terrainSideMesh;
@@ -98,12 +104,12 @@ public class TerrainManager : MonoBehaviour
 	{
 		_instance = this; //singleton
 
-		//récupération du générateur le planête si il est pas connu
+		//récupération du générateur le planête si il n'est pas connu
 		if (_planet == null)
 		{
 			_planet = GetComponent<PlanetGen>();
 		}
-
+		
 
 
 		//creation des objets du terrain
@@ -156,6 +162,8 @@ public class TerrainManager : MonoBehaviour
 			WireframeRender.Instance.linesGeometry.Add(line);
 		}
 		WireframeRender.Instance.linesGeometry.Add(frontLine);
+		
+		_planet.AddObjectsView(this);
 	}
 	
 
@@ -386,7 +394,7 @@ public class TerrainManager : MonoBehaviour
 	
 	
 	public void UpdateObjetsDisplay() {
-		UpdateObjetsDisplay( _planet.getObjects() );
+		UpdateObjectsDisplay( _planet.getObjects() );
 	}
 	
 	
@@ -395,17 +403,17 @@ public class TerrainManager : MonoBehaviour
 	/// </summary>
 	/// <param name="objects"> une collection d'objets à afficher </param>
 	/// <remarks> Les listes vertices et bgVertices peuvent être modifées si flattenTerrain = true </remarks>
-	private void UpdateObjetsDisplay(IEnumerable<LocalizedObject> objects)
+	private void UpdateObjectsDisplay(IEnumerable<LocalizedObject> objects)
 	{
 		
 		foreach (LocalizedObject obj in objects)
 		{
-		   UpdateObjetDisplay(obj);
+		   UpdateObjectDisplay(obj);
 		}
 	}
 
 
-	private void UpdateObjetDisplay(LocalizedObject obj) {
+	private void UpdateObjectDisplay(LocalizedObject obj) {
 
 		//cos de l'angle entre la direction de l'objet et la normale du plan de coupe
 		float normalCos = Mathf.Abs(Vector3.Dot(obj.Position, _sliceNormal));
@@ -445,6 +453,10 @@ public class TerrainManager : MonoBehaviour
 				
 				
 			} else {
+				if( !objToPrefInstance[obj].IsStatic() ) {
+					return;
+				}
+				
 				x = objToPrefInstance[obj].transform.position.x;
 				xId = (int) (x * sampleCount / _terrainWidth);
 				if(xId < 0) {
@@ -473,11 +485,12 @@ public class TerrainManager : MonoBehaviour
 			
 			Vector3 position = new Vector3(x, y, 0);
 
-			if (!objToPrefInstance.ContainsKey(obj))
+			if (!instanceExists)
 			{
 				ObjectBehaviour instance = obj.CreateInstance(position);
 				objToPrefInstance.Add(obj, instance);
 				instance.transform.SetParent(transform, false);
+				instance.sliceNormal = SliceNormal;
 			}
 
 			objToPrefInstance[obj].SetPosition(position);
@@ -529,6 +542,9 @@ public class TerrainManager : MonoBehaviour
 		_sliceOrigine = (rotation * _sliceOrigine).normalized;
 
 		UpdateTerrain();
+		foreach( ISliceLineView view in _sliceLineViews ) {
+			view.UpdateSliceLine(_sliceNormal);
+		}
 	}
 
 	/// <summary>
@@ -549,7 +565,16 @@ public class TerrainManager : MonoBehaviour
 		}
 		return (Quaternion.AngleAxis(360.0f * x / _terrainWidth, _sliceNormal) * _sliceOrigine).normalized;
 	}
-
+	
+	
+	public void UpdateObjectLocation( ObjectBehaviour obj ) {
+		Vector3 rawPosition = ConvertXtoDir( obj.transform.position.x );
+		obj.LocObject.Position = Vector3.ProjectOnPlane(rawPosition, obj.sliceNormal).normalized;
+		Planet.NotifyUpdateObject(obj.LocObject);
+	}
+	
+	
+	
 	/// <summary>
 	/// renvoie la hauteur du terrain pour la position spécifiée, en effectuant une interpolation
 	/// </summary>
@@ -672,10 +697,37 @@ public class TerrainManager : MonoBehaviour
 		}
 	}
 	
+	
 	public void RemoveObject( LocalizedObject obj ) {
-		objToPrefInstance.Remove(obj);
-		Planet.RemoveObject( obj );
+		
+		if( objToPrefInstance.ContainsKey(obj) ) {
+			Destroy( objToPrefInstance[obj].gameObject );
+			objToPrefInstance.Remove(obj);
+		}
 	}
 	
 	
+	public void AddSliceLineView( ISliceLineView view ) {
+		view.UpdateSliceLine( _sliceNormal );
+		_sliceLineViews.AddLast(view);
+	}
+	
+	
+	
+	
+	
+	public void SetObjectsCollection(IEnumerable<LocalizedObject> objects)
+	{
+		UpdateObjectsDisplay(objects);
+	}
+
+	public void UpdateObject(LocalizedObject obj)
+	{
+		UpdateObjectDisplay(obj);
+	}
+
+	public void AddObject(LocalizedObject obj)
+	{
+		UpdateObjectDisplay(obj);
+	}
 }

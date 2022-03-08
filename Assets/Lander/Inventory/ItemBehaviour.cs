@@ -19,8 +19,7 @@ public class ItemBehaviour : ObjectBehaviour
 
     public LocalizedItem Pickup() 
 	{
-		TerrainManager.Instance.RemoveObject(LocItem);
-		Destroy( gameObject );
+		RemoveFromWorld();
 		return LocItem;
 	}
 	

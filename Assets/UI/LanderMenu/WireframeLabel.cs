@@ -53,7 +53,7 @@ public class WireframeLabel : UIwireframeElement
     new private void OnEnable()
     {
         base.OnEnable();
-
+        
         EnableText();
     }
 

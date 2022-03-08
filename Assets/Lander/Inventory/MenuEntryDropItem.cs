@@ -17,12 +17,13 @@ class MenuEntryDropItem : MenuEntry
         inventory.RemoveItem(_item);
         
         Vector3 containerPosition = inventory.GetDropPosition();
-        TerrainManager.Instance.Planet.AddItem(
+        LocalizedItem locItem = TerrainManager.Instance.Planet.AddItem(
             _item, 
             TerrainManager.Instance.ConvertXtoDir(containerPosition.x), 
             containerPosition.y );
         
-        TerrainManager.Instance.UpdateObjetsDisplay();
+        UImanager.Instance.instrumentsManager.AddKnownObject(locItem);
+        // TerrainManager.Instance.UpdateObjetsDisplay();
     }
     
     

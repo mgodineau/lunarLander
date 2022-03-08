@@ -139,17 +139,6 @@ public class Lander : InputConsumer
         
         
         
-        // gestion du son
-        // if( playSoundThrust ) {
-        //     if( audioSource.clip != clipThrust || !audioSource.isPlaying ) {
-        //         audioSource.clip = clipThrust;
-        //         audioSource.Play();
-        //     }
-        // } else if ( audioSource.isPlaying && audioSource.clip == clipThrust ) {
-        //     audioSource.Stop();
-        // }
-        
-        
         
         // affichage du menu
         if( CanProcessInput() && Input.GetKeyDown(KeyCode.S) ) {

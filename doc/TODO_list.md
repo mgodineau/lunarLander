@@ -2,6 +2,8 @@
 ## visuel :
 - écran titre
 - ajouter les minuscules dans la police wireframe
+- trouver une solution pour le curseur sur fond blanc
+- ajouter du blanc dans le rendu des lignes de couleur
 
 ## sons : 
 - click des menus
@@ -15,8 +17,7 @@
 
 
 # bugs
-- faire disparaitre les objets ramassé de la map
-- MAJ de la position des obj physiques dans le monde sous-jascent
+- gérer l'affichage des objets à la jonction des bords du terrain
 
 # optimisations
 - optimiser le rendu wireframe du terrain (frustrum culling)
@@ -24,6 +25,8 @@
 
 
 # fini:
+- faire disparaitre les objets ramassé de la map
+- MAJ de la position des obj physiques dans le monde sous-jascent
 - fading effect quand on arrête le son du thrust
 - son de destruction
 - créer la zone de dépot des items pour construire la fusée

@@ -28,6 +28,8 @@ public class MenuEntryUI : WireframeLabel
     
     
     new private void OnEnable() {
+        Debug.Log("OnEnable");
+        
         base.OnEnable();
         
         Deselect();
@@ -54,6 +56,7 @@ public class MenuEntryUI : WireframeLabel
     
     
     public void SetEntry( MenuEntry entry ) {
+        Debug.Log("SetEntry to \"" + entry.Name + "\"");
         linkedEntry = entry;
         
         // textUI.text = linkedEntry.Name;

@@ -17,6 +17,8 @@ public class PlanetGen : MonoBehaviour
 	private List<LandingZone> landingZones = new List<LandingZone>();
 	private List<LocalizedItem> items = new List<LocalizedItem>();
 	
+	private LinkedList<IObjectsView> _objectsViews = new LinkedList<IObjectsView>();
+	
 	
 	private void Awake() {
 		layers.Add( new RandomLayer(1, 30) );
@@ -32,43 +34,70 @@ public class PlanetGen : MonoBehaviour
 		landingZones.Add( new LZrocketBuilder(Vector3.forward + Vector3.right*0.2f, _levelParams) );
 		
 		generateRocketParts();
-		
-		UImanager.Instance.instrumentsManager.AddKnownObjects(getObjects());	//tmp
+	}
+	
+	private void Start() {
+		UImanager.Instance.instrumentsManager.AddKnownObjects(getObjects());	//tmp, pour debug
 	}
 	
 	
 	internal void RemoveObject(LocalizedObject obj)
 	{
 		if( obj is LocalizedItem ) {
-			RemoveItem( obj as LocalizedItem );
+			items.Remove( obj as LocalizedItem );
+		} else if( obj is LandingZone ) {
+			landingZones.Remove(obj as LandingZone);
 		}
+		NotifyRemoveObject(obj);
 	}
 	
-	public void RemoveItem(LocalizedItem item)
-	{
-		items.Remove(item);
-	}
 	
 	public void RemoveItem(InventoryItem item)
 	{
 		foreach( LocalizedItem locItem in items) {
 			if( locItem.Item == item ) {
-				RemoveItem(locItem);
-				break;
+				RemoveObject(locItem);
+				return;
 			}
 		}
 	}
 	
+	private void NotifyRemoveObject( LocalizedObject obj ) {
+		foreach( IObjectsView view in _objectsViews ) {
+			view.RemoveObject(obj);
+		}
+	}
+	
+	private void NotifyAddObject( LocalizedObject obj ) {
+		foreach( IObjectsView view in _objectsViews ) {
+			view.AddObject(obj);
+		}
+	}
+	
+	public void NotifyUpdateObject(LocalizedObject obj)
+	{
+		foreach( IObjectsView view in _objectsViews ) {
+			view.UpdateObject(obj);
+		}
+	}
+	
+	
 	public void AddItem(InventoryItem item, Vector3 spherePosition)
 	{
-		items.Add( new LocalizedItem(item, spherePosition) );
+		AddItem( new LocalizedItem(item, spherePosition) );
 	}
 	
-	public void AddItem(InventoryItem item, Vector3 spherePosition, float height, float rotation=0)
+	public LocalizedItem AddItem(InventoryItem item, Vector3 spherePosition, float height, float rotation=0)
 	{
-		items.Add( new LocalizedItem(item, spherePosition, height, rotation) );
+		LocalizedItem locItem = new LocalizedItem(item, spherePosition, height, rotation);
+		AddItem( locItem );
+		return locItem;
 	}
 	
+	public void AddItem( LocalizedItem item ) {
+		items.Add(item);
+		NotifyAddObject(item);
+	}
 	
 	public List<LocalizedObject> getObjects() {
 		List<LocalizedObject> objects = new List<LocalizedObject>();
@@ -136,5 +165,12 @@ public class PlanetGen : MonoBehaviour
 		}
 	}
 
+	
+	public void AddObjectsView( IObjectsView view ) {
+		view.SetObjectsCollection( getObjects() );
+		_objectsViews.AddLast(view);
+	}
+
+	
 	
 }
