@@ -141,7 +141,7 @@ public class Lander : InputConsumer
         
         
         // affichage du menu
-        if( CanProcessInput() && Input.GetKeyDown(KeyCode.S) ) {
+        if( CanProcessInput() && Input.GetKeyUp(KeyCode.S) ) {
             SubMenu mainMenu = CreateMainMenu();
             UImanager.Instance.menuManager.SetMenu( mainMenu );
         }

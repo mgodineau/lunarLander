@@ -5,8 +5,8 @@
 - trouver une solution pour le curseur sur fond blanc
 - ajouter du blanc dans le rendu des lignes de couleur
 
+
 ## sons : 
-- click des menus
 
 
 # gameplay :
@@ -21,10 +21,12 @@
 
 # optimisations
 - optimiser le rendu wireframe du terrain (frustrum culling)
-
+- essayer de faire 1 passe de shader par wireframe
 
 
 # fini:
+- ajouter les 8 variantes des clicks
+- click des menus
 - faire disparaitre les objets ramassé de la map
 - MAJ de la position des obj physiques dans le monde sous-jascent
 - fading effect quand on arrête le son du thrust
