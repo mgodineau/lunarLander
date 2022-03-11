@@ -21,7 +21,7 @@
 
 # optimisations
 - optimiser le rendu wireframe du terrain (frustrum culling)
-- essayer de faire 1 passe de shader par wireframe
+- essayer de faire 1 passe de shader par wireframe (avec des meshs)
 
 
 # fini:

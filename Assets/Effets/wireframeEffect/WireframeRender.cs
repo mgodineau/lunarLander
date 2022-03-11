@@ -68,21 +68,20 @@ public class WireframeRender : MonoBehaviour
 		//rendu de l'arrière plan
 		lineBackgroundDrawMaterial.SetPass(0);
 		GL.PushMatrix();
-		GL.LoadOrtho();
-		
-		foreach( LineData line in linesBackground ) {
-			GL.Begin( GL.LINE_STRIP );
-			GL.Color(line.LineColor);
+			GL.LoadOrtho();
 			
-			foreach( Vector3 pos in line.points ) {
-				GL.Vertex(pos);
+			foreach( LineData line in linesBackground ) {
+				GL.Begin( GL.LINE_STRIP );
+				GL.Color(line.LineColor);
+				
+				foreach( Vector3 pos in line.points ) {
+					GL.Vertex(pos);
+				}
+				GL.End();
 			}
-			GL.End();
-		}
 		GL.PopMatrix();
 		
 		
-		//TODO optimiser les perfs
 		//rendu des lignes en 3d
 		lineGeometryDrawMaterial.SetPass(0);
 		foreach( LineData line in linesGeometry ) {
@@ -95,26 +94,27 @@ public class WireframeRender : MonoBehaviour
 			
 			GL.End();
 		}
-		
+		//rendu des lignes 3d, mais avec des meshs
+		WireframeEffect.DrawAllNow();
 		
 		//rendu des lignes du HUD
 		uiLineDrawMaterial.SetPass(0);
 		GL.PushMatrix();
 		
-		GL.LoadOrtho();
-		foreach( LineData line in linesUI ) {
-			GL.Begin( GL.LINE_STRIP );
-			GL.Color( line.LineColor );
-			
-			foreach( Vector3 pos in line.points ) {
-				Vector3 pos2 = pos;
-				pos2.z = 0;
+			GL.LoadOrtho();
+			foreach( LineData line in linesUI ) {
+				GL.Begin( GL.LINE_STRIP );
+				GL.Color( line.LineColor );
 				
-				GL.Vertex(pos2);
+				foreach( Vector3 pos in line.points ) {
+					Vector3 pos2 = pos;
+					pos2.z = 0;
+					
+					GL.Vertex(pos2);
+				}
+				
+				GL.End();
 			}
-			
-			GL.End();
-		}
 		GL.PopMatrix();
 		
 		
