@@ -49,15 +49,17 @@ public class WireframeEffect : MonoBehaviour
 	
 	
 	
-	public static void DrawAllNow() {
+	public static void DrawAllNow( Material material ) {
 		foreach( WireframeEffect effect in registeredWireframeObjects ) {
-			effect.DrawNow();
+			effect.DrawNow(material);
 		}
 	}
 	
 	
-	private void DrawNow() {
-		
+	private void DrawNow( Material material ) {
+		//material.color = color;
+		material.SetColor("_Color", color);
+		material.SetPass(0);
 		Graphics.DrawMeshNow(wireframeMesh, transform.localToWorldMatrix, 0);
 	}
 	
@@ -71,9 +73,9 @@ public class WireframeEffect : MonoBehaviour
 		UpdateLinesFromMesh();
 	}
 	
-	private void OnRenderObject() {
+	// private void OnRenderObject() {
 		//Graphics.DrawMeshNow(wireframeMesh, transform.localToWorldMatrix, 0);
-	}
+	// }
 	
 	
 	private void UpdateLinesFromMesh()
@@ -84,140 +86,32 @@ public class WireframeEffect : MonoBehaviour
 			return;
 		}
 		
-		//TODO
 		Vector3[] vertices = meshFilter.mesh.vertices;
-		int[] triangles = new int[vertices.Length - vertices.Length % 3 ];
-		for( int i=0; i<triangles.Length; i++ ) {
-			triangles[i] = i;
+		
+		BetterMesh betterMesh = new BetterMesh(mesh);
+		HashSet<Edge> edges = GetDisplayedEdge(betterMesh);
+		
+		int trianglesLength = edges.Count*2;
+		if(trianglesLength%3 != 0) {
+			trianglesLength += 3 - trianglesLength%3;
+		}
+		int[] triangles = new int[trianglesLength];
+		int i = 0;
+		foreach( Edge edge in edges ) {
+			triangles[i] = betterMesh.Vertices.IndexOf(edge.vertex_0);
+			triangles[i+1] = betterMesh.Vertices.IndexOf(edge.vertex_1);
+			i+=2;
 		}
 		
 		wireframeMesh.SetVertices( vertices );
 		wireframeMesh.SetTriangles(triangles, 0);
 		
-		SubMeshDescriptor[] desc = {new SubMeshDescriptor(0, triangles.Length, MeshTopology.Lines)};
+		SubMeshDescriptor[] desc = {new SubMeshDescriptor(0, edges.Count*2, MeshTopology.Lines)};
 		wireframeMesh.SetSubMeshes( desc );
 	}
-
-
-	// private List<List<Vector3>> ExtractLinesSimple(Mesh mesh)
-	// {
-	// 	if (meshToLinesLocal.ContainsKey(mesh))
-	// 	{
-	// 		return meshToLinesLocal[mesh];
-	// 	}
-		
-	// 	BetterMesh betterMesh = new BetterMesh(mesh);
-	// 	List<Edge> previousEdges = new List<Edge>();
-	// 	List<Edge> displayedEdges = new List<Edge>();
-		
-	// 	List<Triangle> triangles = betterMesh.Triangles;
-	// 	for( int i=0; i<triangles.Count; i++) {
-			
-	// 		foreach( Edge edge in triangles[i].GetEdges() ) {
-	// 			if( !previousEdges.Contains( edge ) ) {
-	// 				if (removeDiagonals) {
-	// 					bool ignore = false;
-	// 					for( int j=i+1; j<triangles.Count && !ignore; j++ ) {
-	// 						//suppression des edges qui sont sur d'autres triangles parallèles
-	// 						if( new List<Edge>(triangles[j].GetEdges()).Contains(edge) && Vector3.Angle(triangles[i].GetNormal(), triangles[j].GetNormal()) <= diagThreshold ) {
-	// 							ignore = true;
-	// 						}
-	// 					}
-	// 					if( !ignore ) {
-	// 						displayedEdges.Add(edge);
-	// 					}
-	// 				} else {
-	// 					displayedEdges.Add(edge);
-	// 				}
-	// 			}
-	// 			previousEdges.Add(edge);
-	// 		}
-			
-	// 	}
-		
-		
-	// 	List<List<Vector3>> linesPath = new List<List<Vector3>>();
-	// 	meshToLinesLocal.Add(mesh, linesPath);
-		
-	// 	foreach( Edge edge in displayedEdges ) {
-	// 		List<Vector3> line = new List<Vector3>();
-	// 		line.Add(edge.vertex_0.position);
-	// 		line.Add(edge.vertex_1.position);
-	// 		linesPath.Add(line);
-	// 	}
-		
-	// 	return linesPath;
-	// }
-
-
-	// private List<List<Vector3>> ExtractLinesOptimized(Mesh mesh)
-	// {
-	// 	if (meshToLinesLocal.ContainsKey(mesh))
-	// 	{
-	// 		return meshToLinesLocal[mesh];
-	// 	}
-
-	// 	List<List<Vector3>> linesPath = new List<List<Vector3>>();
-
-	// 	BetterMesh betterMesh = new BetterMesh(mesh);
-
-	// 	// HashSet<Edge> addedEdges = new HashSet<Edge>();
-	// 	HashSet<Edge> displayedEdges = GetDisplayedEdge(betterMesh);
-
-	// 	Edge currentEdge = betterMesh.Edges[0];
-	// 	Vertex previousVertex = currentEdge.vertex_0;   // la dernière vertex ajoutée à la currentLine
-
-	// 	List<Vector3> currentLine = new List<Vector3>();
-	// 	currentLine.Add(previousVertex.position);
-	// 	linesPath.Add(currentLine);
-
-	// 	while (displayedEdges.Count > 0)
-	// 	{
-
-	// 		//ajout de l'edge courrante
-	// 		// addedEdges.Add(currentEdge);
-	// 		displayedEdges.Remove(currentEdge);
-	// 		previousVertex = previousVertex == currentEdge.vertex_0 ? currentEdge.vertex_1 : currentEdge.vertex_0;
-	// 		currentLine.Add(previousVertex.position);
-
-
-	// 		//sélection de l'edge suivante à ajouter
-	// 		bool continueLine = false;
-	// 		foreach (Edge nextEdge in betterMesh.Edges)
-	// 		{
-	// 			if (nextEdge.ContainsVertex(previousVertex) && displayedEdges.Contains(nextEdge))
-	// 			{
-	// 				currentEdge = nextEdge;
-	// 				continueLine = true;
-	// 				break;
-	// 			}
-	// 		}
-
-	// 		if (!continueLine && displayedEdges.Count != 0)
-	// 		{
-	// 			HashSet<Edge>.Enumerator enumerator = displayedEdges.GetEnumerator();
-	// 			enumerator.MoveNext();
-	// 			currentEdge = enumerator.Current;
-	// 			enumerator.Dispose();
-				
-	// 			previousVertex = currentEdge.vertex_0;
-
-	// 			currentLine = new List<Vector3>();
-	// 			currentLine.Add(previousVertex.position);
-	// 			linesPath.Add(currentLine);
-	// 		}
-
-
-	// 	}
-
-
-	// 	meshToLinesLocal.Add(mesh, linesPath);
-
-	// 	return linesPath;
-	// }
-
-
-
+	
+	
+	
 	private HashSet<Edge> GetDisplayedEdge(BetterMesh mesh)
 	{
 		if (!removeDiagonals)
@@ -235,23 +129,30 @@ public class WireframeEffect : MonoBehaviour
 
 			foreach (Edge edge in triangles[i].GetEdges())
 			{
-				if (!previousEdges.Add(edge))
+				if (!previousEdges.Add(edge)){
+					continue;
+				}
+				
+				bool ignore = false;
+				for (int j = i + 1; j < triangles.Count; j++)
 				{
-					bool ignore = false;
-					for (int j = i + 1; j < triangles.Count && !ignore; j++)
+					//suppression des edges qui sont sur d'autres triangles parallèles
+					if (new List<Edge>(triangles[j].GetEdges()).Contains(edge))
 					{
-						//suppression des edges qui sont sur d'autres triangles parallèles
-						if (new List<Edge>(triangles[j].GetEdges()).Contains(edge) && Vector3.Angle(triangles[i].GetNormal(), triangles[j].GetNormal()) <= diagThreshold)
-						{
+						float angleCos = Vector3.Dot( triangles[i].GetNormal(), triangles[j].GetNormal());
+						angleCos = Mathf.Abs(angleCos);
+						if ( angleCos > Mathf.Cos( Mathf.Deg2Rad * diagThreshold ) ) {
 							ignore = true;
+							break;
 						}
 					}
-					if (!ignore)
-					{
-						displayedEdges.Add(edge);
-					}
-
 				}
+				if (!ignore)
+				{
+					displayedEdges.Add(edge);
+				}
+
+				
 			}
 
 		}
@@ -261,10 +162,10 @@ public class WireframeEffect : MonoBehaviour
 
 
 
-	private bool linesEquals(int[] line1, int[] line2)
-	{
-		return line1[0] == line2[0] && line1[1] == line2[1]
-		|| line1[0] == line2[1] && line1[1] == line2[0];
-	}
+	// private bool linesEquals(int[] line1, int[] line2)
+	// {
+	// 	return line1[0] == line2[0] && line1[1] == line2[1]
+	// 	|| line1[0] == line2[1] && line1[1] == line2[0];
+	// }
 
 }

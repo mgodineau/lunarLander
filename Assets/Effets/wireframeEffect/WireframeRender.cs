@@ -84,6 +84,7 @@ public class WireframeRender : MonoBehaviour
 		
 		//rendu des lignes en 3d
 		lineGeometryDrawMaterial.SetPass(0);
+		lineGeometryDrawMaterial.color = Color.green;
 		foreach( LineData line in linesGeometry ) {
 			GL.Begin( GL.LINE_STRIP );
 			GL.Color( line.LineColor );
@@ -95,7 +96,7 @@ public class WireframeRender : MonoBehaviour
 			GL.End();
 		}
 		//rendu des lignes 3d, mais avec des meshs
-		WireframeEffect.DrawAllNow();
+		WireframeEffect.DrawAllNow( lineGeometryDrawMaterial );
 		
 		//rendu des lignes du HUD
 		uiLineDrawMaterial.SetPass(0);

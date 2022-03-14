@@ -21,10 +21,12 @@
 
 # optimisations
 - optimiser le rendu wireframe du terrain (frustrum culling)
-- essayer de faire 1 passe de shader par wireframe (avec des meshs)
+- utiliser un mesh pour les étoiles
+- utiliser un mesh pour le terrain
 
 
 # fini:
+- essayer de faire 1 passe de shader par wireframe (avec des meshs)
 - ajouter les 8 variantes des clicks
 - click des menus
 - faire disparaitre les objets ramassé de la map
