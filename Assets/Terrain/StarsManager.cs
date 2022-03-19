@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -14,6 +15,8 @@ public class StarsManager : MonoBehaviour
 	
 	
 	[SerializeField] private uint starCount = 1000;
+	[SerializeField] private List<StarsColor> starsColors;
+	
 	
 	[SerializeField] private float maxCamSize = 150;
 	[SerializeField] private float maxFOV = 120;
@@ -21,9 +24,17 @@ public class StarsManager : MonoBehaviour
 	[SerializeField] private ScreenSpaceSprite sun;
 	
 	
-	private Vector3[] stars;
-	
 	private Mesh starMesh;
+	
+	
+	
+	[System.Serializable]
+	private struct StarsColor {
+		public Color color;
+		public float weight;
+	}
+	
+	
 	
 	private void Awake() {
 		
@@ -42,11 +53,11 @@ public class StarsManager : MonoBehaviour
 	
 	
 	
-	public void DrawSky() {
+	public void DrawSky( Material starsMaterial ) {
 		Quaternion globalToLocalRot = ComputeGlobalToLocalRot();
 		Matrix4x4 viewMatrix = ComputeCameraProjection();
 		
-		DrawStars(globalToLocalRot, viewMatrix);
+		DrawStars(globalToLocalRot, viewMatrix, starsMaterial);
 		UpdateSun(globalToLocalRot, viewMatrix);
 	}
 	
@@ -54,19 +65,20 @@ public class StarsManager : MonoBehaviour
 	
 	
 	
-	public void DrawStars() {
-		DrawStars( ComputeGlobalToLocalRot(), ComputeCameraProjection() );
+	public void DrawStars( Material mat ) {
+		DrawStars( ComputeGlobalToLocalRot(), ComputeCameraProjection(), mat );
 	}
 	
-	private void DrawStars( Quaternion globalToLocalRot, Matrix4x4 viewMatrix ) {
+	private void DrawStars( Quaternion globalToLocalRot, Matrix4x4 viewMatrix, Material mat ) {
 		
 		GL.PushMatrix();
 			GL.LoadProjectionMatrix( GL.GetGPUProjectionMatrix(viewMatrix, true) );
-			Graphics.DrawMeshNow(starMesh, Camera.main.transform.localToWorldMatrix * Matrix4x4.Rotate(globalToLocalRot) );
+			for( int i=0; i<starsColors.Count; i++ ) {
+				mat.color = starsColors[i].color;
+				mat.SetPass(0);
+				Graphics.DrawMeshNow(starMesh, Camera.main.transform.localToWorldMatrix * Matrix4x4.Rotate(globalToLocalRot), i );
+			}
 		GL.PopMatrix();
-		
-		
-		
 	}
 	
 	
@@ -91,29 +103,49 @@ public class StarsManager : MonoBehaviour
 	
 	private void UpdateStars() {
 		// création des étoiles
-		stars = new Vector3[starCount];
+		Vector3[] vertices = new Vector3[starCount];
 		for( int i=0; i<starCount; i++ ) {
-			stars[i] = Random.onUnitSphere;
+			vertices[i] = UnityEngine.Random.onUnitSphere;
 		}
-		
-		// copie des étoiles dans les vertices du mesh
-		Vector3[] vertices = stars;
-		int trianglesLength = vertices.Length;
-		if( trianglesLength % 3 != 0 ) {
-			trianglesLength += 3 - trianglesLength%3;
-		}
-		// création du tableau triangles
-		int[] triangles = new int[trianglesLength];
-		for( int i=0; i<vertices.Length; i++ ) {
-			triangles[i] = i;
-		}
-		
-		//affectation des étoiles au mesh
 		starMesh.SetVertices(vertices);
-		starMesh.SetTriangles(triangles, 0);
 		
-		SubMeshDescriptor[] desc = {new SubMeshDescriptor(0, vertices.Length, MeshTopology.Points)};
-		starMesh.SetSubMeshes( desc );
+		// création du tableau triangles
+		int[] indices = new int[vertices.Length];
+		for( int i=0; i<vertices.Length; i++ ) {
+			indices[i] = i;
+		}
+		
+		
+		//affectation des étoiles au mesh		
+		float weightSum = 0.0f;
+		foreach( StarsColor color in starsColors ) {
+			weightSum += color.weight;
+		}
+		int[] colorsStartIndexes = new int[starsColors.Count+1];
+		colorsStartIndexes[0] = 0;
+		for( int i=0; i<starsColors.Count; i++ ) {
+			colorsStartIndexes[i+1] = colorsStartIndexes[i] + Mathf.RoundToInt(starsColors[i].weight * starCount / weightSum);
+		}
+		
+		SubMeshDescriptor[] descriptors = new SubMeshDescriptor[starsColors.Count];
+		starMesh.subMeshCount = starsColors.Count;
+		for( int i=0; i<descriptors.Length; i++ ) {
+			
+			int indicesCount = colorsStartIndexes[i+1] - colorsStartIndexes[i];
+			starMesh.SetIndices( indices, colorsStartIndexes[i], indicesCount, MeshTopology.Points, i);
+			descriptors[i] = new SubMeshDescriptor(colorsStartIndexes[i], indicesCount, MeshTopology.Points);
+			
+		}
+		starMesh.SetSubMeshes( descriptors );
+		// starMesh.UploadMeshData(false);
+		
+		// starMesh.SetVertices(vertices);
+		// starMesh.SetTriangles(triangles, 0);
+		// starMesh.SetTriangles(triangles, 1);
+		
+		// SubMeshDescriptor[] desc = {new SubMeshDescriptor(0, vertices.Length, MeshTopology.Points)};
+		// starMesh.SetSubMeshes( desc );
+		
 	}
 	
 	
