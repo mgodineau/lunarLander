@@ -4,7 +4,7 @@
 - ajouter les minuscules dans la police wireframe
 - trouver une solution pour le curseur sur fond blanc
 - ajouter du blanc dans le rendu des lignes de couleur
-
+- afficher les étoiles avec diférentes intensités
 
 ## sons : 
 
@@ -20,7 +20,6 @@
 - gérer l'affichage des objets à la jonction des bords du terrain
 
 # optimisations
-- optimiser le rendu wireframe du terrain (frustrum culling)
 - utiliser un mesh pour les étoiles
 - utiliser un mesh pour le terrain
 

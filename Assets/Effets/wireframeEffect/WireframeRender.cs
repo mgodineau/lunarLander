@@ -67,19 +67,7 @@ public class WireframeRender : MonoBehaviour
 		
 		//rendu de l'arrière plan
 		lineBackgroundDrawMaterial.SetPass(0);
-		GL.PushMatrix();
-			GL.LoadOrtho();
-			
-			foreach( LineData line in linesBackground ) {
-				GL.Begin( GL.LINE_STRIP );
-				GL.Color(line.LineColor);
-				
-				foreach( Vector3 pos in line.points ) {
-					GL.Vertex(pos);
-				}
-				GL.End();
-			}
-		GL.PopMatrix();
+		StarsManager.Instance.DrawStars();
 		
 		
 		//rendu des lignes en 3d
