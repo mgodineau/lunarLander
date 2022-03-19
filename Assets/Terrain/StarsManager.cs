@@ -137,15 +137,6 @@ public class StarsManager : MonoBehaviour
 			
 		}
 		starMesh.SetSubMeshes( descriptors );
-		// starMesh.UploadMeshData(false);
-		
-		// starMesh.SetVertices(vertices);
-		// starMesh.SetTriangles(triangles, 0);
-		// starMesh.SetTriangles(triangles, 1);
-		
-		// SubMeshDescriptor[] desc = {new SubMeshDescriptor(0, vertices.Length, MeshTopology.Points)};
-		// starMesh.SetSubMeshes( desc );
-		
 	}
 	
 	

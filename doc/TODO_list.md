@@ -3,8 +3,7 @@
 - écran titre
 - ajouter les minuscules dans la police wireframe
 - trouver une solution pour le curseur sur fond blanc
-- ajouter du blanc dans le rendu des lignes de couleur
-- afficher les étoiles avec diférentes intensités
+
 
 ## sons : 
 
@@ -18,13 +17,16 @@
 
 # bugs
 - gérer l'affichage des objets à la jonction des bords du terrain
+- ne pas écrire dans le zbuffer du background
 
 # optimisations
-- utiliser un mesh pour les étoiles
 - utiliser un mesh pour le terrain
-
+- gérer la couleur des wireframe avec des mesh properties
 
 # fini:
+- ajouter du blanc dans le rendu des lignes de couleur
+- afficher les étoiles avec diférentes intensités
+- utiliser un mesh pour les étoiles
 - essayer de faire 1 passe de shader par wireframe (avec des meshs)
 - ajouter les 8 variantes des clicks
 - click des menus

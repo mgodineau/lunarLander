@@ -66,7 +66,6 @@ public class WireframeRender : MonoBehaviour
 		
 		
 		//rendu de l'arrière plan
-		// lineBackgroundDrawMaterial.SetPass(0);
 		StarsManager.Instance.DrawStars( lineBackgroundDrawMaterial );
 		
 		

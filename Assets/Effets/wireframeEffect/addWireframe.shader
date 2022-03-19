@@ -119,6 +119,8 @@ Shader "Custom/addWireframe"
                             maxBrightness = max(currentBrightness, maxBrightness);
                             maxWeight = weight;
                             wireColor = tex2D( _WireframeTex, i.uv + offset );
+                            float whiteFactor = max(0.0, maxWeight * maxWeight - 0.7);
+                            wireColor = whiteFactor * float4(1, 1, 1, 1) + (1.0 - whiteFactor) * wireColor;
                         }
                         
                     }//for y
