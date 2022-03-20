@@ -17,7 +17,13 @@ public class WireframeEffect : MonoBehaviour
 	[SerializeField]
 	private float diagThreshold = 1.0f;
 	[SerializeField]
-	private Color color = Color.white;
+	private Color _edgesColor = Color.white;
+	public Color EdgesColor {
+		get {return _edgesColor;}
+		set {
+			SetColor32( value );
+		}
+	}
 	
 	
 	private MeshFilter meshFilter;
@@ -49,17 +55,14 @@ public class WireframeEffect : MonoBehaviour
 	
 	
 	
-	public static void DrawAllNow( Material material ) {
+	public static void DrawAllNow() {
 		foreach( WireframeEffect effect in registeredWireframeObjects ) {
-			effect.DrawNow(material);
+			effect.DrawNow();
 		}
 	}
 	
 	
-	private void DrawNow( Material material ) {
-		//material.color = color;
-		material.SetColor("_Color", color);
-		material.SetPass(0);
+	private void DrawNow() {
 		Graphics.DrawMeshNow(wireframeMesh, transform.localToWorldMatrix, 0);
 	}
 	
@@ -73,9 +76,6 @@ public class WireframeEffect : MonoBehaviour
 		UpdateLinesFromMesh();
 	}
 	
-	// private void OnRenderObject() {
-		//Graphics.DrawMeshNow(wireframeMesh, transform.localToWorldMatrix, 0);
-	// }
 	
 	
 	private void UpdateLinesFromMesh()
@@ -87,6 +87,7 @@ public class WireframeEffect : MonoBehaviour
 		}
 		
 		Vector3[] vertices = meshFilter.mesh.vertices;
+		
 		
 		BetterMesh betterMesh = new BetterMesh(mesh);
 		HashSet<Edge> edges = GetDisplayedEdge(betterMesh);
@@ -108,6 +109,19 @@ public class WireframeEffect : MonoBehaviour
 		
 		SubMeshDescriptor[] desc = {new SubMeshDescriptor(0, edges.Count*2, MeshTopology.Lines)};
 		wireframeMesh.SetSubMeshes( desc );
+		
+		SetColor32(_edgesColor);
+	}
+	
+	
+	
+	private void SetColor32( Color32 color ) {
+		
+		Color32[] colors = new Color32[wireframeMesh.vertices.Length];
+		for( int i=0; i<colors.Length; i++ ) {
+			colors[i] = color;
+		}
+		wireframeMesh.SetColors(colors);
 	}
 	
 	

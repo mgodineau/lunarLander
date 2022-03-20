@@ -66,7 +66,8 @@ public class WireframeRender : MonoBehaviour
 		
 		
 		//rendu de l'arrière plan
-		StarsManager.Instance.DrawStars( lineBackgroundDrawMaterial );
+		lineBackgroundDrawMaterial.SetPass(0);
+		StarsManager.Instance.DrawStars();
 		
 		
 		//rendu des lignes en 3d
@@ -83,7 +84,9 @@ public class WireframeRender : MonoBehaviour
 			GL.End();
 		}
 		//rendu des lignes 3d, mais avec des meshs
-		WireframeEffect.DrawAllNow( lineGeometryDrawMaterial );
+		lineGeometryDrawMaterial.SetColor("_Color", Color.white);
+		lineGeometryDrawMaterial.SetPass(0);
+		WireframeEffect.DrawAllNow();
 		
 		//rendu des lignes du HUD
 		uiLineDrawMaterial.SetPass(0);

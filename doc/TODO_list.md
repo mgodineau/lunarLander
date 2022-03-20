@@ -17,13 +17,15 @@
 
 # bugs
 - gérer l'affichage des objets à la jonction des bords du terrain
-- ne pas écrire dans le zbuffer du background
+
 
 # optimisations
 - utiliser un mesh pour le terrain
-- gérer la couleur des wireframe avec des mesh properties
+- essayer d'utiliser un geometry shader pour dilater les lignes
 
 # fini:
+- gérer la couleur des wireframe avec des vertex properties
+- ne pas écrire dans le zbuffer du background
 - ajouter du blanc dans le rendu des lignes de couleur
 - afficher les étoiles avec diférentes intensités
 - utiliser un mesh pour les étoiles
