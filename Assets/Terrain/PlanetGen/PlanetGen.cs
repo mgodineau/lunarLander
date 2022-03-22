@@ -31,6 +31,7 @@ public class PlanetGen : MonoBehaviour
 		landingZones.Add( new LZrefuel(Vector3.right) );
 		landingZones.Add( new LZrefuel(Vector3.up) );
 		landingZones.Add( new LZradar(Vector3.forward) );
+		landingZones.Add( new LZradar(Vector3.back) );
 		landingZones.Add( new LZrocketBuilder(Vector3.forward + Vector3.right*0.2f, _levelParams) );
 		
 		generateRocketParts();

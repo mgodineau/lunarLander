@@ -11,12 +11,11 @@
 # gameplay :
 - gérer la fin du jeu
 - ajuster les constantes de la gestion du fuel
-- faire la génération aléatoire des LZ et des objets du monde
+- **faire la génération aléatoire des LZ et des objets du monde**
 - limiter l'inventaire
 
 
 # bugs
-- gérer l'affichage des objets à la jonction des bords du terrain
 
 
 # optimisations
@@ -24,6 +23,7 @@
 - essayer d'utiliser un geometry shader pour dilater les lignes
 
 # fini:
+- gérer l'affichage des objets à la jonction des bords du terrain
 - gérer la couleur des wireframe avec des vertex properties
 - ne pas écrire dans le zbuffer du background
 - ajouter du blanc dans le rendu des lignes de couleur

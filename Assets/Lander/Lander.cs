@@ -58,10 +58,6 @@ public class Lander : InputConsumer
     
     [SerializeField]
     private SoundFadeManager thrustSoundManager;
-    // [SerializeField]
-    // private AudioClip clipThrust;
-    
-    // private bool playSoundThrust = false;
     
     
     
@@ -136,18 +132,6 @@ public class Lander : InputConsumer
         if( rotationDir != 0 ) {
             TerrainManager.Instance.RotateAround( transform.position.x, rotationDir * worldRotationSpeed * Time.deltaTime );
         }
-        
-        
-        
-        // gestion du son
-        // if( playSoundThrust ) {
-        //     if( audioSource.clip != clipThrust || !audioSource.isPlaying ) {
-        //         audioSource.clip = clipThrust;
-        //         audioSource.Play();
-        //     }
-        // } else if ( audioSource.isPlaying && audioSource.clip == clipThrust ) {
-        //     audioSource.Stop();
-        // }
         
         
         
@@ -255,7 +239,7 @@ public class Lander : InputConsumer
         
         List<MenuEntry> menuContent = new List<MenuEntry>();
         menuContent.Add( CreatePickupMenu() );
-        menuContent.Add( _inventory.GetMenu() );
+        menuContent.Add( _inventory.GetDropMenu() );
         if( currentLZ != null ) {
             menuContent.Add( currentLZ.LZscript.GetMenu(this) );
         }
@@ -266,7 +250,8 @@ public class Lander : InputConsumer
     
     private SubMenu CreatePickupMenu() {
         UpdatePickableItemEntries();
-        return new SubMenu("pickup", pickableItemEntries);
+        string name = "Pickup (" + pickableItemEntries.Count + ")";
+        return new SubMenu(name, pickableItemEntries);
     }
     
     private void UpdatePickableItemEntries() {

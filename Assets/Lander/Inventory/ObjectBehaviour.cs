@@ -37,6 +37,7 @@ public abstract class ObjectBehaviour : MonoBehaviour
 	
 	protected void Update() {
 		updateAction();
+		UpdateDisplayPositionX();
 	}
 	
 	
@@ -55,5 +56,17 @@ public abstract class ObjectBehaviour : MonoBehaviour
 	public void RemoveFromWorld() {
 		TerrainManager.Instance.Planet.RemoveObject(LocObject);
 	}
-
+	
+	private void UpdateDisplayPositionX() {
+		float terrainWidth = TerrainManager.Instance.TerrainWidth;
+		float cameraX = Camera.main.transform.position.x;
+		
+		float posX_0 = transform.position.x;
+		float posX_1 = posX_0 + ((posX_0<0) ? terrainWidth : -terrainWidth);
+		
+		Vector3 pos = transform.position;
+		pos.x = Mathf.Abs(cameraX - posX_0) < Mathf.Abs(cameraX - posX_1) ? posX_0 : posX_1;
+		transform.position = pos;
+	}
+	
 }

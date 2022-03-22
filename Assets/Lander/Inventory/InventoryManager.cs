@@ -48,7 +48,7 @@ public class InventoryManager : InventoryItem
         get{ return "Inventory (" + Volume + "/" + MaxVolume + ")"; }
     }
     
-    private List<MenuEntry> publicEntries = new List<MenuEntry>();
+    private List<MenuEntry> dropEntries = new List<MenuEntry>();
     
     
     
@@ -74,7 +74,9 @@ public class InventoryManager : InventoryItem
         item.inventory = this;
         _volume += item.Volume;
         
-        publicEntries.Add( new MenuEntryDropItem( this, item) );
+        if( item is RocketPart ) {
+            dropEntries.Add( new MenuEntryDropItem( this, item) );
+        }
         if( UImanager.Instance != null ) {
             UImanager.Instance.menuManager.UpdateMenuUI();            
         }
@@ -92,7 +94,7 @@ public class InventoryManager : InventoryItem
         if (result)
         {
             item.inventory = null;
-            publicEntries.RemoveAll( entry => entry is MenuEntryDropItem && (entry as MenuEntryDropItem).Item == item );
+            dropEntries.RemoveAll( entry => entry is MenuEntryDropItem && (entry as MenuEntryDropItem).Item == item );
             if( UImanager.Instance != null) {
                 UImanager.Instance.menuManager.UpdateMenuUI();
             }
@@ -104,14 +106,15 @@ public class InventoryManager : InventoryItem
         }
         return result;
     }
-
-
     
-
-    public SubMenu GetMenu()
-    {
-        return new SubMenu( Name, publicEntries);
+    
+    
+    
+    public SubMenu GetDropMenu() {
+        string name = "Drop Item (" + dropEntries.Count + ")";
+        return new SubMenu( name, dropEntries );
     }
+    
     
     public Vector3 GetDropPosition() {
         // return TerrainManager.Instance.ConvertXtoDir( lander.transform.position.x );
