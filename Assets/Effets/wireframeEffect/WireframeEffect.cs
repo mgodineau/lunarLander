@@ -86,10 +86,11 @@ public class WireframeEffect : MonoBehaviour
 			return;
 		}
 		
-		Vector3[] vertices = meshFilter.mesh.vertices;
 		
 		
 		BetterMesh betterMesh = new BetterMesh(mesh);
+		betterMesh.RemoveDuplicates();
+		Vector3[] vertices = betterMesh.GetMeshVertices();
 		HashSet<Edge> edges = GetDisplayedEdge(betterMesh);
 		
 		int trianglesLength = edges.Count*2;
